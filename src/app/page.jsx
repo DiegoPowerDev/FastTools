@@ -166,7 +166,7 @@ export default function Page() {
               className="flex font-bold justify-end items-center pr-20"
             >
               <a href="https://diegotorres-portfoliodev.vercel.app">
-                AUTOR: DIEGO TORRES
+                Designed & developed by Diego Torres
               </a>
             </motion.div>
           )}
