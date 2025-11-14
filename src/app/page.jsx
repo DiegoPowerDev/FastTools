@@ -14,7 +14,7 @@ import Calculator from "@/components/calculator";
 import Conversor from "@/components/Conversor";
 import Links from "@/components/enlaces";
 import Colors from "@/components/colors";
-import ApiTester from "@/components/testApi";
+import ApiTester from "@/components/testApi/testApi";
 import Hasher from "@/components/hasher";
 import Image from "next/image";
 import AuthenticateForm from "@/components/authenticateForm";

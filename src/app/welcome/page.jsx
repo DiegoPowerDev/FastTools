@@ -7,7 +7,7 @@ import Calculator from "@/components/calculator";
 import Conversor from "@/components/Conversor";
 import Links from "@/components/enlaces";
 import Colors from "@/components/colors";
-import ApiTester from "@/components/testApi";
+import ApiTester from "@/components/testApi/testApi";
 import Hasher from "@/components/hasher";
 import Image from "next/image";
 import ImageCropper from "@/components/ImageCropper";
@@ -206,7 +206,7 @@ export default function Page() {
                   className="flex font-bold justify-end items-center pr-20"
                 >
                   <a href="https://diegotorres-portfoliodev.vercel.app">
-                    AUTOR: DIEGO TORRES
+                    Designed & developed by Diego Torres
                   </a>
                 </motion.div>
               )}

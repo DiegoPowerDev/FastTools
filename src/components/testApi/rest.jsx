@@ -6,7 +6,7 @@ import {
   SelectItem,
   SelectValue,
 } from "@/components/ui/select";
-import styles from "./enlaces.module.css";
+import styles from "../enlaces.module.css";
 import { motion } from "framer-motion";
 import toast, { Toaster } from "react-hot-toast";
 import {
@@ -17,7 +17,8 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { DialogClose } from "@radix-ui/react-dialog";
-export default function ApiTester({ theme, textTheme, api, setApi }) {
+
+export default function Rest({ theme, textTheme, api, setApi }) {
   const [method, setMethod] = useState("GET");
   const [headers, setHeaders] = useState("");
   const [body, setBody] = useState("");
@@ -182,23 +183,7 @@ export default function ApiTester({ theme, textTheme, api, setApi }) {
   }, [loading]);
 
   return (
-    <div
-      style={{
-        border: `2px solid ${theme}`,
-        color: textTheme,
-      }}
-      className=" h-full overflow-hidden flex flex-col items-center justify-start w-full rounded-xl shadow-xl"
-    >
-      <div
-        style={{
-          backgroundColor: theme,
-          color: textTheme,
-        }}
-        className="h-14 items-center justify-center flex w-full"
-      >
-        <span className="text-xl font-bold uppercase">Api tester</span>
-      </div>
-
+    <>
       <div className="w-full flex-1 flex flex-col gap-4 py-4 px-4 md:px-16">
         <div className="h-full grid grid-cols-1 gap-2  justify-center">
           <div className="flex w-full gap-4 items-center justify-center">
@@ -210,7 +195,7 @@ export default function ApiTester({ theme, textTheme, api, setApi }) {
             >
               <SelectTrigger
                 className=" w-[100px] md:w-[150px] font-bold"
-                style={{ color: textTheme, border: `1px solid ${theme}` }}
+                style={{ color: textTheme }}
               >
                 <SelectValue placeholder="Format" />
               </SelectTrigger>
@@ -227,7 +212,7 @@ export default function ApiTester({ theme, textTheme, api, setApi }) {
             <input
               type="text"
               value={api}
-              style={{ color: textTheme, border: `1px solid ${theme}` }}
+              style={{ color: textTheme }}
               onChange={(e) => setApi(e.target.value)}
               placeholder="Enter API URL..."
               className="w-full font-bold bg-transparent h-10 p-2 rounded outline-none"
@@ -250,7 +235,7 @@ export default function ApiTester({ theme, textTheme, api, setApi }) {
                 rows={4}
                 style={{
                   color: textTheme,
-                  border: `1px solid ${theme}`,
+
                   "--theme": theme,
                 }}
                 value={headers}
@@ -300,7 +285,7 @@ export default function ApiTester({ theme, textTheme, api, setApi }) {
                 value={body}
                 style={{
                   color: textTheme,
-                  border: `1px solid ${theme}`,
+
                   "--theme": theme,
                 }}
                 onChange={handleBodyChange}
@@ -373,7 +358,6 @@ export default function ApiTester({ theme, textTheme, api, setApi }) {
                   </div>
                   <pre
                     style={{
-                      border: `1px solid ${theme}`,
                       "--theme": theme,
                       color: textTheme,
                     }}
@@ -414,6 +398,6 @@ export default function ApiTester({ theme, textTheme, api, setApi }) {
         </div>
       </div>
       <Toaster />
-    </div>
+    </>
   );
 }
