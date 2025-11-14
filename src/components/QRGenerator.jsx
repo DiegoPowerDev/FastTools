@@ -1,0 +1,323 @@
+"use client";
+import { useRef, useState, useEffect } from "react";
+import QRCode from "qrcode";
+import QRSVG from "qrcode-svg";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Slider } from "@/components/ui/slider";
+
+export default function QRGenerator({ theme, textTheme }) {
+  const canvasRef = useRef(null);
+  const [text, setText] = useState("https://fasttools.vercel.app");
+  const [size, setSize] = useState(512);
+  const [fgColor, setFgColor] = useState("#000000");
+  const [bgColor, setBgColor] = useState("#ffffff");
+
+  const [logo, setLogo] = useState(null);
+  const [logoSize, setLogoSize] = useState(20); // % del tamaño del QR
+  const [svgData, setSvgData] = useState(null);
+  const logoImgRef = useRef(null);
+
+  const reset = () => {
+    setText(" ");
+    setSize(512);
+    setFgColor("#000000");
+    setBgColor("#ffffff");
+    setLogo(null);
+    setLogoSize(20);
+    setSvgData(null);
+    logoImgRef.current = null;
+  };
+
+  const handleLogoUpload = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const preview = URL.createObjectURL(file);
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      const base64 = reader.result; // ✅ data:image/png;base64,AAAB...
+      const img = new Image();
+      img.src = base64;
+      img.onload = () => {
+        logoImgRef.current = img;
+        setLogo({ file, preview, base64 });
+      };
+    };
+
+    reader.readAsDataURL(file); // ✅ convierte en base64
+  };
+
+  const generatePNG = async () => {
+    try {
+      const canvas = canvasRef.current;
+      const ctx = canvas.getContext("2d");
+      canvas.width = size;
+      canvas.height = size;
+
+      ctx.fillStyle = bgColor;
+      ctx.fillRect(0, 0, size, size);
+
+      const dataUrl = await QRCode.toDataURL(text, {
+        width: size,
+        margin: 1,
+        errorCorrectionLevel: "H",
+        color: {
+          dark: fgColor,
+          light: bgColor,
+        },
+      });
+
+      const img = new Image();
+      img.src = dataUrl;
+      await new Promise((res) => (img.onload = res));
+      ctx.drawImage(img, 0, 0, size, size);
+
+      if (logo?.base64) {
+        const logoPx = (size * logoSize) / 100;
+        const padding = logoPx * 0.08;
+        const bgSize = logoPx + padding * 2;
+        const pos = (size - bgSize) / 2;
+
+        ctx.fillStyle = bgColor;
+        ctx.fillRect(pos, pos, bgSize, bgSize);
+        ctx.roundRect?.(pos, pos, bgSize, bgSize, 6);
+        ctx.fill();
+        img.src = logo.base64;
+        await new Promise((res) => (img.onload = res));
+        ctx.drawImage(img, pos + padding, pos + padding, logoPx, logoPx);
+      }
+    } catch {
+      console.log("Text or URL is required");
+    }
+  };
+
+  const downloadPNG = () => {
+    const url = canvasRef.current.toDataURL("image/png");
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "qr.png";
+    a.click();
+  };
+
+  const generateSVG = () => {
+    try {
+      const svg = new QRSVG({
+        content: text,
+        width: size,
+        height: size,
+        color: fgColor,
+        background: bgColor,
+        ecl: "H",
+      }).svg();
+
+      if (logo) {
+        const logoPx = (size * logoSize) / 100;
+        const bgPadding = logoPx * 0.08;
+        const bgSize = logoPx + bgPadding * 2;
+        const bgX = (size - bgSize) / 2;
+        const bgY = (size - bgSize) / 2;
+
+        const patchedSVG = svg.replace(
+          /<\/svg>\s*$/i,
+          `
+        <rect 
+          x="${bgX}" 
+          y="${bgY}" 
+          width="${bgSize}" 
+          height="${bgSize}" 
+          rx="8" 
+          fill="${bgColor}"
+        />
+        <image 
+          href="${logo.base64}"
+          width="${logoPx}" 
+          height="${logoPx}" 
+          x="${bgX + bgPadding}" 
+          y="${bgY + bgPadding}" 
+        />
+      </svg>`
+        );
+
+        setSvgData(patchedSVG);
+      } else {
+        setSvgData(svg);
+      }
+    } catch {
+      console.log("Incorrect values");
+    }
+  };
+
+  const downloadSVG = () => {
+    const blob = new Blob([svgData], { type: "image/svg+xml" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "qr.svg";
+    a.click();
+  };
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      generatePNG();
+      generateSVG();
+    }, 200); // delay
+
+    return () => clearTimeout(timeout);
+  }, [text, size, fgColor, bgColor, logo, logoSize]);
+
+  return (
+    <div
+      style={{ border: `2px solid ${theme}` }}
+      className={`flex flex-col h-full border- rounded-xl overflow-hidden`}
+    >
+      <div
+        style={{
+          backgroundColor: theme,
+        }}
+        className={`relative  h-14 items-center justify-center grid grid-cols-7 grid-rows-1 w-full`}
+      >
+        <div className="col-start-1 col-end-6 text-xl  w-full font-bold uppercase flex justify-center items-center">
+          QR GENERATOR
+        </div>
+        <div
+          onClick={() => reset()}
+          className="md:col-start-6 border-2 border-black bg-white text-black font-bold md:col-end-7 col-span-2 flex justify-center items-center gap-4 p-2 rounded  md:m-4 hover:opacity-80"
+        >
+          CLEAR
+        </div>
+      </div>
+      <div className="grid grid-cols-2 grid-rows-[6fr_1fr] md:grid-rows-[3fr_1fr] w-full h-full items-center justify-center gap-2">
+        <div className="flex flex-col md:p-2 gap-2 md:gap-4 items-center justify-center h-full w-full">
+          <label className="font-bold">Text or URL</label>
+          <Input
+            style={{
+              color: textTheme,
+              border: `1px solid ${theme}`,
+              placeholderTextColor: "red",
+            }}
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            placeholder="https://fasttools.vercel.app"
+          />
+          <div className="grid grid-cols-1 md:grid-cols-2 grid-rows-1 w-full items-center justify-center">
+            <div className=" flex md:grid md:grid-cols-2 md:grid-rows-2 w-full gap-1 md:gap-4 justify-center items-center">
+              <label className="text-sm md:block hidden">Size (px):</label>
+              <Input
+                type="text"
+                style={{
+                  color: textTheme,
+                  border: `1px solid ${theme}`,
+                }}
+                value={size}
+                onChange={(e) => {
+                  const sanitized = e.target.value.replace(/[^0-9]/g, "");
+                  const val = Number(sanitized);
+                  if (!sanitized) {
+                    setSize(0);
+                  } else if (val > 2000) {
+                    setSize(2000);
+                  } else {
+                    setSize(val);
+                  }
+                }}
+                className="border rounded p-1 w-16"
+              />
+              <span className="md:hidden">px</span>
+
+              <label className="hidden md:block">Colors:</label>
+              <div className="flex">
+                <input
+                  type="color"
+                  value={fgColor}
+                  className="w-8 h-8"
+                  onChange={(e) => setFgColor(e.target.value)}
+                />
+                <input
+                  type="color"
+                  value={bgColor}
+                  className="w-8 h-8 p-0 m-0"
+                  onChange={(e) => setBgColor(e.target.value)}
+                />
+              </div>
+            </div>
+
+            <div className="md:col-span-1 col-span-2 flex flex-col items-center justify-center px-4">
+              <div className="flex gap-4 items-center justify-center">
+                <span className="text-sm font-medium hidden md:block">
+                  Logo:
+                </span>
+                <label htmlFor="QRLogo">
+                  {logo ? (
+                    <img
+                      src={logo.preview}
+                      style={{
+                        border: `1px solid ${theme}`,
+                      }}
+                      className="w-12 h-12 rounded border object-cover"
+                    />
+                  ) : (
+                    <div
+                      style={{
+                        color: textTheme,
+                        border: `1px solid ${theme}`,
+                      }}
+                      className="h-12 w-12 flex justify-center items-center p-4 text-xs border-2 rounded"
+                    >
+                      LOGO
+                    </div>
+                  )}
+                </label>
+
+                <input
+                  id="QRLogo"
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={handleLogoUpload}
+                />
+              </div>
+
+              <div className="w-full">
+                <label className="text-sm">Logo Size: {logoSize}%</label>
+                <Slider
+                  style={theme}
+                  disabled={!logo}
+                  value={[logoSize]}
+                  track="red"
+                  onValueChange={(v) => setLogoSize(v[0])}
+                  max={50}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="h-full w-full md:row-span-2 flex justify-center items-center">
+          <canvas
+            ref={canvasRef}
+            className="max-h-40 md:max-h-64 rounded"
+            width={size}
+            height={size}
+          />
+        </div>
+        <div className="col-span-2 md:col-span-1 flex gap-4 items-center justify-center">
+          <Button
+            style={{ backgroundColor: theme, color: textTheme }}
+            onClick={downloadPNG}
+            className="hover:opacity-80 font-bold ease-in-out hover:scale-105"
+          >
+            Download PNG
+          </Button>
+
+          <Button
+            style={{ backgroundColor: theme, color: textTheme }}
+            onClick={downloadSVG}
+            className="hover:opacity-80 font-bold ease-in-out hover:scale-105"
+            disabled={!svgData}
+          >
+            Download SVG
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+}

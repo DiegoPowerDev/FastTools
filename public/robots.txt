@@ -1,0 +1,9 @@
+# *
+User-agent: *
+Allow: /
+
+# Host
+Host: https://fasttools.vercel.app
+
+# Sitemaps
+Sitemap: https://fasttools.vercel.app/sitemap.xml

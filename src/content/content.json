@@ -1,0 +1,31 @@
+{
+  "metadata": {
+    "title": "Fast Tools",
+    "description": "Sitio web con herramientas utiles para el desarrollo",
+    "icons": {
+      "icon": "/favicon.ico"
+    },
+    "authors": [
+      {
+        "name": "Diego Torres",
+        "url": "https://fasttools.vercel.app"
+      }
+    ],
+    "openGraph": {
+      "title": "Fast Tools",
+      "description": "Acelera tu tiempo de desarrollo y mejora tu productividad",
+      "url": "https://fasttools.vercel.app",
+      "siteName": "Fast Tools",
+      "images": [
+        {
+          "url": "/favicon.ico",
+          "width": 630,
+          "height": 630,
+          "alt": "logo"
+        }
+      ],
+      "locale": "en_US",
+      "type": "website"
+    }
+  }
+}
