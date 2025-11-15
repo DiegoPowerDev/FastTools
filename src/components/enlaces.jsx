@@ -170,7 +170,7 @@ export default function Links({ links, setLinks, theme, textTheme }) {
           <DialogDescription className="hidden">
             Cuadro de edicion de Links
           </DialogDescription>
-          <div className="grid grid-cols-1 grid-rows-3 gap-8  p-4 h-full">
+          <form className="grid grid-cols-1 grid-rows-3 gap-8  p-4 h-full">
             <div className="flex flex-col gap-2">
               <label className="font-bold" htmlFor="icono">
                 ICON
@@ -249,7 +249,7 @@ export default function Links({ links, setLinks, theme, textTheme }) {
                 </div>
               </button>
             </div>
-          </div>
+          </form>
         </DialogContent>
       </Dialog>
       <Toaster />

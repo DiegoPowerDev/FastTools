@@ -184,7 +184,10 @@ export default function Notes({ notes, setNotes, theme, textTheme }) {
           <DialogDescription className="hidden">
             Cuadro de notas
           </DialogDescription>
-          <div style={{ color: textTheme }} className="flex flex-col gap-4 p-4">
+          <form
+            style={{ color: textTheme }}
+            className="flex flex-col gap-4 p-4"
+          >
             <div className="flex flex-col gap-2">
               {editable && (
                 <>
@@ -307,7 +310,7 @@ export default function Notes({ notes, setNotes, theme, textTheme }) {
                 </Button>
               </div>
             )}
-          </div>
+          </form>
         </DialogContent>
       </Dialog>
       <Toaster />
