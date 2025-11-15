@@ -117,6 +117,7 @@ const initialState = {
     { id: 9, label: "jwt" },
   ],
   api: "http://localhost:3000",
+  socketApi: "http://localhost:3000",
   loading: true,
   error: null,
 };
@@ -285,6 +286,7 @@ export const fireStore = createStore((set, get) => ({
     get().saveToFirestore();
   },
   api: "http://localhost:3000",
+  socketApi: "http://localhost:3000",
   loading: true,
   error: null,
   loadUserData: () => {
@@ -338,6 +340,10 @@ export const fireStore = createStore((set, get) => ({
   },
   setApi: (api) => {
     set({ api });
+    get().saveToFirestore();
+  },
+  setSocketApi: (socketApi) => {
+    set({ socketApi });
     get().saveToFirestore();
   },
 

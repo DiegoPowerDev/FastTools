@@ -49,6 +49,8 @@ export default function Page() {
     api,
     toolbarArea,
     setApi,
+    socketApi,
+    setSocketApi,
     setColors,
     setLinks,
     notes,
@@ -144,6 +146,8 @@ export default function Page() {
                     setLinks={setLinks}
                     api={api}
                     setApi={setApi}
+                    socketApi={socketApi}
+                    setSocketApi={setSocketApi}
                   />
                 </motion.div>
               ))}

@@ -176,7 +176,11 @@ export const pageStore = createStore(
         header: true,
       },
       api: "http://localhost:3000",
+      socketApi: "http://localhost:3000",
       setApi: (api) => set({ api: api }),
+      setSocketApi: (socketApi) => {
+        set({ socketApi });
+      },
       setText: (text) => set({ text: text }),
       setTitle: (title) => set({ title: title }),
       setTheme: (color) => {

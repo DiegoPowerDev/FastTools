@@ -5,10 +5,11 @@ import io from "socket.io-client";
 import styles from "../enlaces.module.css";
 
 export default function Websocket({
-  theme = "#ffffff",
-  textTheme = "#000000",
+  theme,
+  textTheme,
+  socketApi,
+  setsocketApi,
 }) {
-  const [url, setUrl] = useState("http://localhost:3000");
   const [message, setMessage] = useState("");
   const [event, setEvent] = useState("");
   const [logs, setLogs] = useState([]);
@@ -30,7 +31,7 @@ export default function Websocket({
   const connect = () => {
     try {
       setIsConnecting(true);
-      const s = io(url, {
+      const s = io(socketApi, {
         transports: ["websocket", "polling"],
         reconnection: true,
         reconnectionAttempts: 5,
@@ -41,13 +42,13 @@ export default function Websocket({
       s.on("connect", () => {
         setIsConnected(true);
         setIsConnecting(false);
-        addLog(`🟢 Connected to ${url} (ID: ${s.id})`);
+        addLog(`🟢 Connected to ${socketApi} (ID: ${s.id})`);
       });
 
       s.on("connect_error", (err) => {
         console.log("Connection error:", err);
         addLog(`❌ Connection error: ${err.message}`);
-        addLog(`💡 Verifica que el servidor esté corriendo en ${url}`);
+        addLog(`💡 Verifica que el servidor esté corriendo en ${socketApi}`);
         if (!s.active) {
           setIsConnecting(false);
         }
@@ -73,7 +74,7 @@ export default function Websocket({
       });
 
       setSocket(s);
-      addLog(`⏳ Connecting to ${url}...`);
+      addLog(`⏳ Connecting to ${socketApi}...`);
     } catch (e) {
       addLog(`❌ Failed to connect: ${e.message}`);
       setIsConnected(false);
@@ -138,8 +139,8 @@ export default function Websocket({
         <div className="flex gap-2">
           <Input
             placeholder="http://localhost:3010"
-            value={url}
-            onChange={(e) => setUrl(e.target.value)}
+            value={socketApi}
+            onChange={(e) => setsocketApi(e.target.value)}
             disabled={isConnected}
             className="flex-1"
           />

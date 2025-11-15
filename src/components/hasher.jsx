@@ -26,11 +26,10 @@ export default function Hasher({ theme, textTheme }) {
             <div
               style={{
                 backgroundColor: action === "hash" && "white",
-                color: textTheme,
                 boxShadow: action === "hash" && `0px 0px 5px 1px white`,
               }}
               className={`flex p-2 rounded ${
-                action != "hash" ? "border-white" : "border-black"
+                action != "hash" ? "border-white" : "border-black text-black"
               } border-2 font-bold items-center justify-center gap-2 hover:opacity-70`}
               onClick={() => setAction("hash")}
             >
@@ -39,11 +38,10 @@ export default function Hasher({ theme, textTheme }) {
             <div
               style={{
                 backgroundColor: action === "verify" && "white",
-                color: textTheme,
                 boxShadow: action === "verify" && `0px 0px 5px 1px white  `,
               }}
               className={`flex p-2 rounded font-bold  ${
-                action != "verify" ? "border-white" : "border-black"
+                action != "verify" ? "border-white" : "border-black text-black"
               } border-2 items-center justify-center gap-2 hover:opacity-70`}
               onClick={() => setAction("verify")}
             >

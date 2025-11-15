@@ -38,7 +38,6 @@ export default function Page() {
   const { logout, setUser } = useUserStore();
   const {
     tabs,
-    setUid,
     colors,
     links,
     api,
@@ -54,6 +53,8 @@ export default function Page() {
     setTheme,
     textTheme,
     setTextTheme,
+    socketApi,
+    setSocketApi,
   } = useFireStore();
 
   const componentsArray = toolbarArea.map((item) => ({
@@ -184,6 +185,8 @@ export default function Page() {
                         setLinks={setLinks}
                         api={api}
                         setApi={setApi}
+                        socketApi={socketApi}
+                        setSocketApi={setSocketApi}
                       />
                     </motion.div>
                   ))}

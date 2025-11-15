@@ -2,7 +2,14 @@ import { useState } from "react";
 import Rest from "./rest";
 import Websocket from "./websocket";
 import { IconBrandSocketIo } from "@tabler/icons-react";
-export default function ApiTester({ theme, textTheme, api, setApi }) {
+export default function ApiTester({
+  theme,
+  textTheme,
+  api,
+  setApi,
+  socketApi,
+  setSocketApi,
+}) {
   const [modo, setModo] = useState("rest");
   return (
     <div
@@ -25,11 +32,10 @@ export default function ApiTester({ theme, textTheme, api, setApi }) {
           <div
             style={{
               backgroundColor: modo === "rest" && "white",
-              color: textTheme,
               boxShadow: modo === "rest" && `0px 0px 5px 1px white`,
             }}
             className={`flex p-2 rounded ${
-              modo != "rest" ? "border-white" : "border-black"
+              modo != "rest" ? "border-white" : "border-black text-black"
             } border-2 font-bold items-center justify-center gap-2 hover:opacity-70`}
             onClick={() => setModo("rest")}
           >
@@ -38,11 +44,10 @@ export default function ApiTester({ theme, textTheme, api, setApi }) {
           <div
             style={{
               backgroundColor: modo === "websocket" && "white",
-              color: textTheme,
               boxShadow: modo === "websocket" && `0px 0px 5px 1px white  `,
             }}
             className={`flex p-2 rounded font-bold  ${
-              modo != "websocket" ? "border-white" : "border-black"
+              modo != "websocket" ? "border-white" : "border-black text-black"
             } border-2 items-center justify-center gap-2 hover:opacity-70`}
             onClick={() => setModo("websocket")}
           >
@@ -54,7 +59,12 @@ export default function ApiTester({ theme, textTheme, api, setApi }) {
       {modo === "rest" ? (
         <Rest theme={theme} textTheme={textTheme} api={api} setApi={setApi} />
       ) : (
-        <Websocket theme={theme} textTheme={textTheme} />
+        <Websocket
+          theme={theme}
+          textTheme={textTheme}
+          socketApi={socketApi}
+          setsocketApi={setSocketApi}
+        />
       )}
     </div>
   );
