@@ -195,12 +195,16 @@ export default function Rest({ theme, textTheme, api, setApi }) {
             >
               <SelectTrigger
                 className=" w-[100px] md:w-[150px] font-bold"
-                style={{ color: textTheme }}
+                style={{ color: textTheme, border: `1px solid ${theme}` }}
               >
                 <SelectValue placeholder="Format" />
               </SelectTrigger>
               <SelectContent
-                style={{ color: textTheme, backgroundColor: "black" }}
+                style={{
+                  color: textTheme,
+                  backgroundColor: "black",
+                  border: `1px solid ${theme}`,
+                }}
               >
                 {["GET", "POST", "PUT", "DELETE", "PATCH", "HEAD"].map((m) => (
                   <SelectItem key={m} value={m}>

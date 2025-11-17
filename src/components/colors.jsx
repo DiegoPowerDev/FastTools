@@ -191,7 +191,7 @@ export default function Colors({
           <DialogDescription className="hidden">
             Cuadro de edicion de color
           </DialogDescription>
-          <form className="grid grid-cols-1 grid-rows-3 gap-8  p-4 h-full">
+          <div className="grid grid-cols-1 grid-rows-3 gap-8  p-4 h-full">
             <div className="flex flex-col gap-2">
               <label className="font-bold" htmlFor="nombre">
                 NAME
@@ -285,7 +285,7 @@ export default function Colors({
                 </Button>
               </div>
             )}
-          </form>
+          </div>
         </DialogContent>
       </Dialog>
     </div>
