@@ -29,7 +29,7 @@ export default function ApiTester({
           API TESTER
         </div>
         <div className="md:col-start-4 md:col-end-7 flex justify-center items-center gap-4">
-          <div
+          <button
             style={{
               backgroundColor: modo === "rest" && "white",
               boxShadow: modo === "rest" && `0px 0px 5px 1px white`,
@@ -40,8 +40,8 @@ export default function ApiTester({
             onClick={() => setModo("rest")}
           >
             <div>HTTP</div>
-          </div>
-          <div
+          </button>
+          <button
             style={{
               backgroundColor: modo === "websocket" && "white",
               boxShadow: modo === "websocket" && `0px 0px 5px 1px white  `,
@@ -53,7 +53,7 @@ export default function ApiTester({
           >
             <div>WEBSOCKET </div>
             <IconBrandSocketIo />
-          </div>
+          </button>
         </div>
       </div>
       {modo === "rest" ? (

@@ -189,12 +189,12 @@ export default function ImageColorPicker({ theme, textTheme }) {
         <div className="col-start-1 col-end-6 text-xl  w-full font-bold uppercase flex justify-center items-center">
           COLOR PICKER
         </div>
-        <div
+        <button
           onClick={() => reset()}
           className="active:scale-110 duration-200 col-start-6 border-2 border-black bg-white text-black  font-bold col-end-7 flex justify-center items-center gap-4 p-2 rounded md:m-4 hover:opacity-80"
         >
           CLEAR
-        </div>
+        </button>
       </div>
       <div
         className="w-full h-full flex items-center justify-center"

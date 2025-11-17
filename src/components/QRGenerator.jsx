@@ -179,12 +179,12 @@ export default function QRGenerator({ theme, textTheme }) {
         <div className="col-start-1 col-end-6 text-xl  w-full font-bold uppercase flex justify-center items-center">
           QR GENERATOR
         </div>
-        <div
+        <button
           onClick={() => reset()}
           className="md:col-start-6 border-2 border-black bg-white text-black font-bold md:col-end-7 col-span-2 flex justify-center items-center gap-4 p-2 rounded  md:m-4 hover:opacity-80"
         >
           CLEAR
-        </div>
+        </button>
       </div>
       <div className="grid grid-cols-2 grid-rows-[6fr_1fr] md:grid-rows-[3fr_1fr] w-full h-full items-center justify-center gap-2">
         <div className="flex flex-col md:p-2 gap-2 md:gap-4 items-center justify-center h-full w-full">

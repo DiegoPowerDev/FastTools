@@ -128,7 +128,7 @@ export default function Recorder({ theme, textTheme }) {
 
         <div className="h-full p-4 grid grid-cols-2 md:gap-x-5 gap-x-4">
           <div className="flex items-center justify-center">
-            <div
+            <button
               style={{
                 backgroundColor: theme,
               }}
@@ -155,11 +155,11 @@ export default function Recorder({ theme, textTheme }) {
                   </motion.span>
                 </div>
               )}
-            </div>
+            </button>
           </div>
 
           <div className="flex items-center justify-center">
-            <div
+            <button
               style={{
                 backgroundColor: theme,
               }}
@@ -188,7 +188,7 @@ export default function Recorder({ theme, textTheme }) {
                   </motion.span>
                 </div>
               )}
-            </div>
+            </button>
           </div>
         </div>
 

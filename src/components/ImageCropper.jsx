@@ -215,12 +215,12 @@ export default function ImageCropper({ theme, textTheme }) {
         <div className="col-start-1 col-end-6 text-xl  w-full font-bold uppercase flex justify-center items-center">
           IMAGE CROPPER
         </div>
-        <div
+        <button
           onClick={() => reset()}
           className="active:scale-110 duration-200  md:col-start-6 border-2 bg-white text-black border-black font-bold md:col-end-7 flex justify-center items-center gap-4 p-2 rounded md:m-4 hover:opacity-80"
         >
           CLEAR
-        </div>
+        </button>
       </div>
 
       <input {...getInputProps()} id="ImageToCrop" className="hidden" />

@@ -23,7 +23,7 @@ export default function Hasher({ theme, textTheme }) {
             HASHER
           </div>
           <div className="md:col-start-4 md:col-end-7 flex justify-center items-center gap-4">
-            <div
+            <button
               style={{
                 backgroundColor: action === "hash" && "white",
                 boxShadow: action === "hash" && `0px 0px 5px 1px white`,
@@ -34,8 +34,8 @@ export default function Hasher({ theme, textTheme }) {
               onClick={() => setAction("hash")}
             >
               <div>HASH</div> <IconHash />
-            </div>
-            <div
+            </button>
+            <button
               style={{
                 backgroundColor: action === "verify" && "white",
                 boxShadow: action === "verify" && `0px 0px 5px 1px white  `,
@@ -47,7 +47,7 @@ export default function Hasher({ theme, textTheme }) {
             >
               <div>VERIFY </div>
               <IconZoomCode />
-            </div>
+            </button>
           </div>
         </div>
 
