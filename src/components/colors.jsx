@@ -252,7 +252,6 @@ export default function Colors({
                 DELETE
               </Button>
               <button
-                type="submit"
                 style={{ backgroundColor: theme, color: textTheme }}
                 onClick={() => {
                   setColors(id, nombre, manageFormat(color));

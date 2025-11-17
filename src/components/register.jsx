@@ -63,7 +63,6 @@ export default function Register({ theme, textTheme }) {
         </div>
         <div className="w-full flex justify-center items-center">
           <Button
-            type="submit"
             style={{
               color: textTheme,
               backgroundColor: theme,
