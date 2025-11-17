@@ -212,7 +212,7 @@ export default function Colors({
               <label className="font-bold" htmlFor="color">
                 COLOR
               </label>
-              <div className="w-full h-full flex items-center justify-center gap-4">
+              <div className="w-full h-full flex items-center gap-4">
                 <div
                   className="w-8 h-8"
                   style={{
