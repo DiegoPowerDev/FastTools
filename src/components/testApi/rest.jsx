@@ -188,7 +188,7 @@ export default function Rest({ theme, textTheme, api, setApi }) {
         <div className="h-full grid grid-cols-1 gap-2  justify-center">
           <div className="flex w-full gap-4 items-center justify-center">
             <Select
-              style={{ color: textTheme }}
+              style={{ color: textTheme, border: `1px solid ${theme}` }}
               value={method}
               onValueChange={setMethod}
               className="p-2 rounded w-full bg-transparent outline-none"
@@ -212,7 +212,7 @@ export default function Rest({ theme, textTheme, api, setApi }) {
             <input
               type="text"
               value={api}
-              style={{ color: textTheme }}
+              style={{ color: textTheme, border: `1px solid ${theme}` }}
               onChange={(e) => setApi(e.target.value)}
               placeholder="Enter API URL..."
               className="w-full font-bold bg-transparent h-10 p-2 rounded outline-none"
@@ -235,7 +235,6 @@ export default function Rest({ theme, textTheme, api, setApi }) {
                 rows={4}
                 style={{
                   color: textTheme,
-
                   "--theme": theme,
                 }}
                 value={headers}

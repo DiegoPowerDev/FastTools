@@ -140,6 +140,7 @@ export default function Websocket({
           <Input
             placeholder="http://localhost:3010"
             value={socketApi}
+            style={{ border: `1px solid ${theme}` }}
             onChange={(e) => setsocketApi(e.target.value)}
             disabled={isConnected}
             className="flex-1"
@@ -169,6 +170,7 @@ export default function Websocket({
           <Input
             placeholder="Event name"
             value={event}
+            style={{ border: `1px solid ${theme}` }}
             onChange={(e) => setEvent(e.target.value)}
             disabled={!isConnected}
             className="w-48"
@@ -176,6 +178,7 @@ export default function Websocket({
           <Input
             placeholder="Message (text or JSON)"
             value={message}
+            style={{ border: `1px solid ${theme}` }}
             onChange={(e) => setMessage(e.target.value)}
             onKeyPress={handleKeyPress}
             disabled={!isConnected}
@@ -223,6 +226,7 @@ export default function Websocket({
             ref={logsRef}
             style={{
               "--theme": theme,
+              border: `1px solid ${theme}`,
             }}
             className={`h-64 overflow-y-auto p-3 border bg-black text-green-400 rounded text-sm font-mono ${styles.scrollContainer}`}
           >
