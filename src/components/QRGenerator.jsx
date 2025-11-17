@@ -14,7 +14,7 @@ export default function QRGenerator({ theme, textTheme }) {
   const [bgColor, setBgColor] = useState("#ffffff");
 
   const [logo, setLogo] = useState(null);
-  const [logoSize, setLogoSize] = useState(20); // % del tamaño del QR
+  const [logoSize, setLogoSize] = useState(20);
   const [svgData, setSvgData] = useState(null);
   const logoImgRef = useRef(null);
 
@@ -37,7 +37,7 @@ export default function QRGenerator({ theme, textTheme }) {
 
     const reader = new FileReader();
     reader.onload = () => {
-      const base64 = reader.result; // ✅ data:image/png;base64,AAAB...
+      const base64 = reader.result;
       const img = new Image();
       img.src = base64;
       img.onload = () => {
@@ -46,7 +46,7 @@ export default function QRGenerator({ theme, textTheme }) {
       };
     };
 
-    reader.readAsDataURL(file); // ✅ convierte en base64
+    reader.readAsDataURL(file);
   };
 
   const generatePNG = async () => {
@@ -74,19 +74,40 @@ export default function QRGenerator({ theme, textTheme }) {
       await new Promise((res) => (img.onload = res));
       ctx.drawImage(img, 0, 0, size, size);
 
-      if (logo?.base64) {
-        const logoPx = (size * logoSize) / 100;
-        const padding = logoPx * 0.08;
-        const bgSize = logoPx + padding * 2;
-        const pos = (size - bgSize) / 2;
+      if (logo?.base64 && logoImgRef.current) {
+        const logoImg = logoImgRef.current;
+        const maxLogoPx = (size * logoSize) / 100;
+        const padding = maxLogoPx * 0.08;
 
+        // Calcular dimensiones preservando aspect ratio
+        const aspectRatio = logoImg.width / logoImg.height;
+        let logoWidth, logoHeight;
+
+        if (aspectRatio > 1) {
+          // Imagen más ancha que alta
+          logoWidth = maxLogoPx;
+          logoHeight = maxLogoPx / aspectRatio;
+        } else {
+          // Imagen más alta que ancha o cuadrada
+          logoHeight = maxLogoPx;
+          logoWidth = maxLogoPx * aspectRatio;
+        }
+
+        // Fondo con padding uniforme alrededor del logo
+        const bgWidth = logoWidth + padding * 2;
+        const bgHeight = logoHeight + padding * 2;
+        const bgX = (size - bgWidth) / 2;
+        const bgY = (size - bgHeight) / 2;
+
+        // Dibujar fondo blanco
         ctx.fillStyle = bgColor;
-        ctx.fillRect(pos, pos, bgSize, bgSize);
-        ctx.roundRect?.(pos, pos, bgSize, bgSize, 6);
-        ctx.fill();
-        img.src = logo.base64;
-        await new Promise((res) => (img.onload = res));
-        ctx.drawImage(img, pos + padding, pos + padding, logoPx, logoPx);
+        ctx.fillRect(bgX, bgY, bgWidth, bgHeight);
+
+        // Centrar logo dentro del fondo
+        const logoX = bgX + padding;
+        const logoY = bgY + padding;
+
+        ctx.drawImage(logoImg, logoX, logoY, logoWidth, logoHeight);
       }
     } catch {
       console.log("Text or URL is required");
@@ -112,12 +133,32 @@ export default function QRGenerator({ theme, textTheme }) {
         ecl: "H",
       }).svg();
 
-      if (logo) {
-        const logoPx = (size * logoSize) / 100;
-        const bgPadding = logoPx * 0.08;
-        const bgSize = logoPx + bgPadding * 2;
-        const bgX = (size - bgSize) / 2;
-        const bgY = (size - bgSize) / 2;
+      if (logo && logoImgRef.current) {
+        const logoImg = logoImgRef.current;
+        const maxLogoPx = (size * logoSize) / 100;
+        const bgPadding = maxLogoPx * 0.08;
+
+        // Calcular dimensiones preservando aspect ratio
+        const aspectRatio = logoImg.width / logoImg.height;
+        let logoWidth, logoHeight;
+
+        if (aspectRatio > 1) {
+          logoWidth = maxLogoPx;
+          logoHeight = maxLogoPx / aspectRatio;
+        } else {
+          logoHeight = maxLogoPx;
+          logoWidth = maxLogoPx * aspectRatio;
+        }
+
+        // Fondo con padding uniforme alrededor del logo
+        const bgWidth = logoWidth + bgPadding * 2;
+        const bgHeight = logoHeight + bgPadding * 2;
+        const bgX = (size - bgWidth) / 2;
+        const bgY = (size - bgHeight) / 2;
+
+        // Posición del logo dentro del fondo
+        const logoX = bgX + bgPadding;
+        const logoY = bgY + bgPadding;
 
         const patchedSVG = svg.replace(
           /<\/svg>\s*$/i,
@@ -125,17 +166,18 @@ export default function QRGenerator({ theme, textTheme }) {
         <rect 
           x="${bgX}" 
           y="${bgY}" 
-          width="${bgSize}" 
-          height="${bgSize}" 
+          width="${bgWidth}" 
+          height="${bgHeight}" 
           rx="8" 
           fill="${bgColor}"
         />
         <image 
           href="${logo.base64}"
-          width="${logoPx}" 
-          height="${logoPx}" 
-          x="${bgX + bgPadding}" 
-          y="${bgY + bgPadding}" 
+          width="${logoWidth}" 
+          height="${logoHeight}" 
+          x="${logoX}" 
+          y="${logoY}" 
+          preserveAspectRatio="xMidYMid meet"
         />
       </svg>`
         );
@@ -156,11 +198,12 @@ export default function QRGenerator({ theme, textTheme }) {
     a.download = "qr.svg";
     a.click();
   };
+
   useEffect(() => {
     const timeout = setTimeout(() => {
       generatePNG();
       generateSVG();
-    }, 200); // delay
+    }, 200);
 
     return () => clearTimeout(timeout);
   }, [text, size, fgColor, bgColor, logo, logoSize]);
