@@ -291,6 +291,17 @@ export default function ImageCropper({ theme, textTheme }) {
             <div className="w-full flex flex-col gap-2">
               <Button
                 style={{ backgroundColor: theme, color: textTheme }}
+                disabled={!imageReady}
+                onClick={() => downloadCroppedImage(false)}
+                className="hover:opacity-80 w-full"
+              >
+                <div className="flex gap-2 items-center justify-center">
+                  <span className="">DOWNLOAD</span>
+                  <IconDeviceFloppy size={18} />
+                </div>
+              </Button>
+              <Button
+                style={{ backgroundColor: theme, color: textTheme }}
                 onClick={async () => {
                   // get base64 and show / copy (example)
                   const base64 = await downloadCroppedImage(true);
@@ -308,17 +319,6 @@ export default function ImageCropper({ theme, textTheme }) {
                 className="w-full"
               >
                 COPY BASE64
-              </Button>{" "}
-              <Button
-                style={{ backgroundColor: theme, color: textTheme }}
-                disabled={!imageReady}
-                onClick={() => downloadCroppedImage(false)}
-                className="hover:opacity-80 w-full"
-              >
-                <div className="flex gap-2 items-center justify-center">
-                  <span className="">DOWNLOAD</span>
-                  <IconDeviceFloppy size={18} />
-                </div>
               </Button>
             </div>
           </div>

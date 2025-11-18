@@ -216,7 +216,7 @@ export default function Links({ links, setLinks, theme, textTheme }) {
                   value={link}
                   onChange={(e) => {
                     const link = e.target.value;
-                    setLink(link.toLowerCase());
+                    setLink(link);
                   }}
                 />
               </div>
