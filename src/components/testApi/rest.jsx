@@ -376,7 +376,7 @@ export default function Rest({ theme, textTheme, api, setApi }) {
                       ? JSON.stringify(response, null, 2)
                       : loading && (
                           <div>
-                            Loading{" "}
+                            Loading
                             <motion.span
                               key={dotCount}
                               initial={{ opacity: 0 }}

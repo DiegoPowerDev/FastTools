@@ -331,7 +331,7 @@ export default function Conversor({ theme, textTheme }) {
                 >
                   <SelectTrigger
                     style={{ color: textTheme, border: `1px solid ${theme}` }}
-                    lassName="w-[100px] md:w-[140px]"
+                    className="w-[100px] md:w-[140px]"
                   >
                     <SelectValue placeholder="Format" />
                   </SelectTrigger>

@@ -26,6 +26,7 @@ import { getAuth, onAuthStateChanged } from "firebase/auth";
 import ImageColorPicker from "@/components/colorPicker";
 import Notes from "@/components/block/notes";
 import Toolbar from "@/components/toolbar";
+import Footer from "@/components/footer";
 
 const componentMap = {
   notes: Notes,
@@ -59,6 +60,8 @@ export default function Page() {
     setTheme,
     setTextTheme,
     textTheme,
+    background,
+    setBackground,
   } = usePageStore();
   const [authenticate, setAuthenticate] = useState(false);
   const router = useRouter();
@@ -83,24 +86,25 @@ export default function Page() {
         style={{
           color: textTheme,
         }}
-        className={`flex   flex-col min-h-dvh overflow-hidden  ${
+        className={`flex w-full  flex-col min-h-dvh overflow-hidden  ${
           process.env.NODE_ENV === "development" ? "debug-screens" : ""
         }`}
       >
         <Toolbar
           setAuthenticate={setAuthenticate}
           theme={theme}
+          setTheme={setTheme}
+          setTextTheme={setTextTheme}
+          setBackground={setBackground}
+          background={background}
           textTheme={textTheme}
         />
         <div className="relative w-full flex-1 flex flex-col justify-center items-center">
           <div className="w-screen h-screen absolute bg-black inset-0 flex justify-center items-center -z-10">
-            <Image
-              src="/icono.png"
+            <img
+              src={background}
               alt="Background"
-              width={600} // ajusta según el tamaño que desees
-              height={600}
-              className="opacity-30 object-contain select-none pointer-events-none"
-              priority
+              className="absolute inset-0 w-full max-w-screen h-full object-contain opacity-40 -z-10 select-none pointer-events-none"
               fetchPriority="high"
             />
           </div>
@@ -154,27 +158,13 @@ export default function Page() {
             </AnimatePresence>
           </motion.div>
         </div>
-        <AnimatePresence mode="popLayout">
-          {tabs.header && (
-            <motion.div
-              key="footer"
-              layout
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{
-                duration: 0.4,
-                ease: "easeInOut",
-              }}
-              style={{ color: textTheme, background: "black" }}
-              className="flex font-bold justify-end items-center pr-20"
-            >
-              <a href="https://diegotorres-portfoliodev.vercel.app">
-                Designed & developed by Diego Torres
-              </a>
-            </motion.div>
-          )}
-        </AnimatePresence>
+        <Footer
+          tabs={tabs}
+          textTheme={textTheme}
+          theme={theme}
+          setBackground={setBackground}
+          background={background}
+        />
       </div>
 
       <Dialog onOpenChange={setAuthenticate} open={authenticate}>

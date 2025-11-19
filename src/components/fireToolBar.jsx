@@ -1,4 +1,12 @@
 "use client";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 import { useFireStore } from "@/store/fireStore";
 import {
@@ -34,9 +42,11 @@ import {
   IconColorPicker,
   IconRocket,
   IconDoor,
+  IconSettings,
 } from "@tabler/icons-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
+import MenuSettings from "./MenuSettings";
 
 // === Icon Map ===
 const iconMap = {
@@ -150,7 +160,15 @@ function DroppableArea({ id, items, theme, textTheme }) {
   );
 }
 
-export default function FireToolBar({ theme, getOut, textTheme }) {
+export default function FireToolBar({
+  theme,
+  setTheme,
+  getOut,
+  setTextTheme,
+  textTheme,
+  setBackground,
+  background,
+}) {
   const {
     headerArea,
     toolbarArea,
@@ -292,43 +310,78 @@ export default function FireToolBar({ theme, getOut, textTheme }) {
     >
       {/* HEADER AREA */}
       {tabs.header && (
-        <AnimatePresence mode="popLayout">
-          <motion.div
-            key="headerBar"
-            layout
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.9 }}
-            transition={{
-              layout: { type: "spring", stiffness: 300, damping: 25 },
-              duration: 0.4,
-              ease: "easeInOut",
-            }}
-            style={{
-              backgroundColor: theme,
-              color: textTheme,
-            }}
-            className="w-screen flex flex-col items-center justify-center"
-          >
-            <span
-              style={{ textShadow: `0 0 20px ${textTheme}` }}
-              className="text-5xl font-bold"
+        <div
+          style={{
+            backgroundColor: theme,
+            color: textTheme,
+          }}
+          className="w-screen flex h-full items-center justify-center "
+        >
+          <AnimatePresence mode="popLayout">
+            <div
+              className="w-full h-full flex items-center justify-center"
+              key="headerBar"
             >
-              FAST TOOLS
-            </span>
+              <div className="w-24 flex h-full items-center justify-center p-2">
+                <Dialog>
+                  <DialogTrigger>
+                    <IconSettings size={40} />
+                  </DialogTrigger>
+                  <DialogContent
+                    style={{ color: textTheme }}
+                    className="w-full bg-black border-white border-2 overflow-hidden"
+                  >
+                    <DialogHeader>
+                      <DialogTitle className="flex justify-center items-center font-bold">
+                        SETTINGS
+                      </DialogTitle>
+                      <DialogDescription></DialogDescription>
+                    </DialogHeader>
+                    <MenuSettings
+                      setBackground={setBackground}
+                      background={background}
+                      textTheme={textTheme}
+                      theme={theme}
+                      setTheme={setTheme}
+                      setTextTheme={setTextTheme}
+                    />
+                  </DialogContent>
+                </Dialog>
+              </div>
+              <motion.div
+                layout
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                transition={{
+                  layout: { type: "spring", stiffness: 300, damping: 25 },
+                  duration: 0.4,
+                  ease: "easeInOut",
+                }}
+                className="w-screen flex flex-col items-center justify-center "
+              >
+                <span
+                  style={{ textShadow: `0 0 20px ${textTheme}` }}
+                  className="text-5xl font-bold"
+                >
+                  FAST TOOLS
+                </span>
 
-            <DroppableArea
-              id="headerArea"
-              items={headerArea}
-              theme={theme}
-              textTheme={textTheme}
-            />
-          </motion.div>
-        </AnimatePresence>
+                <DroppableArea
+                  id="headerArea"
+                  items={headerArea}
+                  theme={theme}
+                  textTheme={textTheme}
+                />
+              </motion.div>
+              <div className="w-24 flex h-full items-center justify-center p-2"></div>
+            </div>
+          </AnimatePresence>
+        </div>
       )}
 
       {/* TOOLBAR AREA */}
-      <div className="w-screen flex justify-center items-center gap-2 py-2 px-2">
+      <div className=" w-screen flex justify-center items-center gap-2 py-2 px-8">
         <motion.div
           animate={{
             x: [1, -1, 1, -1, 1, 0],

@@ -12,6 +12,7 @@ import { getAuth } from "firebase/auth";
 const db = getFirestore(app);
 
 const initialState = {
+  background: "/icono.png",
   theme: "#b91c1c",
   textTheme: "#fafafa",
   colors: [
@@ -123,6 +124,7 @@ const initialState = {
 };
 
 export const fireStore = createStore((set, get) => ({
+  background: "/icono.png",
   theme: "#b91c1c",
   textTheme: "#fafafa",
   colors: [
@@ -337,6 +339,10 @@ export const fireStore = createStore((set, get) => ({
     } catch (err) {
       console.error("❌ Error guardando:", err);
     }
+  },
+  setBackground: (background) => {
+    set({ background });
+    get().saveToFirestore();
   },
   setApi: (api) => {
     set({ api });

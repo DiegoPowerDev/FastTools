@@ -232,7 +232,7 @@ export default function Colors({
                   value={color.toUpperCase()}
                   onChange={(e) => {
                     const color = e.target.value;
-                    setColor(color.toLowerCase());
+                    setColor(color);
                   }}
                 />
               </div>

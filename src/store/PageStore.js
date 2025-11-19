@@ -6,6 +6,7 @@ import { useStore } from "zustand";
 export const pageStore = createStore(
   persist(
     (set, get) => ({
+      background: "/icon.png",
       theme: "#b91c1c",
       textTheme: "#fafafa",
       colors: [
@@ -183,6 +184,9 @@ export const pageStore = createStore(
       },
       setText: (text) => set({ text: text }),
       setTitle: (title) => set({ title: title }),
+      setBackground: (background) => {
+        set({ background });
+      },
       setTheme: (color) => {
         set({ theme: `#${color}` });
       },
