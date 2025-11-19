@@ -320,7 +320,7 @@ function Color({ color, theme, editable, textTheme }) {
         style={{ color: textTheme }}
         className="w-full h-full flex items-center"
       >
-        <h1 className="">{color.nombre}</h1>
+        <h1 className="font-bold">{color.nombre}</h1>
       </div>
     </div>
   );

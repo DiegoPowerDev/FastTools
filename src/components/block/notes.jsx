@@ -337,7 +337,7 @@ function NoteItem({ note, theme, textTheme, editable }) {
         className="h-12 gap-2 w-full rounded-l-md flex items-center justify-start"
       >
         <IconNote />
-        {note && <h1 className="font-medium">{note.title}</h1>}
+        {note && <h1 className="font-bold">{note.title}</h1>}
       </div>
     </div>
   );
