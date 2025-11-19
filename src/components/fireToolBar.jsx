@@ -327,7 +327,19 @@ export default function FireToolBar({
               <div className="w-24 flex h-full items-center justify-center p-2">
                 <Dialog>
                   <DialogTrigger>
-                    <IconSettings size={40} />
+                    <motion.div
+                      whileHover={{
+                        rotate: [0, 360],
+                      }}
+                      transition={{
+                        duration: 1.5,
+                        ease: "linear",
+                        repeat: Infinity,
+                        repeatType: "loop",
+                      }}
+                    >
+                      <IconSettings size={60} />
+                    </motion.div>
                   </DialogTrigger>
                   <DialogContent
                     style={{ color: textTheme }}
