@@ -100,7 +100,7 @@ export default function Notes({ notes, setNotes, theme, textTheme }) {
       <div
         ref={scrollRef}
         style={{
-          "--theme": theme,
+          "--theme": textTheme,
         }}
         className={`w-full flex-1 overflow-x-auto overflow-y-hidden ${styles.scrollContainer}`}
       >
@@ -221,7 +221,7 @@ export default function Notes({ notes, setNotes, theme, textTheme }) {
                   id="content"
                   placeholder={notes[id].content || ""}
                   style={{
-                    "--theme": theme,
+                    "--theme": textTheme,
                     color: textTheme,
                   }}
                   className={`text-white disabled:cursor-text disabled:select-text resize-none p-2 w-full rounded ${styles.scrollContainer} placeholder:opacity-40`}

@@ -158,7 +158,7 @@ export default function JWTGenerator({ theme, textTheme }) {
           style={{
             color: textTheme,
             border: `1px solid ${theme}`,
-            "--theme": theme,
+            "--theme": textTheme,
           }}
           rows={3}
           value={payload}
@@ -226,7 +226,7 @@ export default function JWTGenerator({ theme, textTheme }) {
             style={{
               color: textTheme,
               border: `1px solid ${theme}`,
-              "--theme": theme,
+              "--theme": textTheme,
             }}
             onChange={(e) => setSecret(e.target.value)}
             className="p-2 rounded bg-transparent w-full"
@@ -267,7 +267,7 @@ export default function JWTGenerator({ theme, textTheme }) {
         <div className="flex gap-2 w-full ">
           <pre
             style={{
-              "--theme": theme,
+              "--theme": textTheme,
               border: `1px solid ${theme}`,
               color: textTheme,
             }}

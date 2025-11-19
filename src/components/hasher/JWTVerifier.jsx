@@ -180,7 +180,7 @@ export default function JWTVerifier({ theme, textTheme }) {
         <label className="text-sm font-bold ">Decoded Payload</label>
         <pre
           style={{
-            "--theme": theme,
+            "--theme": textTheme,
             border: `1px solid ${theme}`,
             color: textTheme,
           }}

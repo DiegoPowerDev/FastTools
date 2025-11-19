@@ -239,7 +239,7 @@ export default function Rest({ theme, textTheme, api, setApi }) {
                 rows={4}
                 style={{
                   color: textTheme,
-                  "--theme": theme,
+                  "--theme": textTheme,
                 }}
                 value={headers}
                 onChange={handleHeadersChange}
@@ -289,7 +289,7 @@ export default function Rest({ theme, textTheme, api, setApi }) {
                 style={{
                   color: textTheme,
 
-                  "--theme": theme,
+                  "--theme": textTheme,
                 }}
                 onChange={handleBodyChange}
                 disabled={method === "GET" || method === "HEAD"}
@@ -361,7 +361,7 @@ export default function Rest({ theme, textTheme, api, setApi }) {
                   </div>
                   <pre
                     style={{
-                      "--theme": theme,
+                      "--theme": textTheme,
                       color: textTheme,
                     }}
                     className={` overflow-scroll 2xl:w-[25vw]  w-[85vw] md:w-[35vw] p-3 rounded text-sm h-[350px] ${

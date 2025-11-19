@@ -101,7 +101,7 @@ export default function Colors({
       <div
         ref={scrollRef}
         style={{
-          "--theme": theme,
+          "--theme": textTheme,
         }}
         className={`w-full flex-1 overflow-x-auto overflow-y-hidden ${styles.scrollContainer}`}
       >

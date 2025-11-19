@@ -225,7 +225,7 @@ export default function Websocket({
           <div
             ref={logsRef}
             style={{
-              "--theme": theme,
+              "--theme": textTheme,
               border: `1px solid ${theme}`,
             }}
             className={`h-64 overflow-y-auto p-3 border bg-black text-green-400 rounded text-sm font-mono ${styles.scrollContainer}`}
