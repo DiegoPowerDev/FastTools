@@ -77,7 +77,7 @@ export default function Colors({
   return (
     <div
       style={{ border: `2px solid ${theme}` }}
-      className={`flex flex-col h-full border- rounded-xl overflow-hidden`}
+      className={`flex flex-col h-full rounded-xl overflow-hidden`}
     >
       <div
         style={{

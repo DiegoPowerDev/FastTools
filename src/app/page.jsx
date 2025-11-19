@@ -118,6 +118,9 @@ export default function Page() {
                 <motion.div
                   key={component.label}
                   layout
+                  style={{
+                    boxShadow: `0 0 15px 2px ${textTheme}`,
+                  }}
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
@@ -126,7 +129,7 @@ export default function Page() {
                     duration: 0.4,
                     ease: "easeInOut",
                   }}
-                  className={`${
+                  className={`rounded-xl overflow-hidden ${
                     component.label === "apiTester" || component.label === "jwt"
                       ? "h-[500px]"
                       : "h-[350px]"
