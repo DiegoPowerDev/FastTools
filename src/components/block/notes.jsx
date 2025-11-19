@@ -220,7 +220,10 @@ export default function Notes({ notes, setNotes, theme, textTheme }) {
                   disabled={!editable}
                   id="content"
                   placeholder={notes[id].content || ""}
-                  style={{ color: textTheme }}
+                  style={{
+                    "--theme": theme,
+                    color: textTheme,
+                  }}
                   className={`text-white disabled:cursor-text disabled:select-text resize-none p-2 w-full rounded ${styles.scrollContainer} placeholder:opacity-40`}
                   value={content}
                   onChange={(e) => {
