@@ -13,6 +13,7 @@ const db = getFirestore(app);
 
 const initialState = {
   background: "/icono.png",
+  mobileBackground: "/icono.png",
   theme: "#b91c1c",
   textTheme: "#fafafa",
   colors: [
@@ -125,6 +126,7 @@ const initialState = {
 
 export const fireStore = createStore((set, get) => ({
   background: "/icono.png",
+  mobileBackground: "/icono.png",
   theme: "#b91c1c",
   textTheme: "#fafafa",
   colors: [
@@ -342,6 +344,10 @@ export const fireStore = createStore((set, get) => ({
   },
   setBackground: (background) => {
     set({ background });
+    get().saveToFirestore();
+  },
+  setMobileBackground: (mobileBackground) => {
+    set({ mobileBackground });
     get().saveToFirestore();
   },
   setApi: (api) => {

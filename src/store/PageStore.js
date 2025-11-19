@@ -7,6 +7,7 @@ export const pageStore = createStore(
   persist(
     (set, get) => ({
       background: "/icon.png",
+      mobileBackground: "/icono.png",
       theme: "#b91c1c",
       textTheme: "#fafafa",
       colors: [
@@ -186,6 +187,9 @@ export const pageStore = createStore(
       setTitle: (title) => set({ title: title }),
       setBackground: (background) => {
         set({ background });
+      },
+      setMobileBackground: (mobileBackground) => {
+        set({ mobileBackground });
       },
       setTheme: (color) => {
         set({ theme: `#${color}` });

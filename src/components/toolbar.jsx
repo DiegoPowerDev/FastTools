@@ -176,6 +176,8 @@ export default function Toolbar({ theme, setAuthenticate, textTheme }) {
     setTextTheme,
     setBackground,
     background,
+    mobileBackground,
+    setMobileBackground,
   } = usePageStore();
 
   const sensors = useSensors(
@@ -339,6 +341,8 @@ export default function Toolbar({ theme, setAuthenticate, textTheme }) {
                       theme={theme}
                       setTheme={setTheme}
                       setTextTheme={setTextTheme}
+                      mobileBackground={mobileBackground}
+                      setMobileBackground={setMobileBackground}
                     />
                   </DialogContent>
                 </Dialog>

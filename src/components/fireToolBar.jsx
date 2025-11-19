@@ -177,6 +177,8 @@ export default function FireToolBar({
     setTabs,
     setHeaderArea,
     setToolbarArea,
+    mobileBackground,
+    setMobileBackground,
   } = useFireStore();
 
   const sensors = useSensors(
@@ -344,6 +346,8 @@ export default function FireToolBar({
                       theme={theme}
                       setTheme={setTheme}
                       setTextTheme={setTextTheme}
+                      mobileBackground={mobileBackground}
+                      setMobileBackground={setMobileBackground}
                     />
                   </DialogContent>
                 </Dialog>
@@ -362,7 +366,7 @@ export default function FireToolBar({
               >
                 <span
                   style={{ textShadow: `0 0 20px ${textTheme}` }}
-                  className="text-5xl font-bold"
+                  className="text-5xl font-bold text-center"
                 >
                   FAST TOOLS
                 </span>

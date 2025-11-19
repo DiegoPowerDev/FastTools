@@ -57,6 +57,8 @@ export default function Page() {
     socketApi,
     setSocketApi,
     background,
+    mobileBackground,
+    setMobileBackground,
     setBackground,
   } = useFireStore();
 
@@ -141,14 +143,28 @@ export default function Page() {
                 background={background}
                 setBackground={setBackground}
                 textTheme={textTheme}
+                setMobileBackground={setMobileBackground}
+                mobileBackground={mobileBackground}
               />
               <div className="w-screen h-screen absolute bg-black inset-0 flex justify-center items-center -z-10">
-                <img
-                  src={background}
-                  alt="Background"
-                  className="absolute inset-0 w-full max-w-screen h-full object-contain opacity-40 -z-10 select-none pointer-events-none"
-                  fetchPriority="high"
-                />
+                <picture className="absolute inset-0 -z-10 pointer-events-none select-none">
+                  {/* Mobile: se usará cuando el viewport sea <= 767px */}
+                  <source
+                    media="(max-width: 767px)"
+                    srcSet={mobileBackground}
+                  />
+
+                  {/* Desktop: cuando sea >= 768px */}
+                  <source media="(min-width: 768px)" srcSet={background} />
+
+                  {/* Fallback */}
+                  <img
+                    src={background}
+                    alt={background}
+                    className="absolute inset-0 w-full max-w-screen h-full object-contain opacity-40 -z-10 select-none pointer-events-none"
+                    fetchPriority="high"
+                  />
+                </picture>
               </div>
 
               <motion.div
