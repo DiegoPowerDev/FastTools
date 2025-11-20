@@ -240,7 +240,12 @@ export default function ImageCropper({ theme, textTheme }) {
                 />
               </div>
             ) : (
-              <div style={{ color: textTheme }}>SELECT OR DRAG IMAGE</div>
+              <div
+                style={{ color: textTheme }}
+                className="font-bold select-none opacity-60 text-xl"
+              >
+                SELECT OR DRAG IMAGE
+              </div>
             )}
           </div>
         </div>

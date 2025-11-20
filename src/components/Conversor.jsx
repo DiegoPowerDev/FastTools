@@ -9,8 +9,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
+import { useDropzone } from "react-dropzone";
+import { ImageUpscale } from "lucide-react";
 
-// Simple Toast Component
 const Toast = ({ message, type, onClose }) => {
   useEffect(() => {
     const timer = setTimeout(onClose, 3000);
@@ -108,16 +109,20 @@ export default function Conversor({ theme, textTheme }) {
     }, mimeType);
   }, [format, width, height, originalImage]);
 
-  const handleDrop = (e) => {
-    e.preventDefault();
-    const file = e.dataTransfer.files[0];
-    handleImage(file);
-  };
-
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    handleImage(file);
-  };
+  // Configuración de react-dropzone
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop: (acceptedFiles) => {
+      if (acceptedFiles && acceptedFiles.length > 0) {
+        handleImage(acceptedFiles[0]);
+      }
+    },
+    accept: {
+      "image/*": [".png", ".jpg", ".jpeg", ".webp", ".gif", ".bmp", ".svg"],
+    },
+    maxFiles: 1,
+    noClick: false,
+    noKeyboard: false,
+  });
 
   // Función mejorada para generar ICO válido con múltiples tamaños
   const generateICO = async () => {
@@ -214,7 +219,6 @@ export default function Conversor({ theme, textTheme }) {
         link.href = URL.createObjectURL(icoBlob);
         link.download = `${filename}.ico`;
         link.click();
-        showToast("ICO generado correctamente", "success");
       } catch (error) {
         showToast("Error al generar el ICO: " + error.message, "error");
       }
@@ -235,7 +239,6 @@ export default function Conversor({ theme, textTheme }) {
       link.href = URL.createObjectURL(blob);
       link.download = `${filename}.${format}`;
       link.click();
-      showToast("Imagen descargada correctamente", "success");
     }, mimeType);
   };
 
@@ -277,14 +280,11 @@ export default function Conversor({ theme, textTheme }) {
         } justify-center items-center h-full`}
       >
         <div
-          onDrop={handleDrop}
-          onDragOver={(e) => e.preventDefault()}
-          className="md:col-span-1 h-full w-full flex justify-center items-center"
+          {...getRootProps()}
+          className="md:col-span-1 h-full w-full flex justify-center items-center cursor-pointer"
         >
-          <label
-            htmlFor="imagen"
-            className="h-full cursor-pointer w-full flex gap-4 items-center justify-center"
-          >
+          <input {...getInputProps()} />
+          <div className="h-full w-full flex gap-4 items-center justify-center">
             {preview ? (
               <div className="w-full flex justify-center items-center p-4">
                 <img
@@ -295,18 +295,26 @@ export default function Conversor({ theme, textTheme }) {
                 />
               </div>
             ) : (
-              <div className="font-bold " style={{ color: textTheme }}>
-                SELECT OR DRAG IMAGE
-              </div>
+              <>
+                {isDragActive ? (
+                  <div className="w-28">
+                    <ImageUpscale
+                      size={48}
+                      style={{ color: textTheme }}
+                      className="animate-bounce"
+                    />
+                  </div>
+                ) : (
+                  <div
+                    style={{ color: textTheme }}
+                    className="font-bold select-none opacity-60 text-xl"
+                  >
+                    SELECT OR DRAG IMAGE
+                  </div>
+                )}
+              </>
             )}
-          </label>
-          <input
-            className="hidden"
-            type="file"
-            id="imagen"
-            accept="image/*"
-            onChange={handleFileChange}
-          />
+          </div>
         </div>
 
         {webUrl && (

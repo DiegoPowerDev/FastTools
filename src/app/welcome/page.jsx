@@ -1,6 +1,6 @@
 "use client";
 import toast, { Toaster } from "react-hot-toast";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Recorder from "@/components/recorder";
 import Calculator from "@/components/calculator";
@@ -9,7 +9,6 @@ import Links from "@/components/enlaces";
 import Colors from "@/components/colors";
 import ApiTester from "@/components/testApi/testApi";
 import Hasher from "@/components/hasher";
-import Image from "next/image";
 import ImageCropper from "@/components/ImageCropper";
 import QRGenerator from "@/components/QRGenerator";
 import useUserStore from "@/store/userStore";
@@ -20,6 +19,7 @@ import ImageColorPicker from "@/components/colorPicker";
 import Notes from "@/components/block/notes";
 import FireToolBar from "@/components/fireToolBar";
 import Footer from "@/components/footer";
+import { cn } from "@/lib/utils";
 
 const componentMap = {
   notes: Notes,
@@ -169,7 +169,12 @@ export default function Page() {
 
               <motion.div
                 layout
-                className="2xl:w-9/12 w-full overflow-hidden grid grid-cols-1 md:grid-cols-2 items-center justify-center gap-y-4 md:gap-5 p-4"
+                className={cn(
+                  componentsArray.length === 1
+                    ? "grid grid-cols-1 w-fit"
+                    : "grid grid-cols-1 md:grid-cols-2 2xl:w-9/12  w-full",
+                  "  overflow-hidden  items-center justify-center gap-y-4 md:gap-5 p-4"
+                )}
               >
                 <AnimatePresence mode="popLayout">
                   {componentsArray.map((component, i) => (
@@ -233,26 +238,23 @@ export default function Page() {
 
       <Toaster
         toastOptions={{
-          // Estilo general
           style: {
-            background: "#1e293b", // gris oscuro
-            color: "#f8fafc", // blanco
-            border: `1px solid ${theme}`,
+            background: "black",
+            color: textTheme,
+            boxShadow: `0 0 15px 2px ${textTheme}`,
           },
           // Éxitos
           success: {
             style: {
+              fontWeight: "700",
               background: "black",
-              color: "white",
-            },
-            iconTheme: {
-              primary: theme,
-              secondary: "#fff",
+              color: textTheme,
             },
           },
           // Errores
           error: {
             style: {
+              fontWeight: "700",
               background: "black",
               color: "red",
             },

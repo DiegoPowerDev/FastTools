@@ -1,5 +1,9 @@
 "use client";
-import { IconClipboard, IconDeviceFloppy } from "@tabler/icons-react";
+import {
+  IconBrush,
+  IconClipboard,
+  IconDeviceFloppy,
+} from "@tabler/icons-react";
 import React, { useRef, useState, useEffect } from "react";
 import { Button } from "./ui/button";
 import toast from "react-hot-toast";
@@ -31,7 +35,8 @@ export default function ImageColorPicker({ theme, textTheme }) {
   const copyToClipboard = () => {
     toast((t) => (
       <span className="flex items-center justify-center gap-4">
-        Copied <b>{color}</b>
+        <IconBrush stroke={3} size={20} style={{ color: `${color}` }} />
+        Copied <b>{color.toUpperCase()}</b>
         <div className="h-4 w-4" style={{ backgroundColor: color }}></div>
       </span>
     ));
@@ -335,7 +340,10 @@ export default function ImageColorPicker({ theme, textTheme }) {
             </div>
           </div>
         ) : (
-          <div className="font-bold select-none" style={{ color: textTheme }}>
+          <div
+            className="font-bold select-none text-xl opacity-60"
+            style={{ color: textTheme }}
+          >
             PASTE AN IMAGE HERE!
           </div>
         )}

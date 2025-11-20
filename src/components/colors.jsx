@@ -10,9 +10,11 @@ import {
 import styles from "./enlaces.module.css";
 import { useRef, useEffect, useState } from "react";
 import {
+  IconBrush,
   IconColorSwatch,
   IconDeviceFloppy,
   IconImageInPicture,
+  IconPaint,
   IconPencil,
   IconTex,
   IconTextColor,
@@ -49,9 +51,18 @@ export default function Colors({
     }
     return color;
   };
-  const handleCopy = (text) => {
-    navigator.clipboard.writeText("#" + text);
-    toast.success("Copied!");
+  const handleCopy = (color) => {
+    navigator.clipboard.writeText("#" + color.color);
+    toast((t) => (
+      <span className="flex items-center justify-center gap-4">
+        <IconBrush stroke={3} size={20} style={{ color: `#${color.color}` }} />
+        Copied <b>#{color.color.toUpperCase()}</b>
+        <div
+          className="h-4 w-4"
+          style={{ backgroundColor: `#${color.color}` }}
+        ></div>
+      </span>
+    ));
   };
 
   useEffect(() => {
@@ -119,7 +130,7 @@ export default function Colors({
                   key={i}
                   onClick={() => {
                     if (!editable && color.color) {
-                      handleCopy(color.color);
+                      handleCopy(color);
                     }
                     if (editable) {
                       setId(color.id - 1);
