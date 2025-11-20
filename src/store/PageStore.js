@@ -78,9 +78,9 @@ export const pageStore = createStore(
       notes: [
         {
           id: 1,
-          title: "",
-          content: "",
-          color: "#000000",
+          title: "Example",
+          content: "Write a note here",
+          color: "#b91c1c",
         },
         {
           id: 2,

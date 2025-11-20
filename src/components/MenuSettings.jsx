@@ -39,9 +39,9 @@ export default function MenuSettings({
             style={{
               backgroundColor: `#${manageFormat(newTheme)}`,
             }}
-            className="h-[80px] w-[80px] rounded "
+            className="h-16 w-16 rounded "
           ></div>
-          <div className="w-full">
+          <div className="w-6/12">
             <Input
               value={newTheme}
               onChange={(e) => setNewTheme(e.target.value)}
@@ -69,7 +69,7 @@ export default function MenuSettings({
             }}
             className="h-16 w-16 rounded "
           ></div>
-          <div className="w-full">
+          <div className="w-6/12">
             <Input
               value={newTextTheme}
               onChange={(e) => setNewTextTheme(e.target.value)}
@@ -90,8 +90,8 @@ export default function MenuSettings({
             </Button>
           </div>
         </div>
-        <div className="w-full h-full flex items-center justify-center gap-2">
-          <picture className="max-h-32 max-w-32 rounded ">
+        <div className="w-full h-full flex flex-col items-center justify-center gap-2">
+          <picture className="max-h-40 max-w-64 rounded ">
             <source media="(max-width: 767px)" srcSet={newMobileBackground} />
 
             <source media="(min-width: 768px)" srcSet={newBackground} />
@@ -100,12 +100,12 @@ export default function MenuSettings({
             <img
               src={background}
               alt={"New Background"}
-              className="max-h-32 max-w-32 rounded "
+              className="max-h-40 max-w-64 rounded "
               fetchPriority="high"
             />
           </picture>
 
-          <div className="w-full">
+          <div className="w-5/6">
             <Input
               value={newBackground}
               onChange={(e) => setNewBackground(e.target.value)}
