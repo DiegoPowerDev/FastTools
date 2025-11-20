@@ -33,13 +33,13 @@ export default function MenuSettings({
 
   return (
     <div className="flex flex-col w-full h-full items-center justify-center">
-      <div className="w-10/12 flex flex-col gap-8 items-center justify-center">
+      <div className="w-full flex flex-col gap-8 items-center justify-center">
         <div className="w-full h-full flex items-center justify-center gap-2">
           <div
             style={{
               backgroundColor: `#${manageFormat(newTheme)}`,
             }}
-            className="h-16 w-16 rounded "
+            className="h-[80px] w-[80px] rounded "
           ></div>
           <div className="w-full">
             <Input

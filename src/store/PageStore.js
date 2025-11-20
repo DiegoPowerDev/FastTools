@@ -6,7 +6,7 @@ import { useStore } from "zustand";
 export const pageStore = createStore(
   persist(
     (set, get) => ({
-      background: "/icon.png",
+      background: "/icono.png",
       mobileBackground: "/icono.png",
       theme: "#b91c1c",
       textTheme: "#fafafa",
