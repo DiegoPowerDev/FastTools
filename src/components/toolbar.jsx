@@ -373,7 +373,7 @@ export default function Toolbar({ theme, setAuthenticate, textTheme }) {
               >
                 <span
                   style={{ textShadow: `0 0 15px  ${textTheme}` }}
-                  className="text-5xl font-bold"
+                  className="text-5xl font-bold text-center"
                 >
                   FAST TOOLS
                 </span>

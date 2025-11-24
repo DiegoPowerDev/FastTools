@@ -9,37 +9,28 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import Recorder from "@/components/recorder";
-import Calculator from "@/components/calculator";
-import Conversor from "@/components/Conversor";
-import Links from "@/components/enlaces";
-import Colors from "@/components/colors";
-import ApiTester from "@/components/testApi/testApi";
-import Hasher from "@/components/hasher";
-import Image from "next/image";
 import AuthenticateForm from "@/components/authenticateForm";
-import ImageCropper from "@/components/ImageCropper";
-import QRGenerator from "@/components/QRGenerator";
 import { usePageStore } from "@/store/PageStore";
 import { useRouter } from "next/navigation";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
-import ImageColorPicker from "@/components/colorPicker";
-import Notes from "@/components/block/notes";
 import Toolbar from "@/components/toolbar";
 import Footer from "@/components/footer";
+import dynamic from "next/dynamic";
 
 const componentMap = {
-  notes: Notes,
-  calculator: Calculator,
-  recorder: Recorder,
-  picker: ImageColorPicker,
-  conversor: Conversor,
-  links: Links,
-  colors: Colors,
-  editor: ImageCropper,
-  qr: QRGenerator,
-  apiTester: ApiTester,
-  jwt: Hasher,
+  notes: dynamic(() => import("@/components/block/notes"), { ssr: false }),
+  calculator: dynamic(() => import("@/components/calculator"), { ssr: false }),
+  recorder: dynamic(() => import("@/components/recorder"), { ssr: false }),
+  picker: dynamic(() => import("@/components/colorPicker"), { ssr: false }),
+  conversor: dynamic(() => import("@/components/Conversor"), { ssr: false }),
+  links: dynamic(() => import("@/components/enlaces"), { ssr: false }),
+  colors: dynamic(() => import("@/components/colors"), { ssr: false }),
+  editor: dynamic(() => import("@/components/ImageCropper"), { ssr: false }),
+  qr: dynamic(() => import("@/components/QRGenerator"), { ssr: false }),
+  apiTester: dynamic(() => import("@/components/testApi/testApi"), {
+    ssr: false,
+  }),
+  jwt: dynamic(() => import("@/components/hasher"), { ssr: false }),
 };
 
 export default function Page() {
