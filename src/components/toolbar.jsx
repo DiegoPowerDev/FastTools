@@ -19,7 +19,6 @@ import {
   useDroppable,
   rectIntersection,
   pointerWithin,
-  getFirstCollision,
 } from "@dnd-kit/core";
 import {
   SortableContext,
@@ -47,7 +46,7 @@ import {
 } from "@tabler/icons-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
-import MenuSettings from "./MenuSettings";
+import MenuSettingsBasic from "./MenuSettingsBasic";
 
 // === Icon Map ===
 const iconMap = {
@@ -347,15 +346,13 @@ export default function Toolbar({ theme, setAuthenticate, textTheme }) {
                       </DialogTitle>
                       <DialogDescription></DialogDescription>
                     </DialogHeader>
-                    <MenuSettings
+                    <MenuSettingsBasic
                       setBackground={setBackground}
                       background={background}
                       textTheme={textTheme}
                       theme={theme}
                       setTheme={setTheme}
                       setTextTheme={setTextTheme}
-                      mobileBackground={mobileBackground}
-                      setMobileBackground={setMobileBackground}
                     />
                   </DialogContent>
                 </Dialog>

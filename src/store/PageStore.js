@@ -7,7 +7,6 @@ export const pageStore = createStore(
   persist(
     (set, get) => ({
       background: "/background.webp",
-      mobileBackground: "/background.webp",
       theme: "#b91c1c",
       textTheme: "#fafafa",
       colors: [
