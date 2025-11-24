@@ -94,7 +94,18 @@ export default function Page() {
     });
     return () => unsubscribe();
   }, []);
+  const [aspectRatio, setAspectRatio] = useState("16/9");
 
+  useEffect(() => {
+    // Precarga la imagen para obtener sus dimensiones reales
+    const img = new window.Image();
+    const isMobile = window.innerWidth <= 767;
+    img.src = isMobile ? mobileBackground : background;
+
+    img.onload = () => {
+      setAspectRatio(`${img.width}/${img.height}`);
+    };
+  }, [background, mobileBackground]);
   return (
     <>
       <div
@@ -119,23 +130,18 @@ export default function Page() {
           />
         </Suspense>
         <div className="relative w-full flex-1 flex flex-col justify-center items-center">
-          <div className="w-screen h-screen absolute bg-black inset-0 flex justify-center items-center -z-10">
-            <picture className="absolute inset-0 -z-10 pointer-events-none select-none">
-              {/* Mobile: se usará cuando el viewport sea <= 767px */}
-              <source media="(max-width: 767px)" srcSet={mobileBackground} />
+          <picture className="absolute inset-0 -z-10 pointer-events-none select-none">
+            <source media="(max-width: 767px)" srcSet={mobileBackground} />
+            <source media="(min-width: 768px)" srcSet={background} />
 
-              {/* Desktop: cuando sea >= 768px */}
-              <source media="(min-width: 768px)" srcSet={background} />
-
-              {/* Fallback */}
-              <img
-                src={background}
-                alt={background}
-                className="absolute inset-0 w-full max-w-screen h-full object-contain opacity-40 -z-10 select-none pointer-events-none"
-                fetchPriority="high"
-              />
-            </picture>
-          </div>
+            <img
+              src={background}
+              alt="Background"
+              className="absolute inset-0 w-full h-full object-contain opacity-40 -z-10"
+              style={{ aspectRatio }}
+              fetchPriority="high"
+            />
+          </picture>
 
           <motion.div
             layout
