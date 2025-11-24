@@ -79,7 +79,6 @@ export default function Page() {
     setMobileBackground,
   } = usePageStore();
   const [authenticate, setAuthenticate] = useState(false);
-  const [imageLoaded, setImageLoaded] = useState(false);
   const router = useRouter();
 
   const componentsArray = toolbarArea.map((item) => ({
@@ -96,20 +95,13 @@ export default function Page() {
     return () => unsubscribe();
   }, []);
 
-  // Precargar la imagen
-  useEffect(() => {
-    const img = new Image();
-    img.src = background;
-    img.onload = () => setImageLoaded(true);
-  }, [background]);
-
   return (
     <>
       <div
         style={{
           color: textTheme,
         }}
-        className={`flex w-full flex-col min-h-dvh overflow-hidden ${
+        className={`flex w-full  flex-col min-h-dvh overflow-hidden  ${
           process.env.NODE_ENV === "development" ? "debug-screens" : ""
         }`}
       >
@@ -127,8 +119,7 @@ export default function Page() {
           />
         </Suspense>
         <div className="relative w-full flex-1 flex flex-col justify-center items-center">
-          {/* Fondo con dimensiones fijas para evitar CLS */}
-          <div className="w-screen h-screen fixed bg-black inset-0 flex justify-center items-center -z-10">
+          <div className="w-screen h-screen absolute bg-black inset-0 flex justify-center items-center -z-10">
             <picture className="absolute inset-0 -z-10 pointer-events-none select-none">
               {/* Mobile: se usará cuando el viewport sea <= 767px */}
               <source media="(max-width: 767px)" srcSet={mobileBackground} />
@@ -136,53 +127,46 @@ export default function Page() {
               {/* Desktop: cuando sea >= 768px */}
               <source media="(min-width: 768px)" srcSet={background} />
 
-              {/* Fallback con width y height explícitos */}
+              {/* Fallback */}
               <img
                 src={background}
-                alt="Background"
-                width="1920"
-                height="1080"
-                className="absolute inset-0 w-full h-full object-contain opacity-40 -z-10 select-none pointer-events-none"
+                alt={background}
+                className="absolute inset-0 w-full max-w-screen h-full object-contain opacity-40 -z-10 select-none pointer-events-none"
                 fetchPriority="high"
-                loading="eager"
-                onLoad={() => setImageLoaded(true)}
-                style={{
-                  opacity: imageLoaded ? 0.4 : 0,
-                  transition: "opacity 0.3s ease-in-out",
-                }}
               />
             </picture>
           </div>
 
-          {/* Grid con min-height para reservar espacio */}
           <motion.div
             layout
-            className="2xl:w-9/12 w-full py-4 overflow-hidden grid grid-cols-1 md:grid-cols-2 items-center justify-center gap-y-4 md:gap-5 p-4"
-            style={{ minHeight: "400px" }}
+            className="2xl:w-9/12 w-full py-4 overflow-hidden grid grid-cols-1 md:grid-cols-2 items-center justify-center gap-y-4 md:gap-5 p-4 "
           >
             <AnimatePresence mode="popLayout">
               <Suspense
                 fallback={
                   <>
-                    {/* Skeleton con altura definida */}
                     <div
                       style={{
                         boxShadow: `0 0 15px 2px ${textTheme}`,
-                        minHeight: "350px",
                       }}
-                      className="rounded-xl overflow-hidden animate-pulse bg-gray-800/50"
-                    />
-                    <div
-                      style={{
-                        boxShadow: `0 0 15px 2px ${textTheme}`,
-                        minHeight: "350px",
-                      }}
-                      className="rounded-xl overflow-hidden animate-pulse bg-gray-800/50"
-                    />
+                      className={`rounded-xl overflow-hidden
+                   `}
+                    >
+                      <componentMap.picker
+                        theme={theme}
+                        setTheme={setTheme}
+                        textTheme={textTheme}
+                        setTextTheme={setTextTheme}
+                      />
+                      <componentMap.conversor
+                        theme={theme}
+                        textTheme={textTheme}
+                      />
+                    </div>
                   </>
                 }
               >
-                {componentsArray.map((component) => (
+                {componentsArray.map((component, i) => (
                   <motion.div
                     key={component.label}
                     layout
@@ -256,11 +240,13 @@ export default function Page() {
       </Dialog>
       <Toaster
         toastOptions={{
+          // Estilo general
           style: {
-            background: "#1e293b",
-            color: "#f8fafc",
+            background: "#1e293b", // gris oscuro
+            color: "#f8fafc", // blanco
             border: `1px solid ${theme}`,
           },
+          // Éxitos
           success: {
             style: {
               background: "black",
@@ -271,6 +257,7 @@ export default function Page() {
               secondary: "#fff",
             },
           },
+          // Errores
           error: {
             style: {
               background: "black",
