@@ -16,6 +16,7 @@ export default function Page() {
           <div className="w-screen h-screen absolute bg-black inset-0 flex justify-center items-center -z-10">
             {/* <BackgroundImage /> */}
           </div>
+          <div>probando</div>
 
           {/* <LocalTable /> */}
         </div>
