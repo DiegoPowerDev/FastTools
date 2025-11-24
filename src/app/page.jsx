@@ -13,6 +13,7 @@ import { usePageStore } from "@/store/PageStore";
 import { useRouter } from "next/navigation";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import dynamic from "next/dynamic";
+import AuthenticateForm from "@/components/authenticateForm";
 
 const componentMap = {
   notes: dynamic(() => import("@/components/block/notes"), {
@@ -64,10 +65,6 @@ const Toolbar = dynamic(() => import("@/components/toolbar"), {
   ssr: false,
 });
 const Footer = dynamic(() => import("@/components/footer"), { ssr: false });
-const AuthenticateForm = dynamic(
-  () => import("@/components/authenticateForm"),
-  { ssr: false }
-);
 
 export default function Page() {
   const {
