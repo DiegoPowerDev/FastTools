@@ -123,29 +123,18 @@ export default function Page() {
           process.env.NODE_ENV === "development" ? "debug-screens" : ""
         }`}
       >
-        <Suspense
-          fallback={
-            <div
-              style={{
-                backgroundColor: theme,
-                color: textTheme,
-              }}
-              className="w-screen flex h-full items-center justify-center "
-            ></div>
-          }
-        >
-          <Toolbar
-            setAuthenticate={setAuthenticate}
-            theme={theme}
-            setTheme={setTheme}
-            setTextTheme={setTextTheme}
-            setBackground={setBackground}
-            background={background}
-            textTheme={textTheme}
-            setMobileBackground={setMobileBackground}
-            mobileBackground={mobileBackground}
-          />
-        </Suspense>
+        <Toolbar
+          setAuthenticate={setAuthenticate}
+          theme={theme}
+          setTheme={setTheme}
+          setTextTheme={setTextTheme}
+          setBackground={setBackground}
+          background={background}
+          textTheme={textTheme}
+          setMobileBackground={setMobileBackground}
+          mobileBackground={mobileBackground}
+        />
+
         <div className="relative w-full flex-1 flex flex-col justify-center items-center">
           <picture className="absolute inset-0 -z-10 pointer-events-none select-none">
             <img

@@ -176,8 +176,6 @@ export default function Toolbar({ theme, setAuthenticate, textTheme }) {
     setTextTheme,
     setBackground,
     background,
-    mobileBackground,
-    setMobileBackground,
   } = usePageStore();
 
   const sensors = useSensors(
