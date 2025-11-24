@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { Toaster } from "react-hot-toast";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -18,19 +18,50 @@ import Footer from "@/components/footer";
 import dynamic from "next/dynamic";
 
 const componentMap = {
-  notes: dynamic(() => import("@/components/block/notes"), { ssr: false }),
-  calculator: dynamic(() => import("@/components/calculator"), { ssr: false }),
-  recorder: dynamic(() => import("@/components/recorder"), { ssr: false }),
-  picker: dynamic(() => import("@/components/colorPicker"), { ssr: false }),
-  conversor: dynamic(() => import("@/components/Conversor"), { ssr: false }),
-  links: dynamic(() => import("@/components/enlaces"), { ssr: false }),
-  colors: dynamic(() => import("@/components/colors"), { ssr: false }),
-  editor: dynamic(() => import("@/components/ImageCropper"), { ssr: false }),
-  qr: dynamic(() => import("@/components/QRGenerator"), { ssr: false }),
+  notes: dynamic(() => import("@/components/block/notes"), {
+    ssr: false,
+    suspense: true,
+  }),
+  calculator: dynamic(() => import("@/components/calculator"), {
+    ssr: false,
+    suspense: true,
+  }),
+  recorder: dynamic(() => import("@/components/recorder"), {
+    ssr: false,
+    suspense: true,
+  }),
+  picker: dynamic(() => import("@/components/colorPicker"), {
+    ssr: false,
+    suspense: true,
+  }),
+  conversor: dynamic(() => import("@/components/Conversor"), {
+    ssr: false,
+    suspense: true,
+  }),
+  links: dynamic(() => import("@/components/enlaces"), {
+    ssr: false,
+    suspense: true,
+  }),
+  colors: dynamic(() => import("@/components/colors"), {
+    ssr: false,
+    suspense: true,
+  }),
+  editor: dynamic(() => import("@/components/ImageCropper"), {
+    ssr: false,
+    suspense: true,
+  }),
+  qr: dynamic(() => import("@/components/QRGenerator"), {
+    ssr: false,
+    suspense: true,
+  }),
   apiTester: dynamic(() => import("@/components/testApi/testApi"), {
     ssr: false,
+    suspense: true,
   }),
-  jwt: dynamic(() => import("@/components/hasher"), { ssr: false }),
+  jwt: dynamic(() => import("@/components/hasher"), {
+    ssr: false,
+    suspense: true,
+  }),
 };
 
 export default function Page() {
@@ -119,48 +150,51 @@ export default function Page() {
           >
             <AnimatePresence mode="popLayout">
               {componentsArray.map((component, i) => (
-                <motion.div
-                  key={component.label}
-                  layout
-                  style={{
-                    boxShadow: `0 0 15px 2px ${textTheme}`,
-                  }}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{
-                    layout: { type: "spring", stiffness: 300, damping: 25 },
-                    duration: 0.4,
-                    ease: "easeInOut",
-                  }}
-                  className={`rounded-xl overflow-hidden ${
-                    component.label === "apiTester" || component.label === "jwt"
-                      ? "h-[500px]"
-                      : "h-[350px]"
-                  } ${
-                    component.label === "recorder" ||
-                    component.label === "picker"
-                      ? "hidden md:block"
-                      : ""
-                  }`}
-                >
-                  <component.Component
-                    theme={theme}
-                    setTheme={setTheme}
-                    textTheme={textTheme}
-                    setTextTheme={setTextTheme}
-                    notes={notes}
-                    setNotes={setNotes}
-                    colors={colors}
-                    setColors={setColors}
-                    links={links}
-                    setLinks={setLinks}
-                    api={api}
-                    setApi={setApi}
-                    socketApi={socketApi}
-                    setSocketApi={setSocketApi}
-                  />
-                </motion.div>
+                <Suspense key={component.label} fallback={<></>}>
+                  <motion.div
+                    key={component.label}
+                    layout
+                    style={{
+                      boxShadow: `0 0 15px 2px ${textTheme}`,
+                    }}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{
+                      layout: { type: "spring", stiffness: 300, damping: 25 },
+                      duration: 0.4,
+                      ease: "easeInOut",
+                    }}
+                    className={`rounded-xl overflow-hidden ${
+                      component.label === "apiTester" ||
+                      component.label === "jwt"
+                        ? "h-[500px]"
+                        : "h-[350px]"
+                    } ${
+                      component.label === "recorder" ||
+                      component.label === "picker"
+                        ? "hidden md:block"
+                        : ""
+                    }`}
+                  >
+                    <component.Component
+                      theme={theme}
+                      setTheme={setTheme}
+                      textTheme={textTheme}
+                      setTextTheme={setTextTheme}
+                      notes={notes}
+                      setNotes={setNotes}
+                      colors={colors}
+                      setColors={setColors}
+                      links={links}
+                      setLinks={setLinks}
+                      api={api}
+                      setApi={setApi}
+                      socketApi={socketApi}
+                      setSocketApi={setSocketApi}
+                    />
+                  </motion.div>
+                </Suspense>
               ))}
             </AnimatePresence>
           </motion.div>
