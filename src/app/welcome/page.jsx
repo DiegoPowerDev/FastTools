@@ -1,6 +1,6 @@
 "use client";
 import toast, { Toaster } from "react-hot-toast";
-import { Suspense, useEffect } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useFireStore, fireStore } from "@/store/fireStore";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
@@ -88,12 +88,16 @@ export default function Page() {
     setBackground,
   } = useFireStore();
 
+  const [imageLoaded, setImageLoaded] = useState(false);
+
   const componentsArray = toolbarArea.map((item) => ({
     id: item.id,
     label: item.label,
     Component: componentMap[item.label],
   }));
+
   const router = useRouter();
+
   const getOut = () => {
     fireStore.getState().resetStore();
     logout();
@@ -107,11 +111,7 @@ export default function Page() {
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
       if (firebaseUser) {
         setUser(firebaseUser);
-
-        // ✅ Establece UID y carga datos en un solo paso
-
         const unsubFirestore = loadUserData(firebaseUser.uid);
-
         window.__UNSUB_FIRESTORE__ = unsubFirestore;
       } else {
         console.log("No hay usuario autenticado");
@@ -133,18 +133,27 @@ export default function Page() {
     };
   }, []);
 
+  // Precargar imagen de fondo
+  useEffect(() => {
+    if (background) {
+      const img = new Image();
+      img.src = background;
+      img.onload = () => setImageLoaded(true);
+    }
+  }, [background]);
+
   return (
     <>
       <div
         style={{
           color: textTheme,
         }}
-        className={`flex w-full  flex-col min-h-dvh overflow-hidden  ${
+        className={`flex w-full flex-col min-h-dvh overflow-hidden ${
           process.env.NODE_ENV === "development" ? "debug-screens" : ""
         }`}
       >
         {loading ? (
-          <div className="flex flex-col items-center justify-center h-screen  text-white">
+          <div className="flex flex-col items-center justify-center h-screen text-white">
             <motion.div
               animate={{ rotate: 360 }}
               transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
@@ -166,39 +175,62 @@ export default function Page() {
                 setMobileBackground={setMobileBackground}
                 mobileBackground={mobileBackground}
               />
-              <div className="w-screen h-screen absolute bg-black inset-0 flex justify-center items-center -z-10">
+
+              {/* Fondo optimizado con dimensiones fijas */}
+              <div className="w-screen h-screen fixed bg-black inset-0 flex justify-center items-center -z-10">
                 <picture className="absolute inset-0 -z-10 pointer-events-none select-none">
-                  {/* Mobile: se usará cuando el viewport sea <= 767px */}
                   <source
                     media="(max-width: 767px)"
                     srcSet={mobileBackground}
                   />
-
-                  {/* Desktop: cuando sea >= 768px */}
                   <source media="(min-width: 768px)" srcSet={background} />
 
-                  {/* Fallback */}
                   <img
                     src={background}
-                    alt={background}
-                    className="absolute inset-0 w-full max-w-screen h-full object-contain opacity-40 -z-10 select-none pointer-events-none"
+                    alt="Background"
+                    width="1920"
+                    height="1080"
+                    className="absolute inset-0 w-full h-full object-contain opacity-40 -z-10 select-none pointer-events-none"
                     fetchPriority="high"
+                    loading="eager"
+                    onLoad={() => setImageLoaded(true)}
+                    style={{
+                      opacity: imageLoaded ? 0.4 : 0,
+                      transition: "opacity 0.3s ease-in-out",
+                    }}
                   />
                 </picture>
               </div>
 
+              {/* Grid con espacio reservado */}
               <motion.div
                 layout
                 className={cn(
                   componentsArray.length === 1
                     ? "grid grid-cols-1 w-fit"
-                    : "grid grid-cols-1 md:grid-cols-2 2xl:w-9/12  w-full",
-                  "  overflow-hidden  items-center justify-center gap-y-4 md:gap-5 p-4"
+                    : "grid grid-cols-1 md:grid-cols-2 2xl:w-9/12 w-full",
+                  "overflow-hidden items-center justify-center gap-y-4 md:gap-5 p-4"
                 )}
+                style={{ minHeight: "400px" }}
               >
                 <AnimatePresence mode="popLayout">
-                  {componentsArray.map((component, i) => (
-                    <Suspense key={component.label} fallback={<></>}>
+                  {componentsArray.map((component) => (
+                    <Suspense
+                      key={component.label}
+                      fallback={
+                        <div
+                          style={{
+                            boxShadow: `0 0 15px 2px ${textTheme}`,
+                            minHeight:
+                              component.label === "apiTester" ||
+                              component.label === "jwt"
+                                ? "500px"
+                                : "350px",
+                          }}
+                          className="rounded-xl overflow-hidden animate-pulse bg-gray-800/30"
+                        />
+                      }
+                    >
                       <motion.div
                         layout
                         style={{
@@ -268,7 +300,6 @@ export default function Page() {
             color: textTheme,
             boxShadow: `0 0 15px 2px ${textTheme}`,
           },
-          // Éxitos
           success: {
             style: {
               fontWeight: "700",
@@ -276,7 +307,6 @@ export default function Page() {
               color: textTheme,
             },
           },
-          // Errores
           error: {
             style: {
               fontWeight: "700",
