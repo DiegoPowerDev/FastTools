@@ -1,12 +1,10 @@
-import { Toaster } from "react-hot-toast";
-import FirebaseAuthWatcher from "@/components/FirebaseAuthWatcher";
-import PageStoreProvider from "@/components/PageStoreProvider";
 import BackgroundImage from "@/components/backgroundImage";
 import AuthDialog from "@/components/authDialog";
 
 export default function Page() {
   return (
-    <PageStoreProvider>
+    <>
+      {/* <PageStoreProvider> */}
       <div
         className={`flex w-full  flex-col min-h-dvh overflow-hidden  ${
           process.env.NODE_ENV === "development" ? "debug-screens" : ""
@@ -59,6 +57,7 @@ export default function Page() {
       /> */}
       <AuthDialog />
       {/* <FirebaseAuthWatcher /> */}
-    </PageStoreProvider>
+      {/* </PageStoreProvider> */}
+    </>
   );
 }
