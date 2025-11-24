@@ -279,12 +279,12 @@ export default function Conversor({ theme, textTheme }) {
             : "grid grid-cols-1 grid-rows-[5fr] w-full h-full"
         } justify-center items-center h-full`}
       >
-        <label htmlFor="Image">
+        <label htmlFor="conversorInput">
           <div
             {...getRootProps()}
             className="md:col-span-1 h-full w-full flex justify-center items-center cursor-pointer"
           >
-            <Input id="Image" {...getInputProps()} />
+            <Input id="conversorInput" {...getInputProps()} />
 
             <div className="h-full w-full flex gap-4 items-center justify-center">
               {preview ? (
