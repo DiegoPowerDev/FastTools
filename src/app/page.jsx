@@ -9,12 +9,9 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import AuthenticateForm from "@/components/authenticateForm";
 import { usePageStore } from "@/store/PageStore";
 import { useRouter } from "next/navigation";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
-import Toolbar from "@/components/toolbar";
-import Footer from "@/components/footer";
 import dynamic from "next/dynamic";
 
 const componentMap = {
@@ -63,6 +60,14 @@ const componentMap = {
     suspense: true,
   }),
 };
+const Toolbar = dynamic(() => import("@/components/toolbar"), {
+  ssr: false,
+});
+const Footer = dynamic(() => import("@/components/footer"), { ssr: false });
+const AuthenticateForm = dynamic(
+  () => import("@/components/authenticateForm"),
+  { ssr: false }
+);
 
 export default function Page() {
   const {
