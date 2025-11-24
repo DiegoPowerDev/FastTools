@@ -146,19 +146,15 @@ export default function Page() {
             mobileBackground={mobileBackground}
           />
         </Suspense>
-        <div className="relative w-full flex-1 flex flex-col justify-center items-center">
-          <div className="fixed inset-0 -z-10 pointer-events-none select-none">
-            <img
-              src={background}
-              width="1920"
-              height="1080"
-              alt=""
-              className="w-full h-full object-contain opacity-40"
-              fetchPriority="high"
-              decoding="async"
-            />
-          </div>
-
+        <div
+          style={{
+            backgroundImage: `url(${background})`,
+            backgroundSize: "contain",
+            backgroundRepeat: "no-repeat",
+            backgroundPosition: "center",
+          }}
+          className="w-full flex-1 flex flex-col justify-center items-center"
+        >
           <motion.div
             layout
             className="2xl:w-9/12 w-full py-4 overflow-hidden grid grid-cols-1 md:grid-cols-2 items-center justify-center gap-y-4 md:gap-5 p-4 "
