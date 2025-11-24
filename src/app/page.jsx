@@ -147,17 +147,17 @@ export default function Page() {
           />
         </Suspense>
         <div className="relative w-full flex-1 flex flex-col justify-center items-center">
-          <div
-            aria-hidden="true"
-            style={{
-              backgroundImage: `url(${background})`,
-              backgroundSize: "contain",
-              backgroundPosition: "center",
-              backgroundRepeat: "no-repeat",
-              opacity: 0.4,
-            }}
-            className="fixed inset-0 -z-10 w-full h-full pointer-events-none select-none"
-          ></div>
+          <div className="fixed inset-0 -z-10 pointer-events-none select-none">
+            <img
+              src={background}
+              width="1920"
+              height="1080"
+              alt=""
+              className="w-full h-full object-contain opacity-40"
+              fetchPriority="high"
+              decoding="async"
+            />
+          </div>
 
           <motion.div
             layout
