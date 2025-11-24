@@ -25,7 +25,7 @@ export default function ApiTester({
         }}
         className={`relative min-h-14 items-center justify-center md:grid grid-cols-6 md:grid-rows-1 flex w-full`}
       >
-        <div className="md:col-start-1 md:col-end-4 text-xl  w-full font-bold uppercase flex justify-center items-center">
+        <div className="md:col-start-1 md:col-end-4 text-xl  w-full font-bold uppercase flex justify-center items-center text-center">
           API TESTER
         </div>
         <div className="md:col-start-4 md:col-end-7 flex justify-center items-center gap-4">

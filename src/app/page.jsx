@@ -1,7 +1,6 @@
 "use client";
 import { Suspense, useEffect, useState } from "react";
 import { Toaster } from "react-hot-toast";
-import { motion, AnimatePresence } from "framer-motion";
 import {
   Dialog,
   DialogContent,
@@ -12,74 +11,21 @@ import {
 import { usePageStore } from "@/store/PageStore";
 import { useRouter } from "next/navigation";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
-import dynamic from "next/dynamic";
 import AuthenticateForm from "@/components/authenticateForm";
-
-const componentMap = {
-  notes: dynamic(() => import("@/components/block/notes"), {
-    ssr: false,
-    suspense: true,
-  }),
-  calculator: dynamic(() => import("@/components/calculator"), {
-    ssr: false,
-    suspense: true,
-  }),
-  recorder: dynamic(() => import("@/components/recorder"), {
-    ssr: false,
-    suspense: true,
-  }),
-  picker: dynamic(() => import("@/components/colorPicker"), {
-    ssr: false,
-    suspense: true,
-  }),
-  conversor: dynamic(() => import("@/components/Conversor"), {
-    ssr: false,
-    suspense: true,
-  }),
-  links: dynamic(() => import("@/components/enlaces"), {
-    ssr: false,
-    suspense: true,
-  }),
-  colors: dynamic(() => import("@/components/colors"), {
-    ssr: false,
-    suspense: true,
-  }),
-  editor: dynamic(() => import("@/components/ImageCropper"), {
-    ssr: false,
-    suspense: true,
-  }),
-  qr: dynamic(() => import("@/components/QRGenerator"), {
-    ssr: false,
-    suspense: true,
-  }),
-  apiTester: dynamic(() => import("@/components/testApi/testApi"), {
-    ssr: false,
-    suspense: true,
-  }),
-  jwt: dynamic(() => import("@/components/hasher"), {
-    ssr: false,
-    suspense: true,
-  }),
-};
-const Toolbar = dynamic(() => import("@/components/toolbar"), {
-  ssr: false,
-});
+import dynamic from "next/dynamic";
+import Tablero from "@/components/Tablero";
+const Toolbar = dynamic(() => import("@/components/toolbar"), { ssr: false });
 const Footer = dynamic(() => import("@/components/footer"), { ssr: false });
-
+function PageSkeleton() {
+  return (
+    <div className="w-full h-56 flex items-center justify-center">
+      <div className="text-gray-400 animate-pulse">Loading content…</div>
+    </div>
+  );
+}
 export default function Page() {
   const {
     tabs,
-    colors,
-    links,
-    api,
-    toolbarArea,
-    setApi,
-    socketApi,
-    setSocketApi,
-    setColors,
-    setLinks,
-    notes,
-    setNotes,
     theme,
     setTheme,
     setTextTheme,
@@ -91,13 +37,13 @@ export default function Page() {
   } = usePageStore();
   const [authenticate, setAuthenticate] = useState(false);
   const router = useRouter();
+  const [hydrated, setHydrated] = useState(false);
 
-  const componentsArray = toolbarArea.map((item) => ({
-    id: item.id,
-    label: item.label,
-    Component: componentMap[item.label],
-  }));
-
+  useEffect(() => {
+    // small delay ensures initial paint settles (optional)
+    const id = setTimeout(() => setHydrated(true), 50);
+    return () => clearTimeout(id);
+  }, []);
   useEffect(() => {
     const auth = getAuth();
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
@@ -146,60 +92,16 @@ export default function Page() {
             </picture>
           </div>
 
-          <motion.div
-            layout
-            className="2xl:w-9/12 w-full py-4 overflow-hidden grid grid-cols-1 md:grid-cols-2 items-center justify-center gap-y-4 md:gap-5 p-4 "
-          >
-            <AnimatePresence mode="popLayout">
-              {componentsArray.map((component, i) => (
-                <Suspense key={component.label} fallback={<></>}>
-                  <motion.div
-                    key={component.label}
-                    layout
-                    style={{
-                      boxShadow: `0 0 15px 2px ${textTheme}`,
-                    }}
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    transition={{
-                      layout: { type: "spring", stiffness: 300, damping: 25 },
-                      duration: 0.4,
-                      ease: "easeInOut",
-                    }}
-                    className={`rounded-xl overflow-hidden ${
-                      component.label === "apiTester" ||
-                      component.label === "jwt"
-                        ? "h-[500px]"
-                        : "h-[350px]"
-                    } ${
-                      component.label === "recorder" ||
-                      component.label === "picker"
-                        ? "hidden md:block"
-                        : ""
-                    }`}
-                  >
-                    <component.Component
-                      theme={theme}
-                      setTheme={setTheme}
-                      textTheme={textTheme}
-                      setTextTheme={setTextTheme}
-                      notes={notes}
-                      setNotes={setNotes}
-                      colors={colors}
-                      setColors={setColors}
-                      links={links}
-                      setLinks={setLinks}
-                      api={api}
-                      setApi={setApi}
-                      socketApi={socketApi}
-                      setSocketApi={setSocketApi}
-                    />
-                  </motion.div>
-                </Suspense>
-              ))}
-            </AnimatePresence>
-          </motion.div>
+          <div className="w-full h-full px-12">
+            {/* Before hydration show a tiny skeleton; after hydration load heavy GridAllComponents */}
+            {hydrated ? (
+              <Suspense fallback={<PageSkeleton />}>
+                <Tablero />
+              </Suspense>
+            ) : (
+              <PageSkeleton />
+            )}
+          </div>
         </div>
         <Footer
           tabs={tabs}
