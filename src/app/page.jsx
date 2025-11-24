@@ -1,5 +1,4 @@
 import { Toaster } from "react-hot-toast";
-import FirebaseAuthWatcher from "@/components/FirebaseAuthWatcher";
 import PageStoreProvider from "@/components/PageStoreProvider";
 import LocalTable from "@/components/LocalTable";
 import Footer from "@/components/footer";
@@ -61,7 +60,7 @@ export default function Page() {
         }}
       /> */}
       <AuthDialog />
-      <FirebaseAuthWatcher />
+      {/* <FirebaseAuthWatcher /> */}
     </PageStoreProvider>
   );
 }
