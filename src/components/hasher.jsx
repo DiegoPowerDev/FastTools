@@ -20,7 +20,7 @@ export default function Hasher({ theme, textTheme }) {
           className={`relative  h-14 items-center justify-center md:grid grid-cols-6 md:grid-rows-1 flex w-full`}
         >
           <div className="md:col-start-1 md:col-end-4 text-xl  w-full font-bold uppercase flex justify-center items-center">
-            HASHER
+            JWT
           </div>
           <div className="md:col-start-4 md:col-end-7 flex justify-center items-center gap-4">
             <button
@@ -33,7 +33,7 @@ export default function Hasher({ theme, textTheme }) {
               } border-2 font-bold items-center justify-center gap-2 hover:opacity-70`}
               onClick={() => setAction("hash")}
             >
-              <div>HASH</div> <IconHash />
+              <div>ENCODE</div> <IconHash />
             </button>
             <button
               style={{
@@ -45,7 +45,7 @@ export default function Hasher({ theme, textTheme }) {
               } border-2 items-center justify-center gap-2 hover:opacity-70`}
               onClick={() => setAction("verify")}
             >
-              <div>VERIFY </div>
+              <div>DECODE </div>
               <IconZoomCode />
             </button>
           </div>
