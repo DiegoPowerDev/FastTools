@@ -283,7 +283,9 @@ export default function Conversor({ theme, textTheme }) {
           {...getRootProps()}
           className="md:col-span-1 h-full w-full flex justify-center items-center cursor-pointer"
         >
-          <input {...getInputProps()} />
+          <label htmlFor="Image">
+            <input id="Image" {...getInputProps()} />
+          </label>
           <div className="h-full w-full flex gap-4 items-center justify-center">
             {preview ? (
               <div className="w-full flex justify-center items-center p-4">

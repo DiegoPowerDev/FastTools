@@ -90,6 +90,7 @@ function SortableButton({ id, label, theme, textTheme }) {
     <div
       ref={setNodeRef}
       style={style}
+      aria-label={label}
       {...listeners}
       {...attributes}
       className={`relative h-14 w-14 p-2  rounded flex justify-center items-center cursor-grab active:cursor-grabbing touch-none ${
@@ -326,7 +327,7 @@ export default function FireToolBar({
             >
               <div className="w-24 flex h-full items-center justify-center p-2">
                 <Dialog>
-                  <DialogTrigger>
+                  <DialogTrigger aria-label="Abrir menú">
                     <motion.div
                       whileHover={{
                         rotate: [0, 360],

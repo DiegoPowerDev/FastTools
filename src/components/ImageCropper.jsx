@@ -222,9 +222,9 @@ export default function ImageCropper({ theme, textTheme }) {
           CLEAR
         </button>
       </div>
-
-      <input {...getInputProps()} id="ImageToCrop" className="hidden" />
-
+      <label htmlFor="ImageToCrop">
+        <input {...getInputProps()} id="ImageToCrop" className="hidden" />
+      </label>
       {!imageUrl ? (
         <div
           {...getRootProps()}

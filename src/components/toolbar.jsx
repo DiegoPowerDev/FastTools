@@ -92,6 +92,7 @@ function SortableButton({ id, label, theme, textTheme }) {
       style={style}
       {...listeners}
       {...attributes}
+      aria-label={label}
       className={`relative h-14 w-14 p-2 border-2 border-black rounded flex justify-center items-center cursor-grab active:cursor-grabbing touch-none ${
         label === "recorder" || label === "picker" ? "sm:block hidden" : ""
       }`}
@@ -321,7 +322,7 @@ export default function Toolbar({ theme, setAuthenticate, textTheme }) {
             >
               <div className="w-24 flex h-full items-center justify-center p-2">
                 <Dialog>
-                  <DialogTrigger>
+                  <DialogTrigger aria-label="Settings">
                     <motion.div
                       whileHover={{
                         rotate: [0, 360],
