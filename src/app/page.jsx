@@ -134,8 +134,8 @@ export default function Page() {
           setMobileBackground={setMobileBackground}
           mobileBackground={mobileBackground}
         /> */}
-
-        <div className="relative w-full flex-1 flex flex-col justify-center items-center">
+        <div>Probando</div>
+        {/* <div className="relative w-full flex-1 flex flex-col justify-center items-center">
           <picture className="absolute inset-0 -z-10 pointer-events-none select-none">
             <img
               src="/background.webp"
@@ -148,9 +148,9 @@ export default function Page() {
             />
           </picture>
 
-          <div className="2xl:w-9/12 w-full py-4 overflow-hidden grid grid-cols-1 md:grid-cols-2 items-center justify-center gap-y-4 md:gap-5 p-4 ">
-            {/* <AnimatePresence mode="popLayout"> */}
-            {/* <Suspense fallback={<></>}>
+          <div className="2xl:w-9/12 w-full py-4 overflow-hidden grid grid-cols-1 md:grid-cols-2 items-center justify-center gap-y-4 md:gap-5 p-4 "> */}
+        {/* <AnimatePresence mode="popLayout"> */}
+        {/* <Suspense fallback={<></>}>
                 {componentsArray.map((component, i) => (
                   <motion.div
                     key={component.label}
@@ -197,9 +197,9 @@ export default function Page() {
                   </motion.div>
                 ))}
               </Suspense> */}
-            {/* </AnimatePresence> */}
-          </div>
-        </div>
+        {/* </AnimatePresence> */}
+        {/* </div>
+        </div> */}
         {/* <Suspense fallback={null}>
           {tabs.header && (
             <Footer

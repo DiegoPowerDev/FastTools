@@ -30,12 +30,12 @@ export default function RootLayout({ children }) {
           name="google-site-verification"
           content="abSLIjYehY7UNNtTck9OZ0lKx9FvXoWr4XvLnOBVs1M"
         />
-        <link
+        {/* <link
           rel="preload"
           href="/background.webp"
           as="image"
-          fetchpriority="high"
-        />
+          fetchPriority="high"
+        /> */}
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} min-h-screen antialiased relative bg-transparent `}
