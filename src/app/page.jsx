@@ -14,7 +14,7 @@ export default function Page() {
           process.env.NODE_ENV === "development" ? "debug-screens" : ""
         }`}
       >
-        <Toolbar />
+        {/* <Toolbar /> */}
 
         <div className="relative w-full flex-1 flex flex-col justify-center items-center">
           <div className="w-screen h-screen absolute bg-black inset-0 flex justify-center items-center -z-10">
