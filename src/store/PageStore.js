@@ -6,8 +6,8 @@ import { useStore } from "zustand";
 export const pageStore = createStore(
   persist(
     (set, get) => ({
-      background: "/icono.png",
-      mobileBackground: "/icono.png",
+      background: "/background.webp",
+      mobileBackground: "/background.webp",
       theme: "#b91c1c",
       textTheme: "#fafafa",
       colors: [
@@ -130,15 +130,15 @@ export const pageStore = createStore(
         { id: 32, title: "", content: "", color: "#000000" },
       ],
       toolbarArea: [
-        { id: 2, label: "calculator" },
-        { id: 3, label: "recorder" },
         { id: 4, label: "picker" },
         { id: 5, label: "conversor" },
+      ],
+      headerArea: [
         { id: 7, label: "colors" },
         { id: 10, label: "editor" },
         { id: 11, label: "qr" },
-      ],
-      headerArea: [
+        { id: 2, label: "calculator" },
+        { id: 3, label: "recorder" },
         { id: 1, label: "notes" },
         { id: 6, label: "links" },
         { id: 8, label: "apiTester" },

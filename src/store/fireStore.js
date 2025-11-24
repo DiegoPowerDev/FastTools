@@ -12,8 +12,8 @@ import { getAuth } from "firebase/auth";
 const db = getFirestore(app);
 
 const initialState = {
-  background: "/icono.png",
-  mobileBackground: "/icono.png",
+  background: "/background.webp",
+  mobileBackground: "/background.webp",
   theme: "#b91c1c",
   textTheme: "#fafafa",
   colors: [
@@ -162,8 +162,8 @@ const initialState = {
 };
 
 export const fireStore = createStore((set, get) => ({
-  background: "/icono.png",
-  mobileBackground: "/icono.png",
+  background: "/background.webp",
+  mobileBackground: "/background.webp",
   theme: "#b91c1c",
   textTheme: "#fafafa",
   colors: [
