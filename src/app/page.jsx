@@ -10,44 +10,62 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { usePageStore } from "@/store/PageStore";
-import { useRouter } from "next/navigation";
-import { getAuth, onAuthStateChanged } from "firebase/auth";
+// import { useRouter } from "next/navigation";
+// import { getAuth, onAuthStateChanged } from "firebase/auth";
 import dynamic from "next/dynamic";
-import AuthenticateForm from "@/components/authenticateForm";
-
+// import AuthenticateForm from "@/components/authenticateForm";
+function ComponentSkeleton({ height }) {
+  return (
+    <div
+      style={{ height }}
+      className="rounded-xl overflow-hidden bg-gray-900/20 animate-pulse"
+    />
+  );
+}
 const componentMap = {
   notes: dynamic(() => import("@/components/block/notes"), {
     ssr: false,
+    loading: () => <ComponentSkeleton height="350px" />,
   }),
   calculator: dynamic(() => import("@/components/calculator"), {
     ssr: false,
+    loading: () => <ComponentSkeleton height="350px" />,
   }),
   recorder: dynamic(() => import("@/components/recorder"), {
     ssr: false,
+    loading: () => <ComponentSkeleton height="350px" />,
   }),
   picker: dynamic(() => import("@/components/colorPicker"), {
     ssr: false,
+    loading: () => <ComponentSkeleton height="350px" />,
   }),
   conversor: dynamic(() => import("@/components/Conversor"), {
     ssr: false,
+    loading: () => <ComponentSkeleton height="350px" />,
   }),
   links: dynamic(() => import("@/components/enlaces"), {
     ssr: false,
+    loading: () => <ComponentSkeleton height="350px" />,
   }),
   colors: dynamic(() => import("@/components/colors"), {
     ssr: false,
+    loading: () => <ComponentSkeleton height="350px" />,
   }),
   editor: dynamic(() => import("@/components/ImageCropper"), {
     ssr: false,
+    loading: () => <ComponentSkeleton height="350px" />,
   }),
   qr: dynamic(() => import("@/components/QRGenerator"), {
     ssr: false,
+    loading: () => <ComponentSkeleton height="350px" />,
   }),
   apiTester: dynamic(() => import("@/components/testApi/testApi"), {
     ssr: false,
+    loading: () => <ComponentSkeleton height="500px" />,
   }),
   jwt: dynamic(() => import("@/components/hasher"), {
     ssr: false,
+    loading: () => <ComponentSkeleton height="500px" />,
   }),
 };
 const Toolbar = dynamic(() => import("@/components/toolbar"), {
@@ -78,8 +96,8 @@ export default function Page() {
     mobileBackground,
     setMobileBackground,
   } = usePageStore();
-  const [authenticate, setAuthenticate] = useState(false);
-  const router = useRouter();
+  // const [authenticate, setAuthenticate] = useState(false);
+  // const router = useRouter();
 
   const componentsArray = toolbarArea.map((item) => ({
     id: item.id,
@@ -87,13 +105,13 @@ export default function Page() {
     Component: componentMap[item.label],
   }));
 
-  useEffect(() => {
-    const auth = getAuth();
-    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
-      if (firebaseUser) router.replace("/welcome");
-    });
-    return () => unsubscribe();
-  }, []);
+  // useEffect(() => {
+  //   const auth = getAuth();
+  //   const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+  //     if (firebaseUser) router.replace("/welcome");
+  //   });
+  //   return () => unsubscribe();
+  // }, []);
 
   return (
     <>
@@ -106,7 +124,7 @@ export default function Page() {
         }`}
       >
         <Toolbar
-          setAuthenticate={setAuthenticate}
+          // setAuthenticate={setAuthenticate}
           theme={theme}
           setTheme={setTheme}
           setTextTheme={setTextTheme}
@@ -191,8 +209,7 @@ export default function Page() {
           />
         )}
       </div>
-
-      <Dialog onOpenChange={setAuthenticate} open={authenticate}>
+      {/* <Dialog onOpenChange={setAuthenticate} open={authenticate}>
         <DialogContent
           style={{ color: theme, border: `1px solid ${theme}` }}
           className="bg-black flex flex-col h-[450px] w-full items-center"
@@ -201,9 +218,9 @@ export default function Page() {
             <DialogTitle className="text-center"></DialogTitle>
             <DialogDescription></DialogDescription>
           </DialogHeader>
-          <AuthenticateForm theme={theme} textTheme={textTheme} />
-        </DialogContent>
-      </Dialog>
+          {/* <AuthenticateForm theme={theme} textTheme={textTheme} /> */}
+      {/* </DialogContent>
+      </Dialog> */}
       <Toaster
         toastOptions={{
           // Estilo general
