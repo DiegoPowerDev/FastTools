@@ -262,13 +262,15 @@ export default function Page() {
                 </AnimatePresence>
               </motion.div>
             </div>
-            <Footer
-              tabs={tabs}
-              textTheme={textTheme}
-              theme={theme}
-              background={background}
-              setBackground={setBackground}
-            />
+            {tabs.header && (
+              <Footer
+                tabs={tabs}
+                textTheme={textTheme}
+                theme={theme}
+                setBackground={setBackground}
+                background={background}
+              />
+            )}
           </>
         )}
       </div>
