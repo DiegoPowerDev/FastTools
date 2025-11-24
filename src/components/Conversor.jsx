@@ -279,45 +279,46 @@ export default function Conversor({ theme, textTheme }) {
             : "grid grid-cols-1 grid-rows-[5fr] w-full h-full"
         } justify-center items-center h-full`}
       >
-        <div
-          {...getRootProps()}
-          className="md:col-span-1 h-full w-full flex justify-center items-center cursor-pointer"
-        >
-          <label htmlFor="Image">
-            <input id="Image" {...getInputProps()} />
-          </label>
-          <div className="h-full w-full flex gap-4 items-center justify-center">
-            {preview ? (
-              <div className="w-full flex justify-center items-center p-4">
-                <img
-                  style={{ border: `2px solid ${theme}` }}
-                  src={preview}
-                  alt="Vista previa"
-                  className="max-h-48 md:max-h-64 rounded"
-                />
-              </div>
-            ) : (
-              <>
-                {isDragActive ? (
-                  <div className="w-28">
-                    <ImageUpscale
-                      size={48}
+        <label htmlFor="Image">
+          <div
+            {...getRootProps()}
+            className="md:col-span-1 h-full w-full flex justify-center items-center cursor-pointer"
+          >
+            <Input id="Image" {...getInputProps()} />
+
+            <div className="h-full w-full flex gap-4 items-center justify-center">
+              {preview ? (
+                <div className="w-full flex justify-center items-center p-4">
+                  <img
+                    style={{ border: `2px solid ${theme}` }}
+                    src={preview}
+                    alt="Vista previa"
+                    className="max-h-48 md:max-h-64 rounded"
+                  />
+                </div>
+              ) : (
+                <>
+                  {isDragActive ? (
+                    <div className="w-28">
+                      <ImageUpscale
+                        size={48}
+                        style={{ color: textTheme }}
+                        className="animate-bounce"
+                      />
+                    </div>
+                  ) : (
+                    <div
                       style={{ color: textTheme }}
-                      className="animate-bounce"
-                    />
-                  </div>
-                ) : (
-                  <div
-                    style={{ color: textTheme }}
-                    className="font-bold select-none opacity-60 text-xl"
-                  >
-                    SELECT OR DRAG IMAGE
-                  </div>
-                )}
-              </>
-            )}
+                      className="font-bold select-none opacity-60 text-xl"
+                    >
+                      SELECT OR DRAG IMAGE
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
           </div>
-        </div>
+        </label>
 
         {webUrl && (
           <div
