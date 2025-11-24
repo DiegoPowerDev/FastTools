@@ -123,7 +123,7 @@ export default function Page() {
           process.env.NODE_ENV === "development" ? "debug-screens" : ""
         }`}
       >
-        <Toolbar
+        {/* <Toolbar
           setAuthenticate={setAuthenticate}
           theme={theme}
           setTheme={setTheme}
@@ -133,7 +133,7 @@ export default function Page() {
           textTheme={textTheme}
           setMobileBackground={setMobileBackground}
           mobileBackground={mobileBackground}
-        />
+        /> */}
 
         <div className="relative w-full flex-1 flex flex-col justify-center items-center">
           <picture className="absolute inset-0 -z-10 pointer-events-none select-none">
@@ -153,7 +153,7 @@ export default function Page() {
             className="2xl:w-9/12 w-full py-4 overflow-hidden grid grid-cols-1 md:grid-cols-2 items-center justify-center gap-y-4 md:gap-5 p-4 "
           >
             <AnimatePresence mode="popLayout">
-              <Suspense fallback={<></>}>
+              {/* <Suspense fallback={<></>}>
                 {componentsArray.map((component, i) => (
                   <motion.div
                     key={component.label}
@@ -199,11 +199,11 @@ export default function Page() {
                     />
                   </motion.div>
                 ))}
-              </Suspense>
+              </Suspense> */}
             </AnimatePresence>
           </motion.div>
         </div>
-        <Suspense fallback={null}>
+        {/* <Suspense fallback={null}>
           {tabs.header && (
             <Footer
               tabs={tabs}
@@ -213,7 +213,7 @@ export default function Page() {
               background={background}
             />
           )}
-        </Suspense>
+        </Suspense> */}
       </div>
 
       <Dialog onOpenChange={setAuthenticate} open={authenticate}>

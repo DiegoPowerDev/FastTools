@@ -40,8 +40,8 @@ export default function RootLayout({ children }) {
       <body
         className={`${geistSans.variable} ${geistMono.variable} min-h-screen antialiased relative bg-transparent `}
       >
-        <div className="w-full h-full absolute inset-0 flex justify-center items-center -z-20 bg-black"></div>
-        {/* {children} */}
+        <div className="w-full h-full absolute inset-0 flex justify-center items-center -z-20"></div>
+        {children}
         <Analytics />
       </body>
     </html>
