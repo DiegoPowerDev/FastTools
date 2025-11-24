@@ -19,7 +19,6 @@ export default function MenuSettings({
   const [newMobileBackground, setNewMobileBackground] = useState("/icono.png");
   const manageFormat = (color) => {
     if (color[0] === "#") {
-      console.log(color.slice(1, color.length));
       return color.slice(1, color.length);
     }
     return color;

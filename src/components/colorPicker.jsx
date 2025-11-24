@@ -165,7 +165,7 @@ export default function ImageColorPicker({ theme, textTheme }) {
   };
 
   const handleWheel = (e) => {
-    e.preventDefault();
+    // e.preventDefault();
     setZoom((prevZoom) => {
       let newZoom = prevZoom + (e.deltaY < 0 ? 0.5 : -0.5);
       return Math.min(Math.max(newZoom, 1), 20); // límites entre 1x y 20x

@@ -333,7 +333,6 @@ export const fireStore = createStore((set, get) => ({
   loadUserData: () => {
     const auth = getAuth();
     const uid = auth.currentUser?.uid;
-    console.log(uid);
     const userDoc = doc(db, "stores", uid);
     const unsubscribe = onSnapshot(
       userDoc,
@@ -374,7 +373,6 @@ export const fireStore = createStore((set, get) => ({
 
     try {
       await updateDoc(doc(db, "stores", uid), data);
-      console.log("✅ Guardado exitoso");
     } catch (err) {
       console.error("❌ Error guardando:", err);
     }

@@ -80,7 +80,6 @@ export default function Page() {
 
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
       if (firebaseUser) {
-        console.log("Usuario autenticado:", firebaseUser.uid);
         setUser(firebaseUser);
 
         // ✅ Establece UID y carga datos en un solo paso
@@ -90,16 +89,11 @@ export default function Page() {
         window.__UNSUB_FIRESTORE__ = unsubFirestore;
       } else {
         console.log("No hay usuario autenticado");
-
-        // Limpiar todo
-
         setUser(null);
-
         if (window.__UNSUB_FIRESTORE__) {
           window.__UNSUB_FIRESTORE__();
           delete window.__UNSUB_FIRESTORE__;
         }
-
         router.push("/");
       }
     });
