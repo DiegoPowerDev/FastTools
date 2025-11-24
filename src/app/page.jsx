@@ -148,12 +148,9 @@ export default function Page() {
             />
           </picture>
 
-          <motion.div
-            layout
-            className="2xl:w-9/12 w-full py-4 overflow-hidden grid grid-cols-1 md:grid-cols-2 items-center justify-center gap-y-4 md:gap-5 p-4 "
-          >
-            <AnimatePresence mode="popLayout">
-              {/* <Suspense fallback={<></>}>
+          <div className="2xl:w-9/12 w-full py-4 overflow-hidden grid grid-cols-1 md:grid-cols-2 items-center justify-center gap-y-4 md:gap-5 p-4 ">
+            {/* <AnimatePresence mode="popLayout"> */}
+            {/* <Suspense fallback={<></>}>
                 {componentsArray.map((component, i) => (
                   <motion.div
                     key={component.label}
@@ -200,8 +197,8 @@ export default function Page() {
                   </motion.div>
                 ))}
               </Suspense> */}
-            </AnimatePresence>
-          </motion.div>
+            {/* </AnimatePresence> */}
+          </div>
         </div>
         {/* <Suspense fallback={null}>
           {tabs.header && (
