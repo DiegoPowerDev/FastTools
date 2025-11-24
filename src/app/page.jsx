@@ -105,20 +105,20 @@ export default function Page() {
     Component: componentMap[item.label],
   }));
 
-  useEffect(() => {
-    const auth = getAuth();
-    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
-      if (firebaseUser) router.replace("/welcome");
-    });
-    return () => unsubscribe();
-  }, []);
+  // useEffect(() => {
+  //   const auth = getAuth();
+  //   const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+  //     if (firebaseUser) router.replace("/welcome");
+  //   });
+  //   return () => unsubscribe();
+  // }, []);
 
   return (
     <>
       <div
-        style={{
-          color: textTheme,
-        }}
+        // style={{
+        //   color: textTheme,
+        // }}
         className={`flex w-full  flex-col min-h-dvh overflow-hidden  ${
           process.env.NODE_ENV === "development" ? "debug-screens" : ""
         }`}
@@ -213,7 +213,7 @@ export default function Page() {
         </Suspense> */}
       </div>
 
-      <Dialog onOpenChange={setAuthenticate} open={authenticate}>
+      {/* <Dialog onOpenChange={setAuthenticate} open={authenticate}>
         <DialogContent
           style={{ color: theme, border: `1px solid ${theme}` }}
           className="bg-black flex flex-col h-[450px] w-full items-center"
@@ -256,7 +256,7 @@ export default function Page() {
             },
           },
         }}
-      />
+      /> */}
     </>
   );
 }
