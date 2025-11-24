@@ -1,5 +1,5 @@
 "use client";
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
 import { Toaster } from "react-hot-toast";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -14,46 +14,71 @@ import { useRouter } from "next/navigation";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import dynamic from "next/dynamic";
 import AuthenticateForm from "@/components/authenticateForm";
+import Image from "next/image";
 
+// Skeleton minimalista y rápido
+function QuickSkeleton({ height }) {
+  return <div style={{ height }} className="rounded-xl bg-gray-900/10" />;
+}
+
+// Carga ultra lazy de componentes - solo cuando sean visibles
 const componentMap = {
   notes: dynamic(() => import("@/components/block/notes"), {
     ssr: false,
+    loading: () => <QuickSkeleton height="350px" />,
   }),
   calculator: dynamic(() => import("@/components/calculator"), {
     ssr: false,
+    loading: () => <QuickSkeleton height="350px" />,
   }),
   recorder: dynamic(() => import("@/components/recorder"), {
     ssr: false,
+    loading: () => <QuickSkeleton height="350px" />,
   }),
   picker: dynamic(() => import("@/components/colorPicker"), {
     ssr: false,
+    loading: () => <QuickSkeleton height="350px" />,
   }),
   conversor: dynamic(() => import("@/components/Conversor"), {
     ssr: false,
+    loading: () => <QuickSkeleton height="350px" />,
   }),
   links: dynamic(() => import("@/components/enlaces"), {
     ssr: false,
+    loading: () => <QuickSkeleton height="350px" />,
   }),
   colors: dynamic(() => import("@/components/colors"), {
     ssr: false,
+    loading: () => <QuickSkeleton height="350px" />,
   }),
   editor: dynamic(() => import("@/components/ImageCropper"), {
     ssr: false,
+    loading: () => <QuickSkeleton height="350px" />,
   }),
   qr: dynamic(() => import("@/components/QRGenerator"), {
     ssr: false,
+    loading: () => <QuickSkeleton height="350px" />,
   }),
   apiTester: dynamic(() => import("@/components/testApi/testApi"), {
     ssr: false,
+    loading: () => <QuickSkeleton height="500px" />,
   }),
   jwt: dynamic(() => import("@/components/hasher"), {
     ssr: false,
+    loading: () => <QuickSkeleton height="500px" />,
   }),
 };
+
+// Toolbar y Footer con mayor prioridad
 const Toolbar = dynamic(() => import("@/components/toolbar"), {
   ssr: false,
+  loading: () => <div style={{ height: "64px" }} />,
 });
-const Footer = dynamic(() => import("@/components/footer"), { ssr: false });
+
+const Footer = dynamic(() => import("@/components/footer"), {
+  ssr: false,
+  loading: () => <div style={{ height: "80px" }} />,
+});
 
 export default function Page() {
   const {
@@ -78,108 +103,83 @@ export default function Page() {
     mobileBackground,
     setMobileBackground,
   } = usePageStore();
+
   const [authenticate, setAuthenticate] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const router = useRouter();
 
-  const componentsArray = toolbarArea.map((item) => ({
-    id: item.id,
-    label: item.label,
-    Component: componentMap[item.label],
-  }));
+  // Memoizar array de componentes
+  const componentsArray = useMemo(
+    () =>
+      toolbarArea.map((item) => ({
+        id: item.id,
+        label: item.label,
+        Component: componentMap[item.label],
+      })),
+    [toolbarArea]
+  );
 
   useEffect(() => {
+    setMounted(true);
     const auth = getAuth();
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
       if (firebaseUser) router.replace("/welcome");
     });
     return () => unsubscribe();
-  }, []);
+  }, [router]);
 
   return (
     <>
       <div
-        style={{
-          color: textTheme,
-        }}
-        className={`flex w-full  flex-col min-h-dvh overflow-hidden  ${
+        style={{ color: textTheme }}
+        className={`flex w-full flex-col min-h-dvh overflow-hidden ${
           process.env.NODE_ENV === "development" ? "debug-screens" : ""
         }`}
       >
-        <Suspense fallback={null}>
-          <Toolbar
-            setAuthenticate={setAuthenticate}
-            theme={theme}
-            setTheme={setTheme}
-            setTextTheme={setTextTheme}
-            setBackground={setBackground}
-            background={background}
-            textTheme={textTheme}
-            setMobileBackground={setMobileBackground}
-            mobileBackground={mobileBackground}
-          />
-        </Suspense>
+        <Toolbar
+          setAuthenticate={setAuthenticate}
+          theme={theme}
+          setTheme={setTheme}
+          setTextTheme={setTextTheme}
+          setBackground={setBackground}
+          background={background}
+          textTheme={textTheme}
+          setMobileBackground={setMobileBackground}
+          mobileBackground={mobileBackground}
+        />
+
         <div className="relative w-full flex-1 flex flex-col justify-center items-center">
-          <div className="w-screen h-screen absolute bg-black inset-0 flex justify-center items-center -z-10">
-            <picture className="absolute inset-0 -z-10 pointer-events-none select-none">
-              {/* Mobile: se usará cuando el viewport sea <= 767px */}
-              <source media="(max-width: 767px)" srcSet={mobileBackground} />
-
-              {/* Desktop: cuando sea >= 768px */}
-              <source media="(min-width: 768px)" srcSet={background} />
-
-              {/* Fallback */}
-              <img
-                src={background}
-                alt={background}
-                className="absolute inset-0 w-full max-w-screen h-full object-contain opacity-40 -z-10 select-none pointer-events-none"
-                fetchPriority="high"
-              />
-            </picture>
+          {/* Fondo usando Next/Image para optimización automática */}
+          <div className="fixed inset-0 bg-black -z-10">
+            <Image
+              src={background}
+              alt="Background"
+              fill
+              priority={false}
+              className="object-contain opacity-40"
+              sizes="100vw"
+            />
           </div>
 
-          <motion.div
-            layout
-            className="2xl:w-9/12 w-full py-4 overflow-hidden grid grid-cols-1 md:grid-cols-2 items-center justify-center gap-y-4 md:gap-5 p-4 "
+          {/* Grid de componentes */}
+          <div
+            className="2xl:w-9/12 w-full py-4 overflow-hidden grid grid-cols-1 md:grid-cols-2 items-center justify-center gap-y-4 md:gap-5 p-4"
+            style={{ minHeight: "400px" }}
           >
-            <AnimatePresence mode="popLayout">
-              <Suspense
-                fallback={
-                  <>
-                    <div
-                      style={{
-                        boxShadow: `0 0 15px 2px ${textTheme}`,
-                      }}
-                      className={`rounded-xl overflow-hidden
-                   `}
-                    >
-                      <componentMap.picker
-                        theme={theme}
-                        setTheme={setTheme}
-                        textTheme={textTheme}
-                        setTextTheme={setTextTheme}
-                      />
-                      <componentMap.conversor
-                        theme={theme}
-                        textTheme={textTheme}
-                      />
-                    </div>
-                  </>
-                }
-              >
-                {componentsArray.map((component, i) => (
+            {mounted && (
+              <AnimatePresence mode="popLayout">
+                {componentsArray.map((component) => (
                   <motion.div
                     key={component.label}
                     layout
-                    style={{
-                      boxShadow: `0 0 15px 2px ${textTheme}`,
-                    }}
+                    style={{ boxShadow: `0 0 15px 2px ${textTheme}` }}
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
                     transition={{
                       layout: { type: "spring", stiffness: 300, damping: 25 },
-                      duration: 0.4,
-                      ease: "easeInOut",
+                      duration: 0.15,
+                      ease: "easeOut",
                     }}
                     className={`rounded-xl overflow-hidden ${
                       component.label === "apiTester" ||
@@ -211,19 +211,18 @@ export default function Page() {
                     />
                   </motion.div>
                 ))}
-              </Suspense>
-            </AnimatePresence>
-          </motion.div>
+              </AnimatePresence>
+            )}
+          </div>
         </div>
-        <Suspense fallback={null}>
-          <Footer
-            tabs={tabs}
-            textTheme={textTheme}
-            theme={theme}
-            setBackground={setBackground}
-            background={background}
-          />
-        </Suspense>
+
+        <Footer
+          tabs={tabs}
+          textTheme={textTheme}
+          theme={theme}
+          setBackground={setBackground}
+          background={background}
+        />
       </div>
 
       <Dialog onOpenChange={setAuthenticate} open={authenticate}>
@@ -238,15 +237,14 @@ export default function Page() {
           <AuthenticateForm theme={theme} textTheme={textTheme} />
         </DialogContent>
       </Dialog>
+
       <Toaster
         toastOptions={{
-          // Estilo general
           style: {
-            background: "#1e293b", // gris oscuro
-            color: "#f8fafc", // blanco
+            background: "#1e293b",
+            color: "#f8fafc",
             border: `1px solid ${theme}`,
           },
-          // Éxitos
           success: {
             style: {
               background: "black",
@@ -257,7 +255,6 @@ export default function Page() {
               secondary: "#fff",
             },
           },
-          // Errores
           error: {
             style: {
               background: "black",

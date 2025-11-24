@@ -134,7 +134,7 @@ export default function MenuSettings({
               className="text-white w-full bg-black border-2 border-white flex items-center justify-center gap-2 md:hidden"
               onClick={() => {
                 if (newMobileBackground === "") {
-                  setMobileBackground("/icono.png");
+                  setMobileBackground("/background.webp");
                 } else {
                   setMobileBackground(newMobileBackground);
                 }
