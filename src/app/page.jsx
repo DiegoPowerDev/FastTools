@@ -147,15 +147,17 @@ export default function Page() {
           />
         </Suspense>
         <div className="relative w-full flex-1 flex flex-col justify-center items-center">
-          <div className="w-screen h-screen absolute bg-black inset-0 flex justify-center items-center -z-10">
-            <img
-              src={background}
-              alt={background}
-              className="absolute inset-0 w-full max-w-screen h-full object-contain opacity-40 -z-10 select-none pointer-events-none"
-              fetchPriority="high"
-              style={{ aspectRatio: "16/9" }}
-            />
-          </div>
+          <div
+            aria-hidden="true"
+            style={{
+              backgroundImage: `url(${background})`,
+              backgroundSize: "contain",
+              backgroundPosition: "center",
+              backgroundRepeat: "no-repeat",
+              opacity: 0.4,
+            }}
+            className="fixed inset-0 -z-10 w-full h-full pointer-events-none select-none"
+          ></div>
 
           <motion.div
             layout
