@@ -7,7 +7,7 @@ import Image from "next/image";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 
-export default function Login({ theme, textTheme }) {
+export default function Login({ theme, textTheme, setAuthenticate }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
@@ -16,6 +16,7 @@ export default function Login({ theme, textTheme }) {
     login(email, password, async (res, msg) => {
       if (res.success) {
         toast.success("Login successful");
+        setAuthenticate(false);
         router.push("/welcome");
         if (msg === "LOGGED IN") {
           await handleLoginSuccess();

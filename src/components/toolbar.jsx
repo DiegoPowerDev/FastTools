@@ -163,7 +163,9 @@ function DroppableArea({ id, items, theme, textTheme }) {
   );
 }
 
-export default function Toolbar({ theme, setAuthenticate, textTheme }) {
+export default function Toolbar() {
+  const { theme, setAuthenticate, textTheme } = usePageStore();
+
   const {
     headerArea,
     toolbarArea,

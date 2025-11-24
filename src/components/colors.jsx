@@ -13,10 +13,7 @@ import {
   IconBrush,
   IconColorSwatch,
   IconDeviceFloppy,
-  IconImageInPicture,
-  IconPaint,
   IconPencil,
-  IconTex,
   IconTextColor,
 } from "@tabler/icons-react";
 import { Input } from "./ui/input";

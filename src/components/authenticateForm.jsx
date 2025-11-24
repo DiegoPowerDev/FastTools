@@ -7,14 +7,17 @@ import { Button } from "./ui/button";
 import { loginWithGoogle } from "@/firebase/auth";
 import toast from "react-hot-toast";
 import { IconBrandGoogle } from "@tabler/icons-react";
+import { usePageStore } from "@/store/PageStore";
 
-export default function AuthenticateForm({ theme, textTheme }) {
+export default function AuthenticateForm() {
+  const { theme, textTheme, setAuthenticate } = usePageStore();
   const [modo, setModo] = useState("login");
 
   const handleGoogleLogin = () => {
     loginWithGoogle((res) => {
       if (res.success) {
         toast.success("Sesión iniciada con Google");
+        setAuthenticate(false);
       } else {
         toast.error(res.error.message);
       }
@@ -62,9 +65,19 @@ export default function AuthenticateForm({ theme, textTheme }) {
         </Button>
       </div>
       <div className="flex-1 flex flex-col items-center justify-center ">
-        {modo === "login" && <Login theme={theme} textTheme={textTheme} />}
+        {modo === "login" && (
+          <Login
+            theme={theme}
+            textTheme={textTheme}
+            setAuthenticate={setAuthenticate}
+          />
+        )}
         {modo === "register" && (
-          <Register theme={theme} textTheme={textTheme} />
+          <Register
+            theme={theme}
+            textTheme={textTheme}
+            setAuthenticate={setAuthenticate}
+          />
         )}
         {modo === "google" && (
           <div>

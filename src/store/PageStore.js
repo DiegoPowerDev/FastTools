@@ -6,6 +6,7 @@ import { useStore } from "zustand";
 export const pageStore = createStore(
   persist(
     (set, get) => ({
+      authenticate: false,
       background: "/background.webp",
       theme: "#b91c1c",
       textTheme: "#fafafa",
@@ -206,6 +207,10 @@ export const pageStore = createStore(
       setSocketApi: (socketApi) => {
         set({ socketApi });
       },
+      setAuthenticate: () =>
+        set((state) => ({
+          authenticate: !state.authenticate,
+        })),
       setText: (text) => set({ text: text }),
       setTitle: (title) => set({ title: title }),
       setBackground: (background) => {
