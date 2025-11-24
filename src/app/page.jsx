@@ -1,9 +1,6 @@
 import { Toaster } from "react-hot-toast";
 import FirebaseAuthWatcher from "@/components/FirebaseAuthWatcher";
 import PageStoreProvider from "@/components/PageStoreProvider";
-import LocalTable from "@/components/LocalTable";
-import Footer from "@/components/footer";
-import Toolbar from "@/components/toolbar";
 import BackgroundImage from "@/components/backgroundImage";
 import AuthDialog from "@/components/authDialog";
 
@@ -25,7 +22,7 @@ export default function Page() {
           {/* <LocalTable /> */}
         </div>
 
-        <Footer />
+        {/* <Footer /> */}
       </div>
 
       {/* <Toaster
