@@ -1,6 +1,5 @@
 import BackgroundImage from "@/components/backgroundImage";
 import AuthDialog from "@/components/authDialog";
-import PageStoreProvider from "@/components/PageStoreProvider";
 import Footer from "@/components/footer";
 
 export default function Page() {
@@ -22,7 +21,7 @@ export default function Page() {
           {/* <LocalTable /> */}
         </div>
 
-        {/* <Footer /> */}
+        <Footer />
       </div>
 
       {/* <Toaster
