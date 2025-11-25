@@ -56,7 +56,10 @@ export default function Colors({
         Copied <b>#{color.color.toUpperCase()}</b>
         <div
           className="h-4 w-4"
-          style={{ backgroundColor: `#${color.color}` }}
+          style={{
+            backgroundColor: `#${color.color}`,
+            border: `1px solid ${textTheme}`,
+          }}
         ></div>
       </span>
     ));
@@ -315,26 +318,26 @@ function Color({ color, theme, editable, textTheme }) {
       }}
       className={`${
         (color.color || editable) && "cursor-pointer"
-      } w-full h-12 flex text-white items-center gap-4 p-2 rounded-xl border-2 border-transparent`}
+      } w-full h-12 flex text-white items-center gap-1 p-2 rounded-xl border-2 border-transparent`}
     >
       <div
         style={{
           backgroundColor: color.color && color.nombre ? `#${color.color}` : "",
-          border: color.color || editable ? `1px solid ${theme}` : "none",
+          border: color.color
+            ? `1px solid ${textTheme}`
+            : editable
+            ? `1px solid ${textTheme}`
+            : "none",
         }}
-        className="h-full w-12 rounded flex-shrink-0"
+        className="h-8 w-8 rounded flex-shrink-0"
       ></div>
-      <div
-        style={{ color: textTheme }}
-        className="w-full h-full flex items-center"
+
+      <h1
+        style={{ color: textTheme, textShadow: `0 0 15px ${theme}` }}
+        className="flex-1 text-sm font-bold truncate"
       >
-        <h1
-          style={{ textShadow: `0 0 15px ${theme}` }}
-          className="font-bold truncate"
-        >
-          {color.nombre}
-        </h1>
-      </div>
+        {color.nombre}
+      </h1>
     </div>
   );
 }

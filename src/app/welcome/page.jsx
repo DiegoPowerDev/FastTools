@@ -7,9 +7,9 @@ import useUserStore from "@/store/userStore";
 import UserFooter from "@/components/footer/UserFooter";
 import UserTable from "@/components/tables/UserTable";
 import FireToolBar from "@/components/toolbars/fireToolBar";
-import ToasterClient from "@/components/toast/ToasterClient";
 import UserBackgroundImage from "@/components/background/UserBackground";
 import { IconRocket } from "@tabler/icons-react";
+import UserToasterClient from "@/components/toast/UserToasterClient";
 
 export default function Page() {
   const { setUser } = useUserStore();
@@ -73,7 +73,7 @@ export default function Page() {
           </>
         )}
       </div>
-      <ToasterClient />
+      <UserToasterClient />
     </>
   );
 }

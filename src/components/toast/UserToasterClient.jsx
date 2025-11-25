@@ -1,10 +1,10 @@
 "use client";
 
 import { Toaster } from "react-hot-toast";
-import { usePageStore } from "@/store/PageStore";
+import { useFireStore } from "@/store/fireStore";
 
-export default function ToasterClient() {
-  const { theme } = usePageStore();
+export default function UserToasterClient() {
+  const { textTheme, theme } = useFireStore();
 
   return (
     <Toaster
@@ -12,7 +12,7 @@ export default function ToasterClient() {
         style: {
           background: "black",
           color: "#fafafa",
-          border: `1px solid ${theme}`,
+          border: `1px solid ${textTheme}`,
         },
         success: {
           style: { background: "black", color: "white" },
