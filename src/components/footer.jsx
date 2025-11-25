@@ -1,13 +1,12 @@
 "use client";
 import { usePageStore } from "@/store/PageStore";
-import { AnimatePresence, motion } from "framer-motion";
+import { motion } from "framer-motion";
 import React from "react";
 
 export default function Footer() {
-  const showFooter = usePageStore((s) => s.tabs.header);
-  const textTheme = usePageStore((s) => s.textTheme);
+  const { tabs, textTheme } = usePageStore();
 
-  if (!showFooter) return null;
+  if (!tabs.header) return null;
 
   return (
     <motion.div
