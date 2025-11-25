@@ -1,6 +1,7 @@
 import BackgroundImage from "@/components/backgroundImage";
 import AuthDialog from "@/components/authDialog";
 import PageStoreProvider from "@/components/PageStoreProvider";
+import Footer from "@/components/footer";
 
 export default function Page() {
   return (
