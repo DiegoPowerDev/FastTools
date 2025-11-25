@@ -20,6 +20,7 @@ export default function Links({ links, setLinks, theme, textTheme }) {
   const [link, setLink] = useState("");
   const [nombre, setNombre] = useState("");
   const [icono, setIcono] = useState("");
+  const [isValid, setIsValid] = useState(true);
   const groups = [];
   for (let i = 0; i < links.length; i += 8) {
     groups.push(links.slice(i, i + 8));
@@ -28,7 +29,9 @@ export default function Links({ links, setLinks, theme, textTheme }) {
   for (let i = 0; i < links.length; i += 4) {
     groupsMobile.push(links.slice(i, i + 4));
   }
-
+  useEffect(() => {
+    setIsValid(true);
+  }, [icono]);
   useEffect(() => {
     const scrollContainer = scrollRef.current;
     if (!scrollContainer) return;
@@ -162,32 +165,33 @@ export default function Links({ links, setLinks, theme, textTheme }) {
       <Dialog onOpenChange={setEditForm} open={editForm}>
         <DialogContent
           style={{ color: textTheme }}
-          className="w-full bg-black border-white border-2 text-white overflow-hidden"
+          className="w-full h-fit bg-black border-white border-2 text-white overflow-hidden "
         >
-          <DialogTitle className="font-bold flex justify-center items-center">
+          <DialogTitle className="font-bold flex justify-center items-center pt-2">
             EDIT LINKS
           </DialogTitle>
           <DialogDescription className="hidden">
             Cuadro de edicion de Links
           </DialogDescription>
-          <div className="grid grid-cols-1 grid-rows-3 gap-8  p-4 h-full">
-            <div className="flex flex-col gap-2">
-              <label className="font-bold" htmlFor="icono">
-                ICON
+          <div className="flex flex-col gap-4  p-4 h-full">
+            <div className="flex w-full h-full items-center gap-4">
+              <label className="font-bold" htmlFor="color">
+                URL
               </label>
+
               <Input
-                id="icono"
+                id="link"
+                className="p-2 w-full rounded placeholder:opacity-40"
                 type="text"
-                className="p-2 rounded placeholder:text-gray-500  placeholder:opacity-40"
-                placeholder="URL"
-                value={icono}
+                placeholder={links[id].link || "URL"}
+                value={link}
                 onChange={(e) => {
-                  const icono = e.target.value;
-                  setIcono(icono);
+                  const link = e.target.value;
+                  setLink(link);
                 }}
               />
             </div>
-            <div className="flex flex-col gap-2">
+            <div className="flex w-full h-full items-center gap-4">
               <label className="font-bold" htmlFor="nombre">
                 NAME
               </label>
@@ -203,26 +207,41 @@ export default function Links({ links, setLinks, theme, textTheme }) {
                 }}
               />
             </div>
-            <div className="flex flex-col gap-2">
-              <label className="font-bold" htmlFor="color">
-                LINK
-              </label>
-              <div className="w-full h-full flex gap-4">
-                <Input
-                  id="link"
-                  className="p-2 w-full rounded placeholder:opacity-40"
-                  type="text"
-                  placeholder={links[id].link || ""}
-                  value={link}
-                  onChange={(e) => {
-                    const link = e.target.value;
-                    setLink(link);
-                  }}
-                />
+            <div className="flex flex-col gap-2 items-center justify-center">
+              <div className="w-full h-full flex flex-col justify-center gap-4">
+                <div className="w-full h-full flex items-center justify-center">
+                  <div className="h-16 w-16 border-2 rounded-full flex items-center justify-center">
+                    {icono && isValid && (
+                      <img
+                        src={icono}
+                        alt="nuevo icono"
+                        className="h-10 w-10"
+                        onError={() => setIsValid(false)} // si falla → no mostrar
+                        onLoad={() => setIsValid(true)} // si carga → mostrar
+                      />
+                    )}
+                  </div>
+                </div>
+                <div className="flex w-full h-full items-center gap-4">
+                  <label className="font-bold" htmlFor="icono">
+                    ICON
+                  </label>
+                  <Input
+                    id="icono"
+                    type="text"
+                    className="p-2 rounded placeholder:text-gray-500  placeholder:opacity-40"
+                    placeholder="ICON URL"
+                    value={icono}
+                    onChange={(e) => {
+                      const icono = e.target.value;
+                      setIcono(icono);
+                    }}
+                  />
+                </div>
               </div>
             </div>
 
-            <div className="w-full h-full flex justify-center items-center gap-4">
+            <div className="w-full h-full flex justify-center items-center pt-4 gap-4">
               <Button
                 variant="destructive"
                 onClick={() => {
