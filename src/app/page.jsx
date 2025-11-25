@@ -22,7 +22,7 @@ export default function Page() {
           {/* <LocalTable /> */}
         </div>
 
-        <Footer />
+        {/* <Footer /> */}
       </div>
 
       {/* <Toaster
