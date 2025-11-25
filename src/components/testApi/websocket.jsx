@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import io from "socket.io-client";
-import styles from "../enlaces.module.css";
+import styles from "../style.module.css";
 
 export default function Websocket({
   theme,

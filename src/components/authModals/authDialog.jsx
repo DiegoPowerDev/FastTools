@@ -8,7 +8,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { usePageStore } from "@/store/PageStore";
-import AuthenticateForm from "./authenticateForm";
+import AuthenticateForm from "../authModals/authenticateForm";
 
 export default function AuthDialog() {
   const { authenticate, setAuthenticate, theme, textTheme } = usePageStore();

@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import Login from "./login";
 import Register from "./register";
-import { Button } from "./ui/button";
+import { Button } from "../ui/button";
 import { loginWithGoogle } from "@/firebase/auth";
 import toast from "react-hot-toast";
 import { IconBrandGoogle } from "@tabler/icons-react";

@@ -7,10 +7,10 @@ import {
 } from "@/components/ui/dialog";
 import { Toaster } from "react-hot-toast";
 import { IconDeviceFloppy, IconPencil } from "@tabler/icons-react";
-import styles from "./enlaces.module.css";
+import styles from "../style.module.css";
 import { useRef, useEffect, useState } from "react";
-import { Input } from "./ui/input";
-import { Button } from "./ui/button";
+import { Input } from "../ui/input";
+import { Button } from "../ui/button";
 
 export default function Links({ links, setLinks, theme, textTheme }) {
   const scrollRef = useRef(null);

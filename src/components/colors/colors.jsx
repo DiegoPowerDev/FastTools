@@ -7,7 +7,7 @@ import {
   DialogDescription,
   DialogTitle,
 } from "@/components/ui/dialog";
-import styles from "./enlaces.module.css";
+import styles from "../style.module.css";
 import { useRef, useEffect, useState } from "react";
 import {
   IconBrush,
@@ -16,8 +16,8 @@ import {
   IconPencil,
   IconTextColor,
 } from "@tabler/icons-react";
-import { Input } from "./ui/input";
-import { Button } from "./ui/button";
+import { Input } from "../ui/input";
+import { Button } from "../ui/button";
 
 export default function Colors({
   colors,

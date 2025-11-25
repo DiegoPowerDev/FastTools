@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import { Input } from "./ui/input";
+import { Input } from "../ui/input";
 
 const Calculator = ({ theme, textTheme }) => {
   const [input, setInput] = useState(""); // Estado para el input del usuario

@@ -17,7 +17,7 @@ import {
 import { useState } from "react";
 import toast from "react-hot-toast";
 import * as jose from "jose";
-import styles from "../enlaces.module.css";
+import styles from "../style.module.css";
 import { DialogClose } from "@radix-ui/react-dialog";
 
 export default function JWTVerifier({ theme, textTheme }) {

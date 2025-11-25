@@ -1,5 +1,4 @@
 "use client";
-
 import {
   Dialog,
   DialogContent,
@@ -8,7 +7,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { usePageStore } from "@/store/PageStore";
+
+import { fireStore, useFireStore } from "@/store/fireStore";
 import {
   DndContext,
   PointerSensor,
@@ -41,12 +41,15 @@ import {
   IconQrcode,
   IconColorPicker,
   IconRocket,
-  IconCloud,
+  IconDoor,
   IconSettings,
 } from "@tabler/icons-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
-import MenuSettingsBasic from "./MenuSettingsBasic";
+import MenuSettings from "../menuSettings/MenuSettings";
+import { logout } from "@/firebase/auth";
+import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
 
 // === Icon Map ===
 const iconMap = {
@@ -79,20 +82,21 @@ function SortableButton({ id, label, theme, textTheme }) {
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
+    boxShadow: `0 0 15px 2px ${textTheme}`,
+    color: textTheme,
     backgroundColor: theme,
     color: textTheme,
-    boxShadow: `0px 0px 15px 2px ${theme}`,
-    opacity: isDragging ? 0.5 : 1,
+    opacity: isDragging ? 0 : 1,
   };
 
   return (
     <div
       ref={setNodeRef}
       style={style}
+      aria-label={label}
       {...listeners}
       {...attributes}
-      aria-label={label}
-      className={`relative h-14 w-14 p-2 border-2 border-black rounded flex justify-center items-center cursor-grab active:cursor-grabbing touch-none ${
+      className={`relative h-14 w-14 p-2  rounded flex justify-center items-center cursor-grab active:cursor-grabbing touch-none ${
         label === "recorder" || label === "picker" ? "sm:block hidden" : ""
       }`}
     >
@@ -107,16 +111,13 @@ function ButtonOverlay({ label, theme, textTheme }) {
   return (
     <div
       style={{
-        backgroundColor: theme,
+        boxShadow: `0 0 15px 2px ${textTheme}`,
         color: textTheme,
-        boxShadow: `0px 0px 10px 2px ${theme}`,
+        backgroundColor: theme,
       }}
-      className="relative h-14 w-14 p-2 border-2 border-black rounded flex justify-center items-center cursor-grabbing"
+      className="relative h-14 w-14 rounded flex justify-center items-center cursor-grabbing"
     >
-      <Icon
-        style={{ boxShadow: `0 0 15px 2px ${textTheme}`, color: textTheme }}
-        size={40}
-      />
+      <Icon size={40} />
     </div>
   );
 }
@@ -163,10 +164,10 @@ function DroppableArea({ id, items, theme, textTheme }) {
   );
 }
 
-export default function Toolbar() {
-  const { theme, setAuthenticate, textTheme } = usePageStore();
-
+export default function FireToolBar() {
   const {
+    theme,
+    textTheme,
     headerArea,
     toolbarArea,
     moveButton,
@@ -178,15 +179,29 @@ export default function Toolbar() {
     setTextTheme,
     setBackground,
     background,
-  } = usePageStore();
+    mobileBackground,
+    setMobileBackground,
+  } = useFireStore();
 
+  const router = useRouter();
+  const getOut = () => {
+    fireStore.getState().resetStore();
+    logout();
+    toast.success("Session closed");
+    router.push("/");
+  };
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
         distance: 8,
       },
     }),
-    useSensor(TouchSensor)
+    useSensor(TouchSensor, {
+      activationConstraint: {
+        delay: 200,
+        tolerance: 8,
+      },
+    })
   );
   const [mounted, setMounted] = useState(false);
   const [activeId, setActiveId] = useState(null);
@@ -242,7 +257,6 @@ export default function Toolbar() {
   };
 
   const handleDragStart = (event) => {
-    console.log("Drag started", event);
     setActiveId(event.active.id);
   };
 
@@ -321,7 +335,7 @@ export default function Toolbar() {
             >
               <div className="w-24 flex h-full items-center justify-center p-2">
                 <Dialog>
-                  <DialogTrigger aria-label="Settings">
+                  <DialogTrigger aria-label="Abrir menú">
                     <motion.div
                       whileHover={{
                         rotate: [0, 360],
@@ -346,13 +360,15 @@ export default function Toolbar() {
                       </DialogTitle>
                       <DialogDescription></DialogDescription>
                     </DialogHeader>
-                    <MenuSettingsBasic
+                    <MenuSettings
                       setBackground={setBackground}
                       background={background}
                       textTheme={textTheme}
                       theme={theme}
                       setTheme={setTheme}
                       setTextTheme={setTextTheme}
+                      mobileBackground={mobileBackground}
+                      setMobileBackground={setMobileBackground}
                     />
                   </DialogContent>
                 </Dialog>
@@ -370,7 +386,7 @@ export default function Toolbar() {
                 className="w-screen flex flex-col items-center justify-center "
               >
                 <span
-                  style={{ textShadow: `0 0 15px  ${textTheme}` }}
+                  style={{ textShadow: `0 0 20px ${textTheme}` }}
                   className="text-5xl font-bold text-center"
                 >
                   FAST TOOLS
@@ -382,7 +398,7 @@ export default function Toolbar() {
                   theme={theme}
                   textTheme={textTheme}
                 />
-              </motion.div>{" "}
+              </motion.div>
               <div className="w-24 flex h-full items-center justify-center p-2"></div>
             </div>
           </AnimatePresence>
@@ -391,11 +407,20 @@ export default function Toolbar() {
 
       {/* TOOLBAR AREA */}
       <div className=" w-screen flex justify-center items-center gap-2 py-2 px-8">
-        <div
+        <motion.div
+          animate={{
+            x: [1, -1, 1, -1, 1, 0],
+            y: [0, -1, 1, -1, 1, 0],
+          }}
+          transition={{
+            duration: 0.1,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
           style={{
+            boxShadow: `0 0 15px 5px ${textTheme}`,
             backgroundColor: theme,
             color: textTheme,
-            boxShadow: `0 0 15px 5px ${textTheme}`,
           }}
           onClick={() => {
             setTabs("header");
@@ -405,7 +430,7 @@ export default function Toolbar() {
           }`}
         >
           <IconRocket size={40} />
-        </div>
+        </motion.div>
         <div className="flex-1">
           <DroppableArea
             id="toolbarArea"
@@ -416,11 +441,11 @@ export default function Toolbar() {
         </div>
         <div
           onClick={() => {
-            setAuthenticate(true);
+            getOut();
           }}
           className="hover:scale-125 duration-300 flex justify-end pr-4 cursor-pointer"
         >
-          <IconCloud color={theme} size={40} />
+          <IconDoor color={textTheme} size={40} />
         </div>
       </div>
 

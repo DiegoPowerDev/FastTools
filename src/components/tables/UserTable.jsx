@@ -2,8 +2,8 @@
 import { AnimatePresence, motion } from "framer-motion";
 import dynamic from "next/dynamic";
 
-import { usePageStore } from "@/store/PageStore";
 import React from "react";
+import { useFireStore } from "@/store/fireStore";
 function ComponentSkeleton({ height }) {
   return (
     <div
@@ -17,35 +17,35 @@ const componentMap = {
     ssr: false,
     loading: () => <ComponentSkeleton height="350px" />,
   }),
-  calculator: dynamic(() => import("@/components/calculator"), {
+  calculator: dynamic(() => import("@/components/calculator/calculator"), {
     ssr: false,
     loading: () => <ComponentSkeleton height="350px" />,
   }),
-  recorder: dynamic(() => import("@/components/recorder"), {
+  recorder: dynamic(() => import("@/components/recorder/recorder"), {
     ssr: false,
     loading: () => <ComponentSkeleton height="350px" />,
   }),
-  picker: dynamic(() => import("@/components/colorPicker"), {
+  picker: dynamic(() => import("@/components/colorPicker/colorPicker"), {
     ssr: false,
     loading: () => <ComponentSkeleton height="350px" />,
   }),
-  conversor: dynamic(() => import("@/components/Conversor"), {
+  conversor: dynamic(() => import("@/components/conversor/Conversor"), {
     ssr: false,
     loading: () => <ComponentSkeleton height="350px" />,
   }),
-  links: dynamic(() => import("@/components/enlaces"), {
+  links: dynamic(() => import("@/components/links/enlaces"), {
     ssr: false,
     loading: () => <ComponentSkeleton height="350px" />,
   }),
-  colors: dynamic(() => import("@/components/colors"), {
+  colors: dynamic(() => import("@/components/colors/colors"), {
     ssr: false,
     loading: () => <ComponentSkeleton height="350px" />,
   }),
-  editor: dynamic(() => import("@/components/ImageCropper"), {
+  editor: dynamic(() => import("@/components/imageCropper/ImageCropper"), {
     ssr: false,
     loading: () => <ComponentSkeleton height="350px" />,
   }),
-  qr: dynamic(() => import("@/components/QRGenerator"), {
+  qr: dynamic(() => import("@/components/qrgenerator/QRGenerator"), {
     ssr: false,
     loading: () => <ComponentSkeleton height="350px" />,
   }),
@@ -53,12 +53,12 @@ const componentMap = {
     ssr: false,
     loading: () => <ComponentSkeleton height="500px" />,
   }),
-  jwt: dynamic(() => import("@/components/hasher"), {
+  jwt: dynamic(() => import("@/components/hasher/hasher"), {
     ssr: false,
     loading: () => <ComponentSkeleton height="500px" />,
   }),
 };
-export default function LocalTable() {
+export default function UserTable() {
   const {
     tabs,
     colors,
@@ -76,9 +76,7 @@ export default function LocalTable() {
     setTheme,
     setTextTheme,
     textTheme,
-    background,
-    setBackground,
-  } = usePageStore();
+  } = useFireStore();
 
   const componentsArray = toolbarArea.map((item) => ({
     id: item.id,

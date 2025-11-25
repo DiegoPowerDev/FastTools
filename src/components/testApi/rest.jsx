@@ -6,7 +6,7 @@ import {
   SelectItem,
   SelectValue,
 } from "@/components/ui/select";
-import styles from "../enlaces.module.css";
+import styles from "../style.module.css";
 import { motion } from "framer-motion";
 import toast, { Toaster } from "react-hot-toast";
 import {

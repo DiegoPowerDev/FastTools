@@ -5,7 +5,7 @@ import {
   IconDeviceFloppy,
 } from "@tabler/icons-react";
 import React, { useRef, useState, useEffect } from "react";
-import { Button } from "./ui/button";
+import { Button } from "../ui/button";
 import toast from "react-hot-toast";
 import {
   Select,

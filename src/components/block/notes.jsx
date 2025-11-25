@@ -24,7 +24,7 @@ import {
   IconNote,
   IconPencil,
 } from "@tabler/icons-react";
-import styles from "../enlaces.module.css";
+import styles from "../style.module.css";
 import { useRef, useEffect, useState } from "react";
 import { Textarea } from "../ui/textarea";
 import { Button } from "../ui/button";

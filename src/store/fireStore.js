@@ -12,6 +12,7 @@ import { getAuth } from "firebase/auth";
 const db = getFirestore(app);
 
 const initialState = {
+  uid: null,
   background: "/background.webp",
   mobileBackground: "/background.webp",
   theme: "#b91c1c",

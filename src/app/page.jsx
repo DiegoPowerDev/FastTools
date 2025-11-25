@@ -1,10 +1,10 @@
-import BackgroundImage from "@/components/backgroundImage";
-import AuthDialog from "@/components/authDialog";
-import Footer from "@/components/footer";
-import ToasterClient from "@/components/ToasterClient";
-import Toolbar from "@/components/toolbar";
-import LocalTable from "@/components/LocalTable";
+import AuthDialog from "@/components/authModals/authDialog";
+import BackgroundImage from "@/components/background/backgroundImage";
 import FirebaseAuthWatcher from "@/components/FirebaseAuthWatcher";
+import Footer from "@/components/footer/footer";
+import LocalTable from "@/components/tables/LocalTable";
+import ToasterClient from "@/components/toast/ToasterClient";
+import Toolbar from "@/components/toolbars/toolbar";
 
 export default function Page() {
   return (

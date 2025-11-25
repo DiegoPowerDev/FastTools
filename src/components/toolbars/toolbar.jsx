@@ -1,4 +1,5 @@
 "use client";
+
 import {
   Dialog,
   DialogContent,
@@ -7,8 +8,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-
-import { useFireStore } from "@/store/fireStore";
+import { usePageStore } from "@/store/PageStore";
 import {
   DndContext,
   PointerSensor,
@@ -41,12 +41,12 @@ import {
   IconQrcode,
   IconColorPicker,
   IconRocket,
-  IconDoor,
+  IconCloud,
   IconSettings,
 } from "@tabler/icons-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
-import MenuSettings from "./MenuSettings";
+import MenuSettingsBasic from "../menuSettings/MenuSettingsBasic";
 
 // === Icon Map ===
 const iconMap = {
@@ -79,21 +79,20 @@ function SortableButton({ id, label, theme, textTheme }) {
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
-    boxShadow: `0 0 15px 2px ${textTheme}`,
-    color: textTheme,
     backgroundColor: theme,
     color: textTheme,
-    opacity: isDragging ? 0 : 1,
+    boxShadow: `0px 0px 15px 2px ${theme}`,
+    opacity: isDragging ? 0.5 : 1,
   };
 
   return (
     <div
       ref={setNodeRef}
       style={style}
-      aria-label={label}
       {...listeners}
       {...attributes}
-      className={`relative h-14 w-14 p-2  rounded flex justify-center items-center cursor-grab active:cursor-grabbing touch-none ${
+      aria-label={label}
+      className={`relative h-14 w-14 p-2 border-2 border-black rounded flex justify-center items-center cursor-grab active:cursor-grabbing touch-none ${
         label === "recorder" || label === "picker" ? "sm:block hidden" : ""
       }`}
     >
@@ -108,13 +107,16 @@ function ButtonOverlay({ label, theme, textTheme }) {
   return (
     <div
       style={{
-        boxShadow: `0 0 15px 2px ${textTheme}`,
-        color: textTheme,
         backgroundColor: theme,
+        color: textTheme,
+        boxShadow: `0px 0px 10px 2px ${theme}`,
       }}
-      className="relative h-14 w-14 rounded flex justify-center items-center cursor-grabbing"
+      className="relative h-14 w-14 p-2 border-2 border-black rounded flex justify-center items-center cursor-grabbing"
     >
-      <Icon size={40} />
+      <Icon
+        style={{ boxShadow: `0 0 15px 2px ${textTheme}`, color: textTheme }}
+        size={40}
+      />
     </div>
   );
 }
@@ -161,16 +163,11 @@ function DroppableArea({ id, items, theme, textTheme }) {
   );
 }
 
-export default function FireToolBar({
-  theme,
-  setTheme,
-  getOut,
-  setTextTheme,
-  textTheme,
-  setBackground,
-  background,
-}) {
+export default function Toolbar() {
   const {
+    theme,
+    setAuthenticate,
+    textTheme,
     headerArea,
     toolbarArea,
     moveButton,
@@ -178,9 +175,11 @@ export default function FireToolBar({
     setTabs,
     setHeaderArea,
     setToolbarArea,
-    mobileBackground,
-    setMobileBackground,
-  } = useFireStore();
+    setTheme,
+    setTextTheme,
+    setBackground,
+    background,
+  } = usePageStore();
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -188,12 +187,7 @@ export default function FireToolBar({
         distance: 8,
       },
     }),
-    useSensor(TouchSensor, {
-      activationConstraint: {
-        delay: 200,
-        tolerance: 8,
-      },
-    })
+    useSensor(TouchSensor)
   );
   const [mounted, setMounted] = useState(false);
   const [activeId, setActiveId] = useState(null);
@@ -249,6 +243,7 @@ export default function FireToolBar({
   };
 
   const handleDragStart = (event) => {
+    console.log("Drag started", event);
     setActiveId(event.active.id);
   };
 
@@ -327,7 +322,7 @@ export default function FireToolBar({
             >
               <div className="w-24 flex h-full items-center justify-center p-2">
                 <Dialog>
-                  <DialogTrigger aria-label="Abrir menú">
+                  <DialogTrigger aria-label="Settings">
                     <motion.div
                       whileHover={{
                         rotate: [0, 360],
@@ -352,15 +347,13 @@ export default function FireToolBar({
                       </DialogTitle>
                       <DialogDescription></DialogDescription>
                     </DialogHeader>
-                    <MenuSettings
+                    <MenuSettingsBasic
                       setBackground={setBackground}
                       background={background}
                       textTheme={textTheme}
                       theme={theme}
                       setTheme={setTheme}
                       setTextTheme={setTextTheme}
-                      mobileBackground={mobileBackground}
-                      setMobileBackground={setMobileBackground}
                     />
                   </DialogContent>
                 </Dialog>
@@ -378,7 +371,7 @@ export default function FireToolBar({
                 className="w-screen flex flex-col items-center justify-center "
               >
                 <span
-                  style={{ textShadow: `0 0 20px ${textTheme}` }}
+                  style={{ textShadow: `0 0 15px  ${textTheme}` }}
                   className="text-5xl font-bold text-center"
                 >
                   FAST TOOLS
@@ -390,7 +383,7 @@ export default function FireToolBar({
                   theme={theme}
                   textTheme={textTheme}
                 />
-              </motion.div>
+              </motion.div>{" "}
               <div className="w-24 flex h-full items-center justify-center p-2"></div>
             </div>
           </AnimatePresence>
@@ -399,20 +392,11 @@ export default function FireToolBar({
 
       {/* TOOLBAR AREA */}
       <div className=" w-screen flex justify-center items-center gap-2 py-2 px-8">
-        <motion.div
-          animate={{
-            x: [1, -1, 1, -1, 1, 0],
-            y: [0, -1, 1, -1, 1, 0],
-          }}
-          transition={{
-            duration: 0.1,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
+        <div
           style={{
-            boxShadow: `0 0 15px 5px ${textTheme}`,
             backgroundColor: theme,
             color: textTheme,
+            boxShadow: `0 0 15px 5px ${textTheme}`,
           }}
           onClick={() => {
             setTabs("header");
@@ -422,7 +406,7 @@ export default function FireToolBar({
           }`}
         >
           <IconRocket size={40} />
-        </motion.div>
+        </div>
         <div className="flex-1">
           <DroppableArea
             id="toolbarArea"
@@ -433,11 +417,11 @@ export default function FireToolBar({
         </div>
         <div
           onClick={() => {
-            getOut();
+            setAuthenticate(true);
           }}
           className="hover:scale-125 duration-300 flex justify-end pr-4 cursor-pointer"
         >
-          <IconDoor color={textTheme} size={40} />
+          <IconCloud color={theme} size={40} />
         </div>
       </div>
 

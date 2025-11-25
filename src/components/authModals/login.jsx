@@ -1,8 +1,8 @@
 "use client";
 import React, { useState } from "react";
-import { Input } from "./ui/input";
-import { Button } from "./ui/button";
-import { login } from "../firebase/auth";
+import { Input } from "../ui/input";
+import { Button } from "../ui/button";
+import { login } from "../../firebase/auth";
 import Image from "next/image";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";

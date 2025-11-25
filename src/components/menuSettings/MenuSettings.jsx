@@ -1,19 +1,22 @@
 import React, { useEffect, useState } from "react";
-import { Button } from "./ui/button";
+import { Button } from "../ui/button";
 import { IconColorSwatch, IconPhoto, IconTextColor } from "@tabler/icons-react";
-import { Input } from "./ui/input";
+import { Input } from "../ui/input";
 
-export default function MenuSettingsBasic({
+export default function MenuSettings({
   theme,
   setTheme,
   textTheme,
   setTextTheme,
   setBackground,
   background,
+  mobileBackground,
+  setMobileBackground,
 }) {
   const [newTheme, setNewTheme] = useState("");
   const [newTextTheme, setNewTextTheme] = useState("");
-  const [newBackground, setNewBackground] = useState("/background.webp");
+  const [newBackground, setNewBackground] = useState("/icono.png");
+  const [newMobileBackground, setNewMobileBackground] = useState("/icono.png");
   const manageFormat = (color) => {
     if (color[0] === "#") {
       return color.slice(1, color.length);
@@ -24,6 +27,7 @@ export default function MenuSettingsBasic({
     setNewTheme(theme);
     setNewTextTheme(textTheme);
     setNewBackground(background);
+    setNewMobileBackground(mobileBackground);
   }, []);
 
   return (
@@ -86,26 +90,53 @@ export default function MenuSettingsBasic({
           </div>
         </div>
         <div className="w-full h-full flex flex-col items-center justify-center gap-2">
-          <img
-            src={background}
-            alt={"New Background"}
-            className="max-h-40 max-w-64 rounded "
-            fetchPriority="high"
-          />
+          <picture className="max-h-40 max-w-64 rounded ">
+            <source media="(max-width: 767px)" srcSet={newMobileBackground} />
+
+            <source media="(min-width: 768px)" srcSet={newBackground} />
+
+            {/* Fallback */}
+            <img
+              src={background}
+              alt={"New Background"}
+              className="max-h-40 max-w-64 rounded "
+              fetchPriority="high"
+            />
+          </picture>
 
           <div className="w-5/6">
             <Input
               value={newBackground}
               onChange={(e) => setNewBackground(e.target.value)}
+              className="md:block hidden"
             />
             <Button
               style={{ backgroundColor: theme, color: textTheme }}
-              className="text-white w-full bg-black border-2 border-white flex  items-center justify-center gap-2"
+              className="text-white w-full bg-black border-2 border-white md:flex hidden items-center justify-center gap-2"
               onClick={() => {
                 if (newBackground === "") {
                   setBackground("/icono.png");
                 } else {
                   setBackground(newBackground);
+                }
+              }}
+            >
+              <IconColorSwatch />
+              SET WALLPAPER
+            </Button>
+            <Input
+              value={newMobileBackground}
+              onChange={(e) => setNewMobileBackground(e.target.value)}
+              className="block md:hidden"
+            />
+            <Button
+              style={{ backgroundColor: theme, color: textTheme }}
+              className="text-white w-full bg-black border-2 border-white flex items-center justify-center gap-2 md:hidden"
+              onClick={() => {
+                if (newMobileBackground === "") {
+                  setMobileBackground("/background.webp");
+                } else {
+                  setMobileBackground(newMobileBackground);
                 }
               }}
             >

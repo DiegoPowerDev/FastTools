@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
-import JWTGenerator from "./hasher/JWTGenerator";
-import JWTVerifier from "./hasher/JWTVerifier";
+import JWTGenerator from "./JWTGenerator";
+import JWTVerifier from "./JWTVerifier";
 import { IconHash, IconZoomCode } from "@tabler/icons-react";
 
 export default function Hasher({ theme, textTheme }) {
