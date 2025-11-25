@@ -322,7 +322,7 @@ function Color({ color, theme, editable, textTheme }) {
           backgroundColor: color.color && color.nombre ? `#${color.color}` : "",
           border: color.color || editable ? `1px solid ${theme}` : "none",
         }}
-        className="h-full w-12 rounded"
+        className="h-full w-12 rounded flex-shrink-0"
       ></div>
       <div
         style={{ color: textTheme }}
