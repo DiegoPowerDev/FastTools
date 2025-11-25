@@ -1,30 +1,31 @@
 import BackgroundImage from "@/components/backgroundImage";
 import AuthDialog from "@/components/authDialog";
+import PageStoreProvider from "@/components/PageStoreProvider";
 
 export default function Page() {
   return (
     <>
-      {/* <PageStoreProvider> */}
-      <div
-        className={`flex w-full  flex-col min-h-dvh overflow-hidden  ${
-          process.env.NODE_ENV === "development" ? "debug-screens" : ""
-        }`}
-      >
-        {/* <Toolbar /> */}
+      <PageStoreProvider>
+        <div
+          className={`flex w-full  flex-col min-h-dvh overflow-hidden  ${
+            process.env.NODE_ENV === "development" ? "debug-screens" : ""
+          }`}
+        >
+          {/* <Toolbar /> */}
 
-        <div className="relative w-full flex-1 flex flex-col justify-center items-center">
-          <div className="w-screen h-screen absolute bg-black inset-0 flex justify-center items-center -z-10">
-            {/* <BackgroundImage /> */}
+          <div className="relative w-full flex-1 flex flex-col justify-center items-center">
+            <div className="w-screen h-screen absolute bg-black inset-0 flex justify-center items-center -z-10">
+              {/* <BackgroundImage /> */}
+            </div>
+            <div>probando</div>
+
+            {/* <LocalTable /> */}
           </div>
-          <div>probando</div>
 
-          {/* <LocalTable /> */}
+          {/* <Footer /> */}
         </div>
 
-        {/* <Footer /> */}
-      </div>
-
-      {/* <Toaster
+        {/* <Toaster
         toastOptions={{
           // Estilo general
           style: {
@@ -56,9 +57,9 @@ export default function Page() {
           },
         }}
       /> */}
-      {/* <AuthDialog /> */}
-      {/* <FirebaseAuthWatcher /> */}
-      {/* </PageStoreProvider> */}
+        {/* <AuthDialog /> */}
+        {/* <FirebaseAuthWatcher /> */}
+      </PageStoreProvider>
     </>
   );
 }
