@@ -210,7 +210,7 @@ export default function Links({ links, setLinks, theme, textTheme }) {
             <div className="flex flex-col gap-2 items-center justify-center">
               <div className="w-full h-full flex flex-col justify-center gap-4">
                 <div className="w-full h-full flex items-center justify-center">
-                  <div className="h-16 w-16 border-2 rounded-full flex items-center justify-center">
+                  <div className="h-16 w-16 flex items-center justify-center">
                     {icono && isValid && (
                       <img
                         src={icono}
