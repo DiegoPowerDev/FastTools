@@ -4,7 +4,7 @@ import { Toaster } from "react-hot-toast";
 import { usePageStore } from "@/store/PageStore";
 
 export default function ToasterClient() {
-  const theme = usePageStore((s) => s.theme);
+  const { theme } = usePageStore();
 
   return (
     <Toaster

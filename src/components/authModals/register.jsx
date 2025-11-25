@@ -8,7 +8,7 @@ import { register } from "../../firebase/auth";
 import Image from "next/image";
 import toast from "react-hot-toast";
 
-export default function Register({ theme, textTheme }) {
+export default function Register({ theme, textTheme, setAuthenticate }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -23,6 +23,7 @@ export default function Register({ theme, textTheme }) {
         return toast.error("The email is already in use");
       }
     });
+    setAuthenticate(false);
   };
 
   return (
