@@ -9,6 +9,7 @@ import UserTable from "@/components/tables/UserTable";
 import FireToolBar from "@/components/toolbars/fireToolBar";
 import ToasterClient from "@/components/toast/ToasterClient";
 import UserBackgroundImage from "@/components/background/UserBackground";
+import { IconRocket } from "@tabler/icons-react";
 
 export default function Page() {
   const { setUser } = useUserStore();
@@ -46,27 +47,32 @@ export default function Page() {
 
   return (
     <>
-      {!uid ? (
-        <div>Loading...</div>
-      ) : (
-        <div
-          className={`flex w-full flex-col min-h-dvh overflow-hidden ${
-            process.env.NODE_ENV === "development" ? "debug-screens" : ""
-          }`}
-        >
-          <FireToolBar />
-
-          <div className="relative w-full flex-1 flex flex-col justify-center items-center">
-            <div className="w-screen h-screen absolute bg-black inset-0 flex justify-center items-center -z-10">
-              <UserBackgroundImage />
+      <div
+        className={`flex w-full flex-col min-h-dvh overflow-hidden ${
+          process.env.NODE_ENV === "development" ? "debug-screens" : ""
+        }`}
+      >
+        {!uid ? (
+          <div className="h-screen w-full flex items-center justify-center bg-black">
+            <div className="w-40 h-40 border-8 border-red-800/20 border-t-red-800 rounded-full animate-spin">
+              <IconRocket color="red" size={80} />
             </div>
-
-            <UserTable />
           </div>
-          <UserFooter />
-        </div>
-      )}
+        ) : (
+          <>
+            <FireToolBar />
 
+            <div className="relative w-full flex-1 flex flex-col justify-center items-center">
+              <div className="w-screen h-screen absolute bg-black inset-0 flex justify-center items-center -z-10">
+                <UserBackgroundImage />
+              </div>
+
+              <UserTable />
+            </div>
+            <UserFooter />
+          </>
+        )}
+      </div>
       <ToasterClient />
     </>
   );
