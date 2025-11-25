@@ -291,7 +291,7 @@ function LinkItem({ link, theme, textTheme, editable }) {
       rel="noopener noreferrer"
       className="w-full h-12 flex bg-black items-center gap-4 rounded-xl duration-200"
     >
-      <div className="h-12 w-12 rounded-l-md flex items-center justify-center">
+      <div className="h-12 w-12 rounded-l-md flex items-center justify-center flex-shrink-0">
         {link.icono && (
           <img
             className="flex items-center rounded-xl p-2 justify-center"
@@ -300,7 +300,7 @@ function LinkItem({ link, theme, textTheme, editable }) {
           />
         )}
       </div>
-      <h1 className="font-medium">{link.nombre}</h1>
+      <h1 className="font-medium truncate ">{link.nombre}</h1>
     </div>
   );
 }

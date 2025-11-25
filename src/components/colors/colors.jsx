@@ -328,7 +328,10 @@ function Color({ color, theme, editable, textTheme }) {
         style={{ color: textTheme }}
         className="w-full h-full flex items-center"
       >
-        <h1 style={{ textShadow: `0 0 15px ${theme}` }} className="font-bold">
+        <h1
+          style={{ textShadow: `0 0 15px ${theme}` }}
+          className="font-bold truncate"
+        >
           {color.nombre}
         </h1>
       </div>
