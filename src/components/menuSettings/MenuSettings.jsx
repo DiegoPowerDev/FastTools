@@ -24,8 +24,6 @@ export default function MenuSettings() {
   const [newTheme, setNewTheme] = useState("");
   const [newTextTheme, setNewTextTheme] = useState("");
   const [editable, setEditable] = useState(false);
-  const [newBackground, setNewBackground] = useState("/icono.png");
-  const [newMobileBackground, setNewMobileBackground] = useState("/icono.png");
 
   const manageFormat = (color) => {
     if (color[0] === "#") {
@@ -37,8 +35,6 @@ export default function MenuSettings() {
   useEffect(() => {
     setNewTheme(theme);
     setNewTextTheme(textTheme);
-    setNewBackground(background);
-    setNewMobileBackground(mobileBackground);
   }, []);
 
   return (
@@ -117,30 +113,26 @@ export default function MenuSettings() {
               />
             </button>
           </div>
-          {loadingBackground ? (
-            <div>loadingBackground</div>
-          ) : (
-            <div className="w-full h-full grid md:grid-cols-4 md:grid-rows-3 grid-cols-2 place-content-center md:gap-2">
-              {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((e, i) => (
-                <div
-                  key={i}
-                  className="w-full h-full flex items-center justify-center cursor-pointer"
-                >
-                  <div className="w-full h-full flex items-center justify-center">
-                    <BackgroundImage
-                      textTheme={textTheme}
-                      image={images[e - 1]}
-                      setImages={setImages}
-                      modo={editable}
-                      slot={e}
-                      setBackground={setBackground}
-                      setMobileBackground={setMobileBackground}
-                    />
-                  </div>
+          <div className="w-full h-full grid md:grid-cols-4 md:grid-rows-3 grid-cols-2 place-content-center md:gap-2">
+            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((e, i) => (
+              <div
+                key={i}
+                className="w-full h-full flex items-center justify-center cursor-pointer"
+              >
+                <div className="w-full h-full flex items-center justify-center">
+                  <BackgroundImage
+                    textTheme={textTheme}
+                    image={images[e - 1]}
+                    setImages={setImages}
+                    modo={editable}
+                    slot={e}
+                    setBackground={setBackground}
+                    setMobileBackground={setMobileBackground}
+                  />
                 </div>
-              ))}
-            </div>
-          )}
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>
@@ -159,7 +151,7 @@ function BackgroundImage({
   const auth = getAuth();
   const uid = auth.currentUser?.uid;
 
-  const [localImage, setLocalImage] = useState(image); // 👈 importante
+  const [localImage, setLocalImage] = useState(image);
   const [uploading, setUploading] = useState(false);
 
   async function replaceImage(file) {
@@ -240,18 +232,16 @@ function BackgroundImage({
             modo ? "cursor-pointer" : ""
           }`}
         >
-          {localImage && (
-            <img
-              style={{
-                border: modo && `1px solid ${textTheme}`,
-                boxShadow: `0px 0px 1px ${textTheme}`,
-                opacity: uploading ? 0.5 : 1,
-              }}
-              src={localImage}
-              alt={`Image ${slot}`}
-              className="object-contain h-full w-full"
-            />
-          )}
+          <img
+            style={{
+              border: modo && `1px solid ${textTheme}`,
+              boxShadow: `0px 0px 1px ${textTheme}`,
+              opacity: uploading ? 0.5 : 1,
+            }}
+            src={localImage || "icono.png"}
+            alt={`Image ${slot}`}
+            className="object-contain h-full w-full"
+          />
 
           {uploading && (
             <div className="absolute inset-0 flex items-center justify-center">

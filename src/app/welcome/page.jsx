@@ -39,7 +39,6 @@ export default function Page() {
       if (firebaseUser) {
         setUser(firebaseUser);
         const unsubFirestore = loadUserData(uid);
-        console.log(firebaseUser.uid);
         loadImages(firebaseUser.uid);
         window.__UNSUB_FIRESTORE__ = unsubFirestore;
       } else {

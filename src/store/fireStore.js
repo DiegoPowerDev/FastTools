@@ -478,9 +478,6 @@ export const fireStore = createStore((set, get) => ({
   loadingBackground: true,
   setAllImages: (images) => {
     set({ images, loadingBackground: false });
-
-    // Si quieres ver el valor actualizado, léelo desde el store
-    console.log("loadingBackground:", get().loadingBackground);
   },
 
   setImages: (index, newUrl) => {
