@@ -1,4 +1,5 @@
 "use client";
+import React from "react";
 import {
   Dialog,
   DialogContent,
@@ -6,14 +7,9 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { usePageStore } from "@/store/PageStore";
-import AuthenticateForm from "../authModals/authenticateForm";
-
-export default function AuthDialog() {
-  const { authenticate, setAuthenticate, theme, textTheme } = usePageStore();
-
+export default function ModalBackgroundUser({ open, onOpenChange }) {
   return (
-    <Dialog onOpenChange={setAuthenticate} open={authenticate}>
+    <Dialog onOpenChange={onOpenChange} open={open}>
       <DialogContent
         style={{ color: theme, border: `1px solid ${theme}` }}
         className="bg-black flex flex-col h-[450px] w-full items-center"

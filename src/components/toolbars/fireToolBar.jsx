@@ -181,6 +181,8 @@ export default function FireToolBar() {
     background,
     mobileBackground,
     setMobileBackground,
+    images,
+    setImages,
   } = useFireStore();
 
   const router = useRouter();
@@ -337,6 +339,7 @@ export default function FireToolBar() {
                 <Dialog>
                   <DialogTrigger aria-label="Abrir menú">
                     <motion.div
+                      layout
                       whileHover={{
                         rotate: [0, 360],
                       }}
@@ -369,6 +372,8 @@ export default function FireToolBar() {
                       setTextTheme={setTextTheme}
                       mobileBackground={mobileBackground}
                       setMobileBackground={setMobileBackground}
+                      images={images}
+                      setImages={setImages}
                     />
                   </DialogContent>
                 </Dialog>

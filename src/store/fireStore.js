@@ -17,6 +17,7 @@ const initialState = {
   mobileBackground: "/background.webp",
   theme: "#b91c1c",
   textTheme: "#fafafa",
+  images: [],
   colors: [
     { id: 1, nombre: "theme", color: "b91c1c" },
     { id: 2, nombre: "text", color: "fafafa" },
@@ -189,6 +190,7 @@ const initialState = {
 export const fireStore = createStore((set, get) => ({
   background: "/background.webp",
   mobileBackground: "/background.webp",
+  images: [],
   theme: "#b91c1c",
   textTheme: "#fafafa",
   colors: [
@@ -378,6 +380,7 @@ export const fireStore = createStore((set, get) => ({
   api: "http://localhost:3000",
   socketApi: "http://localhost:3000",
   loading: true,
+  loadingBackground: true,
   error: null,
   loadUserData: () => {
     const auth = getAuth();
@@ -442,7 +445,11 @@ export const fireStore = createStore((set, get) => ({
     set({ socketApi });
     get().saveToFirestore();
   },
+  loading: true,
 
+  setLoading: (state) => {
+    set({ loading: state });
+  },
   setText: (text) => {
     set({ text });
     get().saveToFirestore();
@@ -467,6 +474,19 @@ export const fireStore = createStore((set, get) => ({
     );
     set({ colors: updatedColors });
     get().saveToFirestore();
+  },
+  loadingBackground: true,
+  setAllImages: (images) => {
+    set({ images, loadingBackground: false });
+
+    // Si quieres ver el valor actualizado, léelo desde el store
+    console.log("loadingBackground:", get().loadingBackground);
+  },
+
+  setImages: (index, newUrl) => {
+    const images = get().images || [];
+    const newImages = images.map((img, i) => (i === index - 1 ? newUrl : img));
+    set({ images: newImages });
   },
 
   setLinks: (id, text, link, icono) => {

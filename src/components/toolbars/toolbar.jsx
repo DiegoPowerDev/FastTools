@@ -324,6 +324,7 @@ export default function Toolbar() {
                 <Dialog>
                   <DialogTrigger aria-label="Settings">
                     <motion.div
+                    layout
                       whileHover={{
                         rotate: [0, 360],
                       }}

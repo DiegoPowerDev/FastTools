@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { useFireStore } from "@/store/fireStore";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { useRouter } from "next/navigation";
@@ -13,17 +13,34 @@ import UserToasterClient from "@/components/toast/UserToasterClient";
 
 export default function Page() {
   const { setUser } = useUserStore();
-  const { loadUserData, uid } = useFireStore();
+  const { loadUserData, uid, setAllImages } = useFireStore();
 
   const router = useRouter();
 
+  async function loadImages(uid) {
+    try {
+      const res = await fetch(`/api/upload/${uid}`);
+      if (!res.ok) {
+        throw new Error(`Error fetching images: ${res.status}`);
+      }
+      const data = await res.json();
+      const newData = data.map((e) => e.secure_url);
+      setAllImages(newData);
+    } catch (error) {
+      console.error("Error loading images", error);
+    }
+  }
+
   useEffect(() => {
     const auth = getAuth();
+    const uid = auth.currentUser?.uid;
 
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
       if (firebaseUser) {
         setUser(firebaseUser);
-        const unsubFirestore = loadUserData(firebaseUser.uid);
+        const unsubFirestore = loadUserData(uid);
+        console.log(firebaseUser.uid);
+        loadImages(firebaseUser.uid);
         window.__UNSUB_FIRESTORE__ = unsubFirestore;
       } else {
         console.log("No hay usuario autenticado");
