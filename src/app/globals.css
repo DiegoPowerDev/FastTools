@@ -5,7 +5,15 @@
 html {
   background-color: black;
 }
+@layer utilities {
+  .font-panton {
+    font-family: var(--font-panton), sans-serif;
+  }
 
+  .font-tommy {
+    font-family: var(--font-tommy), sans-serif;
+  }
+}
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -114,7 +122,6 @@ html {
     @apply border-border;
   }
   body {
-    font-family: var(--font-pantom), sans-serif;
     @apply bg-background text-foreground;
   }
 }
