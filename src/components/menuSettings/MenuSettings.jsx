@@ -42,8 +42,8 @@ export default function MenuSettings() {
   }, []);
 
   return (
-    <div className="flex flex-col w-full h-full items-center justify-center pb-8">
-      <div className="w-full flex flex-col gap-8 items-center justify-center">
+    <div className="flex flex-col w-full h-full items-center justify-center md:pb-8">
+      <div className="w-full flex flex-col gap-2 md:gap-8 items-center justify-center">
         <div className="w-full h-full flex items-center justify-center gap-2">
           <div
             style={{
@@ -108,7 +108,7 @@ export default function MenuSettings() {
             style={{ backgroundColor: theme, color: textTheme }}
           >
             <div></div>
-            <div>SET BACKGROUND</div>
+            <div className="font-bold">SET BACKGROUND</div>
             <button className="bg-white text-black rounded h-10 w-10 items-center justify-center flex">
               <IconPencil
                 onClick={() => setEditable(!editable)}
@@ -120,7 +120,7 @@ export default function MenuSettings() {
           {loadingBackground ? (
             <div>loadingBackground</div>
           ) : (
-            <div className="w-full h-full grid grid-cols-4 grid-rows-3 place-content-center gap-2">
+            <div className="w-full h-full grid md:grid-cols-4 md:grid-rows-3 grid-cols-2 place-content-center md:gap-2">
               {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((e, i) => (
                 <div
                   key={i}
@@ -212,53 +212,101 @@ function BackgroundImage({
   };
 
   return (
-    <div
-      onClick={
-        !modo
-          ? () => {
-              setBackground(localImage);
-              setMobileBackground(localImage);
-            }
-          : undefined
-      }
-      className="w-full h-full flex items-center justify-center relative"
-    >
-      {modo && (
-        <input
-          type="file"
-          id={`image${slot}`}
-          className="hidden"
-          onChange={handleImage}
-          accept="image/png, image/jpeg"
-          disabled={uploading}
-        />
-      )}
-
-      <label
-        htmlFor={modo ? `image${slot}` : undefined}
-        className={`w-full h-12 flex items-center justify-center ${
-          modo ? "cursor-pointer" : ""
-        }`}
+    <>
+      <div
+        onClick={
+          !modo
+            ? () => {
+                setBackground(localImage);
+              }
+            : undefined
+        }
+        className="w-full h-full items-center justify-center relative hidden md:flex"
       >
-        {localImage && (
-          <img
-            style={{
-              border: modo && `1px solid ${textTheme}`,
-              boxShadow: `0px 0px 1px ${textTheme}`,
-              opacity: uploading ? 0.5 : 1,
-            }}
-            src={localImage}
-            alt={`Image ${slot}`}
-            className="object-contain h-full w-full"
+        {modo && (
+          <input
+            type="file"
+            id={`image${slot}`}
+            className="hidden"
+            onChange={handleImage}
+            accept="image/png, image/jpeg"
+            disabled={uploading}
           />
         )}
 
-        {uploading && (
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white"></div>
-          </div>
+        <label
+          htmlFor={modo ? `image${slot}` : undefined}
+          className={`w-full h-12 flex items-center justify-center ${
+            modo ? "cursor-pointer" : ""
+          }`}
+        >
+          {localImage && (
+            <img
+              style={{
+                border: modo && `1px solid ${textTheme}`,
+                boxShadow: `0px 0px 1px ${textTheme}`,
+                opacity: uploading ? 0.5 : 1,
+              }}
+              src={localImage}
+              alt={`Image ${slot}`}
+              className="object-contain h-full w-full"
+            />
+          )}
+
+          {uploading && (
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white"></div>
+            </div>
+          )}
+        </label>
+      </div>
+      <div
+        onClick={
+          !modo
+            ? () => {
+                setMobileBackground(localImage);
+              }
+            : undefined
+        }
+        className="w-full h-full  items-center justify-center relative flex md:hidden"
+      >
+        {modo && (
+          <input
+            type="file"
+            id={`image${slot}`}
+            className="hidden"
+            onChange={handleImage}
+            accept="image/png, image/jpeg"
+            disabled={uploading}
+          />
         )}
-      </label>
-    </div>
+
+        <label
+          htmlFor={modo ? `image${slot}` : undefined}
+          className={`w-full h-12 flex items-center justify-center ${
+            modo ? "cursor-pointer" : ""
+          }`}
+        >
+          {localImage && (
+            <img
+              style={{
+                border: `${!modo ? "1" : "2"}px solid ${textTheme}`,
+
+                opacity: uploading ? 0.5 : 1,
+              }}
+              src={localImage}
+              alt={`Image ${slot}`}
+              className="object-contain h-full w-full"
+            />
+          )}
+
+          {uploading && (
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white"></div>
+            </div>
+          )}
+        </label>
+      </div>
+    </>
   );
 }
