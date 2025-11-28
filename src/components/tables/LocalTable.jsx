@@ -33,7 +33,7 @@ const componentMap = {
     ssr: false,
     loading: () => <ComponentSkeleton height="350px" />,
   }),
-  links: dynamic(() => import("@/components/links/enlaces"), {
+  links: dynamic(() => import("@/components/links/links"), {
     ssr: false,
     loading: () => <ComponentSkeleton height="350px" />,
   }),

@@ -1,13 +1,15 @@
 import { useEffect, useState } from "react";
-import NotesMobile from "./notesMobile";
-import NotesDesktop from "./notesDesktop";
+import LinksDesktop from "./linksDesktop";
+import LinksMobile from "./linksMobile";
 
-export default function Notes({
-  notes,
-  setNotes,
+export default function Links({
+  links,
+  setLinks,
   theme,
   textTheme,
-  moveNotes,
+  setDisplayLinks,
+  displayLinks,
+  moveLink,
 }) {
   const [isDesktop, setIsDesktop] = useState(false);
 
@@ -21,17 +23,19 @@ export default function Notes({
   return (
     <>
       {isDesktop ? (
-        <NotesDesktop
-          notes={notes}
-          setNotes={setNotes}
+        <LinksDesktop
+          links={links}
+          setLinks={setLinks}
           theme={theme}
+          moveLink={moveLink}
           textTheme={textTheme}
-          moveNotes={moveNotes}
+          setDisplayLinks={setDisplayLinks}
+          displayLinks={displayLinks}
         />
       ) : (
-        <NotesMobile
-          notes={notes}
-          setNotes={setNotes}
+        <LinksMobile
+          links={links}
+          setLinks={setLinks}
           theme={theme}
           textTheme={textTheme}
         />

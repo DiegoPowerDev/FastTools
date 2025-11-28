@@ -12,7 +12,7 @@ import { useRef, useEffect, useState } from "react";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 
-export default function Links({ links, setLinks, theme, textTheme }) {
+export default function LinksMobile({ links, setLinks, theme, textTheme }) {
   const scrollRef = useRef(null);
   const [editable, setEditable] = useState(false);
   const [editForm, setEditForm] = useState(false);

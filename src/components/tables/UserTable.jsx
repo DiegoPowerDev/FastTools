@@ -33,7 +33,7 @@ const componentMap = {
     ssr: false,
     loading: () => <ComponentSkeleton height="350px" />,
   }),
-  links: dynamic(() => import("@/components/links/enlaces"), {
+  links: dynamic(() => import("@/components/links/links"), {
     ssr: false,
     loading: () => <ComponentSkeleton height="350px" />,
   }),
@@ -77,6 +77,8 @@ export default function UserTable() {
     setTextTheme,
     textTheme,
     moveColor,
+    moveLink,
+    moveNotes,
     displayColors,
     displayLinks,
     setDisplayColors,
@@ -136,6 +138,8 @@ export default function UserTable() {
               socketApi={socketApi}
               setSocketApi={setSocketApi}
               moveColor={moveColor}
+              moveLink={moveLink}
+              moveNotes={moveNotes}
               displayColors={displayColors}
               displayLinks={displayLinks}
               setDisplayColors={setDisplayColors}

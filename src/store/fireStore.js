@@ -258,6 +258,16 @@ export const fireStore = createStore((set, get) => ({
     set({ colors: arrayMove(colors, from, to) });
     get().saveToFirestore();
   },
+  moveLink: (from, to) => {
+    const link = get().links;
+    set({ links: arrayMove(link, from, to) });
+    get().saveToFirestore();
+  },
+  moveNotes: (from, to) => {
+    const note = get().notes;
+    set({ notes: arrayMove(note, from, to) });
+    get().saveToFirestore();
+  },
   links: [
     {
       id: 1,
