@@ -135,7 +135,7 @@ function NotesGrid({
   moveNotes,
   editable,
   setEditForm,
-  setId,
+  setEditingIndex,
   setTitle,
   setContent,
   setBgColor,
@@ -158,8 +158,9 @@ function NotesGrid({
     }
   };
 
-  const handleItemClick = (note) => {
-    setId(note.id - 1);
+  // ✅ CAMBIO: Ahora recibimos el índice como parámetro
+  const handleItemClick = (note, index) => {
+    setEditingIndex(index); // ✅ Guardamos el índice real del array
     setTitle(note.title);
     setContent(note.content);
     setEditForm(true);
@@ -178,11 +179,11 @@ function NotesGrid({
           strategy={verticalListSortingStrategy}
         >
           <div className="grid grid-rows-4 h-full grid-flow-col gap-2 w-full p-4">
-            {notes.map((note) => (
+            {notes.map((note, index) => (
               <SortableNoteItem
                 key={note.id}
                 note={note}
-                onClick={() => handleItemClick(note)}
+                onClick={() => handleItemClick(note, index)}
                 theme={theme}
                 textTheme={textTheme}
                 editable={editable}
@@ -196,11 +197,11 @@ function NotesGrid({
 
   return (
     <div className="grid grid-rows-4 h-full grid-flow-col gap-2 w-full p-4">
-      {notes.map((note) => (
+      {notes.map((note, index) => (
         <div key={note.id}>
           <StaticNoteItem
             note={note}
-            onClick={() => handleItemClick(note)}
+            onClick={() => handleItemClick(note, index)}
             theme={theme}
             textTheme={textTheme}
             editable={false}
@@ -222,7 +223,8 @@ export default function NotesMobile({
   const scrollRef = useRef(null);
   const [editable, setEditable] = useState(false);
   const [editForm, setEditForm] = useState(false);
-  const [id, setId] = useState(0);
+  // ✅ CAMBIO: Ahora guardamos el índice del array, no el ID
+  const [editingIndex, setEditingIndex] = useState(null);
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
 
@@ -252,7 +254,7 @@ export default function NotesMobile({
 
   useEffect(() => {
     if (!editForm) {
-      setId(0);
+      setEditingIndex(null);
     }
   }, [editForm]);
 
@@ -293,7 +295,7 @@ export default function NotesMobile({
             moveNotes={moveNotes}
             editable={editable}
             setEditForm={setEditForm}
-            setId={setId}
+            setEditingIndex={setEditingIndex}
             setTitle={setTitle}
             setContent={setContent}
             setBgColor={setBgColor}
@@ -326,7 +328,9 @@ export default function NotesMobile({
                     disabled={!editable}
                     id="title"
                     type="text"
-                    placeholder={notes[id]?.title || ""}
+                    placeholder={
+                      editingIndex !== null ? notes[editingIndex]?.title : ""
+                    }
                     className="p-2 rounded placeholder:text-gray-500 placeholder:opacity-40"
                     value={title}
                     onChange={(e) => {
@@ -349,7 +353,9 @@ export default function NotesMobile({
                   rows={10}
                   disabled={!editable}
                   id="content"
-                  placeholder={notes[id]?.content || ""}
+                  placeholder={
+                    editingIndex !== null ? notes[editingIndex]?.content : ""
+                  }
                   style={{
                     "--theme": textTheme,
                     color: textTheme,
@@ -404,8 +410,10 @@ export default function NotesMobile({
                         <Button
                           variant="destructive"
                           onClick={() => {
-                            setNotes(id, "", "", "#000000");
-                            setEditForm(false);
+                            if (editingIndex !== null) {
+                              setNotes(editingIndex, "", "", "#000000");
+                              setEditForm(false);
+                            }
                           }}
                         >
                           DELETE
@@ -418,8 +426,10 @@ export default function NotesMobile({
                     disabled={!editable}
                     style={{ backgroundColor: theme, color: textTheme }}
                     onClick={() => {
-                      setNotes(id, title, content, bgColor);
-                      setEditForm(false);
+                      if (editingIndex !== null) {
+                        setNotes(editingIndex, title, content, bgColor);
+                        setEditForm(false);
+                      }
                     }}
                     className="hover:opacity-60  w-8/12 p-2 rounded  font-bold duration-200 active:scale-105 active:border-2 active:border-white"
                   >

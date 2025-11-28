@@ -38,14 +38,7 @@ export default function NotesMobile({ notes, setNotes, theme, textTheme }) {
   const [id, setId] = useState(0);
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
-  const groups = [];
-  for (let i = 0; i < notes.length; i += 8) {
-    groups.push(notes.slice(i, i + 8));
-  }
-  const groupsMobile = [];
-  for (let i = 0; i < notes.length; i += 4) {
-    groupsMobile.push(notes.slice(i, i + 4));
-  }
+
   const exportToTextFile = () => {
     const blob = new Blob([content], { type: "text/plain" });
     const link = document.createElement("a");

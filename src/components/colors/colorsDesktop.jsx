@@ -137,7 +137,7 @@ function ColorsGrid({
   moveColor,
   setEditForm,
   setColor,
-  setId,
+  setEditingIndex,
   setNombre,
   theme,
   displayColors,
@@ -176,11 +176,12 @@ function ColorsGrid({
     ));
   };
 
-  // onClick handler shared
-  const handleItemClick = (color) => {
+  // ✅ CAMBIO: Ahora recibimos el índice como parámetro
+  const handleItemClick = (color, index) => {
     if (!editable && color.color) handleCopy(color);
     if (editable) {
-      setId(color.id - 1);
+      // ✅ Guardamos el índice real del array, no el ID
+      setEditingIndex(index);
       setColor(color.color);
       setNombre(color.nombre);
       setEditForm(true);
@@ -202,21 +203,21 @@ function ColorsGrid({
             strategy={verticalListSortingStrategy}
           >
             <div className="grid h-full grid-rows-4 grid-flow-col w-full gap-2 p-4">
-              {colors.map((color) => (
+              {colors.map((color, index) => (
                 <SortableItem
                   displayColors={displayColors}
                   key={color.id}
                   color={color}
                   theme={theme}
                   textTheme={textTheme}
-                  onClick={() => handleItemClick(color)}
+                  onClick={() => handleItemClick(color, index)}
                 />
               ))}
             </div>
           </SortableContext>
         </DndContext>
         <div className="md:hidden grid h-full grid-rows-4 grid-flow-col w-full gap-2 p-4">
-          {colors.map((color) => (
+          {colors.map((color, index) => (
             <StaticItem
               displayColors={displayColors}
               key={color.id}
@@ -224,7 +225,7 @@ function ColorsGrid({
               editable={true}
               theme={theme}
               textTheme={textTheme}
-              onClick={() => handleItemClick(color)}
+              onClick={() => handleItemClick(color, index)}
             />
           ))}
         </div>
@@ -235,7 +236,7 @@ function ColorsGrid({
   // Si editable === false -> grid estático, sin DnD
   return (
     <div className="grid h-full grid-rows-4 grid-flow-col w-full gap-2 p-4">
-      {colors.map((color) => (
+      {colors.map((color, index) => (
         <StaticItem
           displayColors={displayColors}
           key={color.id}
@@ -243,7 +244,7 @@ function ColorsGrid({
           editable={false}
           theme={theme}
           textTheme={textTheme}
-          onClick={() => handleItemClick(color)}
+          onClick={() => handleItemClick(color, index)}
         />
       ))}
     </div>
@@ -265,7 +266,8 @@ export default function ColorsDesktop({
   const scrollRef = useRef(null);
   const [editable, setEditable] = useState(false);
   const [editForm, setEditForm] = useState(false);
-  const [id, setId] = useState(0);
+  // ✅ CAMBIO: Ahora guardamos el índice del array, no el ID
+  const [editingIndex, setEditingIndex] = useState(null);
   const [color, setColor] = useState("");
   const [nombre, setNombre] = useState("");
 
@@ -293,7 +295,7 @@ export default function ColorsDesktop({
 
   useEffect(() => {
     if (!editForm) {
-      setId(0);
+      setEditingIndex(null);
     }
   }, [editForm]);
 
@@ -343,7 +345,7 @@ export default function ColorsDesktop({
             moveColor={moveColor}
             setEditForm={setEditForm}
             setColor={setColor}
-            setId={setId}
+            setEditingIndex={setEditingIndex}
             setNombre={setNombre}
             theme={theme}
             textTheme={textTheme}
@@ -370,7 +372,9 @@ export default function ColorsDesktop({
               <Input
                 id="nombre"
                 type="text"
-                placeholder={colors[id]?.nombre || ""}
+                placeholder={
+                  editingIndex !== null ? colors[editingIndex]?.nombre : ""
+                }
                 className="p-2 rounded placeholder:text-gray-500 placeholder:opacity-40"
                 value={nombre}
                 onChange={(e) => {
@@ -399,7 +403,9 @@ export default function ColorsDesktop({
                   maxLength={9}
                   className="p-2 w-40 rounded placeholder:opacity-40"
                   type="text"
-                  placeholder={colors[id]?.color || ""}
+                  placeholder={
+                    editingIndex !== null ? colors[editingIndex]?.color : ""
+                  }
                   value={color.toUpperCase()}
                   onChange={(e) => {
                     const colorV = e.target.value;
@@ -413,11 +419,13 @@ export default function ColorsDesktop({
               <Button
                 variant="destructive"
                 onClick={() => {
-                  setEditForm(false);
-                  setColors(id, "", "");
-                  setColor("");
-                  setNombre("");
-                  setId(0);
+                  if (editingIndex !== null) {
+                    setEditForm(false);
+                    setColors(editingIndex, "", "");
+                    setColor("");
+                    setNombre("");
+                    setEditingIndex(null);
+                  }
                 }}
               >
                 DELETE
@@ -425,8 +433,10 @@ export default function ColorsDesktop({
               <button
                 style={{ backgroundColor: theme, color: textTheme }}
                 onClick={() => {
-                  setColors(id, nombre, manageFormat(color));
-                  setEditForm(false);
+                  if (editingIndex !== null) {
+                    setColors(editingIndex, nombre, manageFormat(color));
+                    setEditForm(false);
+                  }
                 }}
                 className="hover:opacity-60 w-full p-2 rounded  font-bold duration-200 active:scale-105 active:border-2 active:border-white"
               >
@@ -435,7 +445,7 @@ export default function ColorsDesktop({
                 </div>
               </button>
             </div>
-            {colors[id]?.color && (
+            {editingIndex !== null && colors[editingIndex]?.color && (
               <div className="w-full flex gap-8 items-center justify-center">
                 <Button
                   variant="outline"

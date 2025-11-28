@@ -150,7 +150,7 @@ function LinkItemInner({ link, textTheme, displayLinks, editable }) {
         border: !editable ? borderStyle : `1px solid ${textTheme}`,
       }}
       className={cn(
-        " h-12 flex  items-center gap-2  rounded-xl duration-200 w-full",
+        " h-12 flex  items-center gap-2  rounded-xl duration-200 w-full px-2",
         (link.link || editable) && "bg-black  cursor-pointer"
       )}
     >
@@ -174,10 +174,9 @@ function LinkItemInner({ link, textTheme, displayLinks, editable }) {
 function LinksGrid({
   links,
   moveLink,
-  setLinks,
   editable,
   setEditForm,
-  setId,
+  setEditingIndex,
   setLink,
   setNombre,
   setIcono,
@@ -196,28 +195,20 @@ function LinksGrid({
 
     if (oldIndex === -1 || newIndex === -1 || oldIndex === newIndex) return;
 
-    // ✅ SOLUCIÓN: Usa moveLink en lugar de actualizar todo el array
+    // ✅ Usa moveLink para reordenar
     if (moveLink) {
       moveLink(oldIndex, newIndex);
-    } else {
-      // Fallback al método anterior si moveLink no está disponible
-      const newLinks = Array.from(links);
-      const [moved] = newLinks.splice(oldIndex, 1);
-      newLinks.splice(newIndex, 0, moved);
-
-      newLinks.forEach((item, idx) => {
-        setLinks(idx, item.nombre || "", item.link || "", item.icono || "");
-      });
     }
   };
 
-  const handleItemClick = (link) => {
+  const handleItemClick = (link, index) => {
     if (!editable) {
       if (link.link) {
         window.open(link.link, "_blank");
       }
     } else {
-      setId(link.id - 1);
+      // ✅ CAMBIO CLAVE: Guardamos el índice real del array, no el ID
+      setEditingIndex(index);
       setLink(link.link || "");
       setNombre(link.nombre || "");
       setIcono(link.icono || "");
@@ -237,7 +228,7 @@ function LinksGrid({
           strategy={verticalListSortingStrategy}
         >
           <div className="grid h-full grid-rows-4 grid-flow-col w-full gap-4 p-4">
-            {links.map((l) => (
+            {links.map((l, index) => (
               <div
                 key={l.id}
                 className={cn("h-full", displayLinks ? "w-[270px]" : "w-full")}
@@ -246,7 +237,7 @@ function LinksGrid({
                   displayLinks={displayLinks}
                   link={l}
                   editable={editable}
-                  onClick={() => handleItemClick(l)}
+                  onClick={() => handleItemClick(l, index)}
                   theme={theme}
                   textTheme={textTheme}
                 />
@@ -260,7 +251,7 @@ function LinksGrid({
 
   return (
     <div className="grid grid-rows-4 grid-flow-col h-full w-full gap-4 p-4">
-      {links.map((l) => (
+      {links.map((l, index) => (
         <div
           key={l.id}
           className={cn("h-full", displayLinks ? "w-[270px]" : "w-full")}
@@ -268,7 +259,7 @@ function LinksGrid({
           <StaticLinkItem
             displayLinks={displayLinks}
             link={l}
-            onClick={() => handleItemClick(l)}
+            onClick={() => handleItemClick(l, index)}
             theme={theme}
             textTheme={textTheme}
           />
@@ -293,7 +284,8 @@ export default function Links({
   const scrollRef = useRef(null);
   const [editable, setEditable] = useState(false);
   const [editForm, setEditForm] = useState(false);
-  const [id, setId] = useState(0);
+  // ✅ CAMBIO: Ahora guardamos el índice del array, no el ID
+  const [editingIndex, setEditingIndex] = useState(null);
   const [link, setLink] = useState("");
   const [nombre, setNombre] = useState("");
   const [icono, setIcono] = useState("");
@@ -321,7 +313,7 @@ export default function Links({
 
   useEffect(() => {
     if (!editForm) {
-      setId(0);
+      setEditingIndex(null);
     }
   }, [editForm]);
 
@@ -366,11 +358,10 @@ export default function Links({
         <div className="h-full">
           <LinksGrid
             links={links}
-            setLinks={setLinks}
-            moveLink={moveLink} // ← Pasamos la nueva prop
+            moveLink={moveLink}
             editable={editable}
             setEditForm={setEditForm}
-            setId={setId}
+            setEditingIndex={setEditingIndex}
             setLink={setLink}
             setNombre={setNombre}
             setIcono={setIcono}
@@ -403,7 +394,9 @@ export default function Links({
                 id="link"
                 className="p-2 w-full rounded placeholder:opacity-40"
                 type="text"
-                placeholder={links[id]?.link || "URL"}
+                placeholder={
+                  editingIndex !== null ? links[editingIndex]?.link : "URL"
+                }
                 value={link}
                 onChange={(e) => {
                   const v = e.target.value;
@@ -418,7 +411,9 @@ export default function Links({
               <Input
                 id="nombre"
                 type="text"
-                placeholder={links[id]?.nombre || ""}
+                placeholder={
+                  editingIndex !== null ? links[editingIndex]?.nombre : ""
+                }
                 className="p-2 rounded placeholder:text-gray-500 placeholder:opacity-40 "
                 value={nombre}
                 onChange={(e) => {
@@ -465,12 +460,15 @@ export default function Links({
               <Button
                 variant="destructive"
                 onClick={() => {
-                  setEditForm(false);
-                  setLinks(id, "", "", "");
-                  setId(0);
-                  setNombre("");
-                  setLink("");
-                  setIcono("");
+                  if (editingIndex !== null) {
+                    setEditForm(false);
+                    // ✅ Usa el índice actual para editar
+                    setLinks(editingIndex, "", "", "");
+                    setEditingIndex(null);
+                    setNombre("");
+                    setLink("");
+                    setIcono("");
+                  }
                 }}
               >
                 DELETE
@@ -478,8 +476,11 @@ export default function Links({
               <button
                 style={{ backgroundColor: theme, color: textTheme }}
                 onClick={() => {
-                  setLinks(id, nombre, link, icono);
-                  setEditForm(false);
+                  if (editingIndex !== null) {
+                    // ✅ Usa el índice actual para editar
+                    setLinks(editingIndex, nombre, link, icono);
+                    setEditForm(false);
+                  }
                 }}
                 className="hover:opacity-60 w-full p-2 rounded  font-bold duration-200 active:scale-105 active:border-2 active:border-white"
               >

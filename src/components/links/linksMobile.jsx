@@ -21,14 +21,7 @@ export default function LinksMobile({ links, setLinks, theme, textTheme }) {
   const [nombre, setNombre] = useState("");
   const [icono, setIcono] = useState("");
   const [isValid, setIsValid] = useState(true);
-  const groups = [];
-  for (let i = 0; i < links.length; i += 8) {
-    groups.push(links.slice(i, i + 8));
-  }
-  const groupsMobile = [];
-  for (let i = 0; i < links.length; i += 4) {
-    groupsMobile.push(links.slice(i, i + 4));
-  }
+
   useEffect(() => {
     setIsValid(true);
   }, [icono]);

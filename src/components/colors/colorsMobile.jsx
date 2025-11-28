@@ -33,14 +33,7 @@ export default function ColorsMobile({
   const [id, setId] = useState(0);
   const [color, setColor] = useState("");
   const [nombre, setNombre] = useState("");
-  const groups = [];
-  for (let i = 0; i < colors.length; i += 12) {
-    groups.push(colors.slice(i, i + 12));
-  }
-  const groupsMobile = [];
-  for (let i = 0; i < colors.length; i += 8) {
-    groupsMobile.push(colors.slice(i, i + 8));
-  }
+
   const manageFormat = (color) => {
     if (color[0] === "#") {
       console.log(color.slice(1, color.length));
