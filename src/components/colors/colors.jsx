@@ -7,8 +7,8 @@ import {
   PointerSensor,
   useSensor,
   useSensors,
-  TouchSensor,
 } from "@dnd-kit/core";
+
 import {
   SortableContext,
   useSortable,
@@ -145,19 +145,7 @@ function ColorsGrid({
   displayColors,
   textTheme,
 }) {
-  const sensors = useSensors(
-    useSensor(PointerSensor, {
-      activationConstraint: {
-        distance: 8,
-      },
-    }),
-    useSensor(TouchSensor, {
-      activationConstraint: {
-        delay: 200,
-        tolerance: 8,
-      },
-    })
-  );
+  const sensors = useSensors(useSensor(PointerSensor));
 
   const handleDragEnd = (event) => {
     const { active, over } = event;
