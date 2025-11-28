@@ -39,7 +39,7 @@ export default function Links({ links, setLinks, theme, textTheme }) {
     const handleWheel = (e) => {
       if (scrollContainer.scrollWidth > scrollContainer.clientWidth) {
         e.preventDefault();
-        const scrollSpeed = 5;
+        const scrollSpeed = 5.5;
         scrollContainer.scrollLeft += e.deltaY * scrollSpeed;
       }
     };
