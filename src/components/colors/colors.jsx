@@ -110,46 +110,16 @@ function SortableItem({ color, onClick, theme, textTheme, displayColors }) {
 function StaticItem({
   color,
   onClick,
-  displayColors,
-  editable,
   theme,
   textTheme,
+  editable,
+  displayColors,
 }) {
-  const startTime = useRef(0);
-  const startX = useRef(0);
-  const startY = useRef(0);
-  const isTap = useRef(true);
-
-  const handlePointerDown = (e) => {
-    startTime.current = Date.now();
-    startX.current = e.clientX;
-    startY.current = e.clientY;
-    isTap.current = true;
-  };
-
-  const handlePointerMove = (e) => {
-    const dx = Math.abs(e.clientX - startX.current);
-    const dy = Math.abs(e.clientY - startY.current);
-
-    if (dx > 10 || dy > 10) {
-      isTap.current = false; // Ya no es un tap
-    }
-  };
-
-  const handlePointerUp = () => {
-    const time = Date.now() - startTime.current;
-
-    if (isTap.current && time < 200) {
-      onClick(); // ← CLICK REAL EN MÓVIL
-    }
-  };
-
+  // Simple wrapper que solo responde clicks/taps (sin DnD)
   return (
     <div
       className={cn(!displayColors ? "w-full" : "w-[190px]")}
-      onPointerDown={handlePointerDown}
-      onPointerMove={handlePointerMove}
-      onPointerUp={handlePointerUp}
+      onClick={onClick}
     >
       <Color
         color={color}
