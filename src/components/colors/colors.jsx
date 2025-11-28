@@ -146,7 +146,7 @@ function StaticItem({
 
   return (
     <div
-      className={cn(!displayColors ? "w-full" : "w-[190]")}
+      className={cn(!displayColors ? "w-full" : "w-[190px]")}
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}

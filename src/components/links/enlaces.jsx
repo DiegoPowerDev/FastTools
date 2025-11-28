@@ -154,7 +154,7 @@ function StaticLinkItem({
 
   return (
     <div
-      className={cn(!displayLinks ? "w-full" : "w-[190]")}
+      className={cn(!displayLinks ? "w-full" : "w-[270px]")}
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
@@ -397,7 +397,9 @@ export default function Links({
         style={{
           "--theme": textTheme,
         }}
-        className={`w-full flex-1 flex items-center overflow-x-auto overflow-y-hidden ${styles.scrollContainer}`}
+        className={`w-full flex-1 flex items-center overflow-x-auto overflow-y-hidden ${
+          styles.scrollContainer
+        } ${!displayLinks && "justify-center"}`}
       >
         <div className="py-4 h-full">
           <LinksGrid
