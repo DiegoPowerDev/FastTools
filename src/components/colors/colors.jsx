@@ -3,12 +3,12 @@ import toast from "react-hot-toast";
 
 import {
   DndContext,
+  closestCenter,
   PointerSensor,
-  TouchSensor,
   useSensor,
   useSensors,
+  TouchSensor,
 } from "@dnd-kit/core";
-
 import {
   SortableContext,
   useSortable,

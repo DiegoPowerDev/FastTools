@@ -104,10 +104,7 @@ export default function Notes({ notes, setNotes, theme, textTheme }) {
         }}
         className={`w-full flex-1 overflow-x-auto overflow-y-hidden ${styles.scrollContainer}`}
       >
-        <div
-          key={i}
-          className="grid grid-rows-4 grid-flow-col auto-cols-fr gap-2 w-full p-4 rounded-2xl flex-shrink-0"
-        >
+        <div className="grid grid-rows-4 grid-flow-col auto-cols-fr gap-2 w-full p-4 rounded-2xl flex-shrink-0">
           {notes.map((note, e) => (
             <div key={e}>
               {(note.title != "" || editable) && (
