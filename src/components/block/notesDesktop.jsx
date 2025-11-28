@@ -166,7 +166,10 @@ function NotesGrid({
     setEditForm(true);
     setBgColor(note.color);
   };
-
+  const visibleNotes = notes.slice(
+    0,
+    notes.map((c) => c.title !== "").lastIndexOf(true) + 1
+  );
   if (editable) {
     return (
       <DndContext
@@ -197,7 +200,7 @@ function NotesGrid({
 
   return (
     <div className="grid grid-rows-4 h-full grid-flow-col gap-4 w-full p-4">
-      {notes.map((note, index) => (
+      {visibleNotes.map((note, index) => (
         <div key={note.id}>
           <StaticNoteItem
             note={note}

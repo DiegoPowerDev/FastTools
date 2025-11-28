@@ -215,7 +215,10 @@ function LinksGrid({
       setEditForm(true);
     }
   };
-
+  const visibleLinks = links.slice(
+    0,
+    links.map((c) => (c.link || c.nombre) !== "").lastIndexOf(true) + 1
+  );
   if (editable) {
     return (
       <DndContext
@@ -248,7 +251,7 @@ function LinksGrid({
 
   return (
     <div className="grid grid-rows-4 grid-flow-col h-full w-full gap-4 p-4">
-      {links.map((l, index) => (
+      {visibleLinks.map((l, index) => (
         <div key={l.id} className={cn("h-full w-full")}>
           <StaticLinkItem
             displayLinks={displayLinks}

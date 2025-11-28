@@ -187,6 +187,10 @@ function ColorsGrid({
       setEditForm(true);
     }
   };
+  const visibleColors = colors.slice(
+    0,
+    colors.map((c) => (c.color || c.nombre) !== "").lastIndexOf(true) + 1
+  );
 
   // Si editable === true -> habilitamos DnD (dnd-kit)
   if (editable) {
@@ -236,7 +240,7 @@ function ColorsGrid({
   // Si editable === false -> grid estático, sin DnD
   return (
     <div className="grid h-full grid-rows-4 grid-flow-col w-full gap-2 p-4">
-      {colors.map((color, index) => (
+      {visibleColors.map((color, index) => (
         <StaticItem
           displayColors={displayColors}
           key={color.id}
