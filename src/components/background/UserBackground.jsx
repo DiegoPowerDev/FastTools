@@ -16,7 +16,8 @@ export default function UserBackgroundImage() {
       <img
         src={background}
         alt={background}
-        className="fixed inset-0 w-full max-w-screen h-full object-contain opacity-40 -z-10 select-none pointer-events-none"
+        className="fixed inset-0 w-full max-w-screen h-full object-contain
+         -z-10 select-none pointer-events-none"
         fetchPriority="high"
       />
     </picture>

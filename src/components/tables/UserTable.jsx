@@ -99,7 +99,7 @@ export default function UserTable() {
             key={component.label}
             layout
             style={{
-              boxShadow: `0 0 15px 2px ${textTheme}`,
+              boxShadow: `0 0 5px 1px ${textTheme}`,
               color: textTheme,
             }}
             initial={{ opacity: 0 }}

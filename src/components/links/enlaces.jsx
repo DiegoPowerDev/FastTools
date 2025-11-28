@@ -81,7 +81,7 @@ export default function Links({ links, setLinks, theme, textTheme }) {
         style={{
           "--theme": textTheme,
         }}
-        className={`w-full flex-1 overflow-x-auto overflow-y-hidden flex  justify-center items-center`}
+        className={`bg-black/30 w-full flex-1 overflow-x-auto overflow-y-hidden flex  justify-center items-center`}
       >
         <div
           ref={scrollRef}

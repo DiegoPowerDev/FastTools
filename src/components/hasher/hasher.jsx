@@ -22,7 +22,7 @@ export default function Hasher({ theme, textTheme }) {
           <div className="md:col-start-1 md:col-end-4 text-xl  w-full font-bold uppercase flex justify-center items-center">
             JWT
           </div>
-          <div className="md:col-start-4 md:col-end-7 flex justify-center items-center gap-4">
+          <div className="bg-black/30 md:col-start-4 md:col-end-7 flex justify-center items-center gap-4">
             <button
               style={{
                 backgroundColor: action === "hash" && "white",

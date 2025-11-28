@@ -76,7 +76,7 @@ export default function Notes({ notes, setNotes, theme, textTheme }) {
   return (
     <div
       style={{ border: `2px solid ${theme}` }}
-      className={`flex flex-col h-full border- rounded-xl overflow-hidden`}
+      className={`bg-black/30 flex flex-col h-full border- rounded-xl overflow-hidden`}
     >
       <div
         style={{

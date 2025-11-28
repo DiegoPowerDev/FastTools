@@ -228,7 +228,7 @@ export default function ImageCropper({ theme, textTheme }) {
       {!imageUrl ? (
         <div
           {...getRootProps()}
-          className="h-full cursor-pointer w-full flex gap-4 items-center justify-center"
+          className="h-full bg-black/30 cursor-pointer w-full flex gap-4 items-center justify-center"
         >
           <div className="h-full w-full flex flex-col items-center justify-center font-bold">
             {isDragActive ? (
@@ -250,7 +250,7 @@ export default function ImageCropper({ theme, textTheme }) {
           </div>
         </div>
       ) : (
-        <div className="h-full grid md:grid-cols-4 grid-cols-1 grid-rows-[auto_auto] md:grid-rows-1 justify-center items-center gap-4 p-4">
+        <div className="bg-black/20 h-full grid md:grid-cols-4 grid-cols-1 grid-rows-[auto_auto] md:grid-rows-1 justify-center items-center gap-4 p-4">
           <div className="md:col-span-3 w-full flex justify-center items-start h-full">
             <div className="w-full max-w-full flex items-center justify-center h-full">
               <ReactCrop

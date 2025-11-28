@@ -134,7 +134,7 @@ export default function Websocket({
   return (
     <div
       style={{ color: textTheme }}
-      className="w-full h-screen flex flex-col gap-4 p-4"
+      className="bg-black/30 w-full h-screen flex flex-col gap-4 p-4"
     >
       <div className="max-w-4xl mx-auto w-full flex flex-col gap-4">
         <div className="flex gap-2">

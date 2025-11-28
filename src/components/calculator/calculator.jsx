@@ -30,7 +30,7 @@ const Calculator = ({ theme, textTheme }) => {
   return (
     <div
       style={{ border: `2px solid ${theme}` }}
-      className={`h-full border- rounded-xl overflow-hidden`}
+      className={`bg-black/30 h-full border- rounded-xl overflow-hidden`}
     >
       <div className="h-full  p-5 md:px-10 grid grid-cols-2">
         <div className="h-full  grid grid-row-[1fr,2fr] ">

@@ -113,7 +113,7 @@ export default function Colors({
         style={{
           "--theme": textTheme,
         }}
-        className={`w-full flex-1 overflow-x-auto overflow-y-hidden `}
+        className={`bg-black/50 w-full flex-1 overflow-x-auto overflow-y-hidden `}
       >
         <div
           ref={scrollRef}

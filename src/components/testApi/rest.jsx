@@ -184,7 +184,7 @@ export default function Rest({ theme, textTheme, api, setApi }) {
 
   return (
     <>
-      <div className="w-full flex-1 flex flex-col gap-4 py-4 px-4 md:px-16">
+      <div className="bg-black/30 w-full flex-1 flex flex-col gap-4 py-4 px-4 md:px-16">
         <div className="h-full grid grid-cols-1 gap-2  justify-center">
           <div className="flex w-full gap-4 items-center justify-center">
             <Select
