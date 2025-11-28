@@ -7,6 +7,7 @@ import {
   PointerSensor,
   useSensor,
   useSensors,
+  TouchSensor,
 } from "@dnd-kit/core";
 
 import {
@@ -184,7 +185,19 @@ function LinksGrid({
   textTheme,
   displayLinks,
 }) {
-  const sensors = useSensors(useSensor(PointerSensor));
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8, // Requiere mover 8px antes de activar el drag
+      },
+    }),
+    useSensor(TouchSensor, {
+      activationConstraint: {
+        delay: 200, // Mantener presionado 200ms antes de activar drag
+        tolerance: 5, // Permite 5px de movimiento durante el delay
+      },
+    })
+  );
 
   const handleDragEnd = (event) => {
     const { active, over } = event;
