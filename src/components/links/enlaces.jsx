@@ -1,13 +1,11 @@
 "use client";
-import toast from "react-hot-toast";
 
 import {
   DndContext,
-  closestCenter,
   PointerSensor,
+  TouchSensor,
   useSensor,
   useSensors,
-  TouchSensor,
 } from "@dnd-kit/core";
 
 import {
@@ -188,13 +186,13 @@ function LinksGrid({
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
-        distance: 8, // Requiere mover 8px antes de activar el drag
+        distance: 8,
       },
     }),
     useSensor(TouchSensor, {
       activationConstraint: {
-        delay: 200, // Mantener presionado 200ms antes de activar drag
-        tolerance: 5, // Permite 5px de movimiento durante el delay
+        delay: 200,
+        tolerance: 8,
       },
     })
   );
