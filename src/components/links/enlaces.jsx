@@ -254,7 +254,7 @@ function LinkItem({ link, textTheme, editable }) {
           />
         )}
       </div>
-      <h1 className="truncate">{link.nombre}</h1>
+      <h1 className="truncate select-none">{link.nombre}</h1>
     </div>
   );
 }

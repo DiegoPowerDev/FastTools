@@ -290,7 +290,7 @@ function Color({ color, theme, editable, textTheme }) {
 
       <h1
         style={{ color: textTheme, textShadow: `0 0 15px ${theme}` }}
-        className="truncate"
+        className="truncate select-none"
       >
         {color.nombre}
       </h1>
