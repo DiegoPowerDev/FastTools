@@ -98,18 +98,19 @@ export default function Notes({ notes, setNotes, theme, textTheme }) {
         </button>
       </div>
       <div
-        ref={scrollRef}
         style={{
           "--theme": textTheme,
         }}
-        className={`w-full flex-1 overflow-x-auto overflow-y-hidden ${styles.scrollContainer}`}
+        className={`w-full flex-1 overflow-x-auto overflow-y-hidden `}
       >
-        <div className="grid grid-rows-4 grid-flow-col auto-cols-fr gap-2 w-full p-4 rounded-2xl flex-shrink-0">
+        <div
+          ref={scrollRef}
+          className={` grid grid-rows-4 h-full grid-flow-col gap-2 w-full p-4 overflow-x-auto ${styles.scrollContainer}`}
+        >
           {notes.map((note, e) => (
-            <div key={e}>
+            <div className="w-[290px]" key={e}>
               {(note.title != "" || editable) && (
                 <div
-                  className="w-[250px]"
                   onClick={() => {
                     setId(note.id - 1);
                     setTitle(note.title);
@@ -279,7 +280,7 @@ function NoteItem({ note, theme, textTheme, editable }) {
   const [hover, setHover] = useState(false);
   const borderStyle =
     editable || (hover && note.title)
-      ? `2px solid ${theme}`
+      ? `2px solid ${textTheme}`
       : "2px solid transparent";
   return (
     <div
@@ -294,7 +295,7 @@ function NoteItem({ note, theme, textTheme, editable }) {
     >
       <div className="h-12 gap-2 w-full rounded-l-md flex items-center justify-start">
         <IconNote className="flex-shrink-0 h-8 w-8" />
-        {note && <h1 className=" truncate">{note.title}</h1>}
+        {note && <h1 className="font-bold truncate">{note.title}</h1>}
       </div>
     </div>
   );

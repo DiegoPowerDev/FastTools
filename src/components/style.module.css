@@ -1,7 +1,6 @@
 .scrollContainer {
   overflow-x: auto;
   scroll-behavior: smooth;
-  scrollbar-gutter: stable both-edges;
   scrollbar-width: thin;
   scrollbar-color: var(--theme) transparent;
 }
