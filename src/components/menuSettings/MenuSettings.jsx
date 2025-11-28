@@ -5,6 +5,7 @@ import { IconColorSwatch, IconPencil } from "@tabler/icons-react";
 import { Input } from "../ui/input";
 import { getAuth } from "firebase/auth";
 import { useFireStore } from "@/store/fireStore";
+import toast from "react-hot-toast";
 
 export default function MenuSettings() {
   const {
@@ -13,11 +14,8 @@ export default function MenuSettings() {
     textTheme,
     setTextTheme,
     setBackground,
-    background,
-    mobileBackground,
     setMobileBackground,
     images,
-    loadingBackground,
     setImages,
   } = useFireStore();
 
@@ -58,8 +56,32 @@ export default function MenuSettings() {
               onClick={() => {
                 if (newTheme === "") {
                   setTheme(manageFormat("#b91c1c"));
+                  toast((t) => (
+                    <span className="flex items-center justify-center gap-4">
+                      Updated theme color
+                      <div
+                        className="h-4 w-4"
+                        style={{
+                          backgroundColor: "#b91c1c",
+                          border: `1px solid ${textTheme}`,
+                        }}
+                      ></div>
+                    </span>
+                  ));
                 } else {
                   setTheme(manageFormat(newTheme));
+                  toast((t) => (
+                    <span className="flex items-center justify-center gap-4">
+                      Updated theme color
+                      <div
+                        className="h-4 w-4"
+                        style={{
+                          backgroundColor: newTheme,
+                          border: `1px solid ${textTheme}`,
+                        }}
+                      ></div>
+                    </span>
+                  ));
                 }
               }}
             >
@@ -87,8 +109,32 @@ export default function MenuSettings() {
               onClick={() => {
                 if (newTextTheme === "") {
                   setTextTheme(manageFormat("#fafafa"));
+                  toast((t) => (
+                    <span className="flex items-center justify-center gap-4">
+                      Updated text color
+                      <div
+                        className="h-4 w-4"
+                        style={{
+                          backgroundColor: "#fafafa",
+                          border: `1px solid ${textTheme}`,
+                        }}
+                      ></div>
+                    </span>
+                  ));
                 } else {
                   setTextTheme(manageFormat(newTextTheme));
+                  toast((t) => (
+                    <span className="flex items-center justify-center gap-4">
+                      Updated text color
+                      <div
+                        className="h-4 w-4"
+                        style={{
+                          backgroundColor: "#fafafa",
+                          border: `1px solid ${newTextTheme}`,
+                        }}
+                      ></div>
+                    </span>
+                  ));
                 }
               }}
             >
@@ -210,10 +256,16 @@ function BackgroundImage({
           !modo
             ? () => {
                 setBackground(localImage);
+                toast((t) => (
+                  <span className="flex items-center justify-center gap-4">
+                    Updated background
+                    <img className="h-8" src={localImage} />
+                  </span>
+                ));
               }
             : undefined
         }
-        className="w-full h-full items-center justify-center relative hidden md:flex"
+        className="w-full h-full items-center justify-center relative hidden md:flex "
       >
         {modo && (
           <input
@@ -240,7 +292,7 @@ function BackgroundImage({
             }}
             src={localImage || "icono.png"}
             alt={`Image ${slot}`}
-            className="object-contain h-full w-full"
+            className="object-contain h-full w-full cursor-pointer"
           />
 
           {uploading && (
@@ -255,6 +307,12 @@ function BackgroundImage({
           !modo
             ? () => {
                 setMobileBackground(localImage);
+                toast((t) => (
+                  <span className="flex items-center justify-center gap-4">
+                    Updated background
+                    <img className="h-8" src={localImage} />
+                  </span>
+                ));
               }
             : undefined
         }
