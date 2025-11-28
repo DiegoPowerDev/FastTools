@@ -83,7 +83,7 @@ function SortableItem({ color, onClick, theme, textTheme, displayColors }) {
 
   return (
     <div
-      className={cn(!displayColors ? "w-full" : "w-[190]")}
+      className={cn(!displayColors ? "w-full" : "w-[190px]")}
       ref={setNodeRef}
       style={style}
       onPointerDown={handlePointerDown}
@@ -192,29 +192,45 @@ function ColorsGrid({
   // Si editable === true -> habilitamos DnD (dnd-kit)
   if (editable) {
     return (
-      <DndContext
-        sensors={sensors}
-        collisionDetection={closestCenter}
-        onDragEnd={handleDragEnd}
-      >
-        <SortableContext
-          items={colors.map((c) => String(c.id))}
-          strategy={verticalListSortingStrategy}
+      <>
+        <DndContext
+          className="md:block hidden"
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragEnd={handleDragEnd}
         >
-          <div className="grid h-full grid-rows-4 grid-flow-col w-full gap-2 p-4">
-            {colors.map((color) => (
-              <SortableItem
-                displayColors={displayColors}
-                key={color.id}
-                color={color}
-                theme={theme}
-                textTheme={textTheme}
-                onClick={() => handleItemClick(color)}
-              />
-            ))}
-          </div>
-        </SortableContext>
-      </DndContext>
+          <SortableContext
+            items={colors.map((c) => String(c.id))}
+            strategy={verticalListSortingStrategy}
+          >
+            <div className="grid h-full grid-rows-4 grid-flow-col w-full gap-2 p-4">
+              {colors.map((color) => (
+                <SortableItem
+                  displayColors={displayColors}
+                  key={color.id}
+                  color={color}
+                  theme={theme}
+                  textTheme={textTheme}
+                  onClick={() => handleItemClick(color)}
+                />
+              ))}
+            </div>
+          </SortableContext>
+        </DndContext>
+        <div className="md:hidden grid h-full grid-rows-4 grid-flow-col w-full gap-2 p-4">
+          {colors.map((color) => (
+            <StaticItem
+              displayColors={displayColors}
+              key={color.id}
+              color={color}
+              editable={true}
+              theme={theme}
+              textTheme={textTheme}
+              onClick={() => handleItemClick(color)}
+            />
+          ))}
+        </div>
+      </>
     );
   }
 
