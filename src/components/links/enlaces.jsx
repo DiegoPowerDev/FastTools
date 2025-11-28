@@ -115,9 +115,50 @@ function SortableLinkItem({
   StaticItem (used when editable === false)
   - only handles click (no dnd-kit)
 ------------------------ */
-function StaticLinkItem({ link, onClick, theme, textTheme, displayLinks }) {
+function StaticLinkItem({
+  link,
+  onClick,
+  theme,
+  textTheme,
+  editable,
+  displayLinks,
+}) {
+  const startTime = useRef(0);
+  const startX = useRef(0);
+  const startY = useRef(0);
+  const isTap = useRef(true);
+
+  const handlePointerDown = (e) => {
+    startTime.current = Date.now();
+    startX.current = e.clientX;
+    startY.current = e.clientY;
+    isTap.current = true;
+  };
+
+  const handlePointerMove = (e) => {
+    const dx = Math.abs(e.clientX - startX.current);
+    const dy = Math.abs(e.clientY - startY.current);
+
+    if (dx > 10 || dy > 10) {
+      isTap.current = false; // Ya no es un tap
+    }
+  };
+
+  const handlePointerUp = () => {
+    const time = Date.now() - startTime.current;
+
+    if (isTap.current && time < 200) {
+      onClick(); // ← CLICK REAL EN MÓVIL
+    }
+  };
+
   return (
-    <div className="h-12" onClick={onClick}>
+    <div
+      className={cn(!displayLinks ? "w-full" : "w-[190]")}
+      onPointerDown={handlePointerDown}
+      onPointerMove={handlePointerMove}
+      onPointerUp={handlePointerUp}
+    >
       <LinkItemInner
         link={link}
         displayLinks={displayLinks}
