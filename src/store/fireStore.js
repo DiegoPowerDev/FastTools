@@ -10,13 +10,20 @@ import {
 import { app } from "@/firebase/config";
 import { getAuth } from "firebase/auth";
 const db = getFirestore(app);
-
+function arrayMove(arr, from, to) {
+  const cloned = [...arr];
+  const item = cloned.splice(from, 1)[0];
+  cloned.splice(to, 0, item);
+  return cloned;
+}
 const initialState = {
   uid: null,
   background: "/background.webp",
   mobileBackground: "/background.webp",
   theme: "#b91c1c",
   textTheme: "#fafafa",
+  displayColors: true,
+  displayLinks: true,
   images: [],
   colors: [
     { id: 1, nombre: "theme", color: "b91c1c" },
@@ -193,6 +200,8 @@ export const fireStore = createStore((set, get) => ({
   images: [],
   theme: "#b91c1c",
   textTheme: "#fafafa",
+  displayColors: true,
+  displayLinks: true,
   colors: [
     { id: 1, nombre: "theme", color: "b91c1c" },
     { id: 2, nombre: "text", color: "fafafa" },
@@ -243,6 +252,12 @@ export const fireStore = createStore((set, get) => ({
     { id: 47, nombre: "", color: "" },
     { id: 48, nombre: "", color: "" },
   ],
+
+  moveColor: (from, to) => {
+    const colors = get().colors;
+    set({ colors: arrayMove(colors, from, to) });
+    get().saveToFirestore();
+  },
   links: [
     {
       id: 1,
@@ -460,6 +475,16 @@ export const fireStore = createStore((set, get) => ({
     get().saveToFirestore();
   },
 
+  setDisplayColors: () => {
+    const value = get().displayColors;
+    set({ displayColors: !value });
+    get().saveToFirestore();
+  },
+  setDisplayLinks: () => {
+    const value = get().displayLinks;
+    set({ displayLinks: !value });
+    get().saveToFirestore();
+  },
   setTabs: (tab) => {
     const tabList = get().tabs || {};
     const updatedTabList = { ...tabList, [tab]: !tabList[tab] };

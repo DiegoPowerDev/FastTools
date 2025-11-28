@@ -76,6 +76,11 @@ export default function UserTable() {
     setTheme,
     setTextTheme,
     textTheme,
+    moveColor,
+    displayColors,
+    displayLinks,
+    setDisplayColors,
+    setDisplayLinks,
   } = useFireStore();
 
   const componentsArray = toolbarArea.map((item) => ({
@@ -130,6 +135,11 @@ export default function UserTable() {
               setApi={setApi}
               socketApi={socketApi}
               setSocketApi={setSocketApi}
+              moveColor={moveColor}
+              displayColors={displayColors}
+              displayLinks={displayLinks}
+              setDisplayColors={setDisplayColors}
+              setDisplayLinks={setDisplayLinks}
             />
           </motion.div>
         ))}

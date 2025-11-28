@@ -2,6 +2,21 @@
 import toast from "react-hot-toast";
 
 import {
+  DndContext,
+  closestCenter,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
+
+import {
+  SortableContext,
+  useSortable,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+
+import { CSS } from "@dnd-kit/utilities";
+import {
   Dialog,
   DialogContent,
   DialogDescription,
@@ -13,41 +28,139 @@ import {
   IconBrush,
   IconColorSwatch,
   IconDeviceFloppy,
+  IconEye,
+  IconEyeClosed,
   IconPencil,
   IconTextColor,
 } from "@tabler/icons-react";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
+import { cn } from "@/lib/utils";
 
-export default function Colors({
-  colors,
-  setColors,
+/* ------------------ SortableItem (solo usado cuando editable === true) ------------------ */
+function SortableItem({ color, onClick, theme, textTheme, displayColors }) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: String(color.id) });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  };
+
+  // Timer para detectar click vs drag
+  const clickTimerRef = useRef(null);
+  const moved = useRef(false);
+
+  const handlePointerDown = (e) => {
+    moved.current = false;
+
+    clickTimerRef.current = setTimeout(() => {
+      if (listeners && typeof listeners.onPointerDown === "function") {
+        listeners.onPointerDown(e);
+      }
+    }, 10);
+  };
+
+  const handlePointerMove = () => {
+    moved.current = true; // El usuario se está moviendo
+    clearTimeout(clickTimerRef.current);
+  };
+
+  const handlePointerUp = (e) => {
+    clearTimeout(clickTimerRef.current);
+
+    if (!moved.current) {
+      onClick();
+    }
+  };
+
+  return (
+    <div
+      className={cn(!displayColors ? "w-full" : "w-[190]")}
+      ref={setNodeRef}
+      style={style}
+      onPointerDown={handlePointerDown}
+      onPointerMove={handlePointerMove}
+      onPointerUp={handlePointerUp}
+      {...attributes}
+    >
+      <div className="cursor-grab active:cursor-grabbing w-full h-full">
+        {(color.nombre || true) && (
+          <Color
+            displayColors={displayColors}
+            color={color}
+            theme={theme}
+            editable={true}
+            textTheme={textTheme}
+          />
+        )}
+      </div>
+    </div>
+  );
+}
+
+/* ------------------ StaticItem (solo cuando editable === false) ------------------ */
+function StaticItem({
+  color,
+  onClick,
   theme,
   textTheme,
-  setTheme,
-  setTextTheme,
+  editable,
+  displayColors,
 }) {
-  const scrollRef = useRef(null);
-  const [editable, setEditable] = useState(false);
-  const [editForm, setEditForm] = useState(false);
-  const [id, setId] = useState(0);
-  const [color, setColor] = useState("");
-  const [nombre, setNombre] = useState("");
-  const groups = [];
-  for (let i = 0; i < colors.length; i += 12) {
-    groups.push(colors.slice(i, i + 12));
-  }
-  const groupsMobile = [];
-  for (let i = 0; i < colors.length; i += 8) {
-    groupsMobile.push(colors.slice(i, i + 8));
-  }
-  const manageFormat = (color) => {
-    if (color[0] === "#") {
-      console.log(color.slice(1, color.length));
-      return color.slice(1, color.length);
+  // Simple wrapper que solo responde clicks/taps (sin DnD)
+  return (
+    <div
+      className={cn(!displayColors ? "w-full" : "w-[190]")}
+      onClick={onClick}
+    >
+      <Color
+        color={color}
+        displayColors={displayColors}
+        theme={theme}
+        editable={editable}
+        textTheme={textTheme}
+      />
+    </div>
+  );
+}
+
+/* ------------------ ColorsGrid: condicional DnD según editable ------------------ */
+function ColorsGrid({
+  colors,
+  editable,
+  moveColor,
+  setEditForm,
+  setColor,
+  setId,
+  setNombre,
+  theme,
+  displayColors,
+  textTheme,
+}) {
+  const sensors = useSensors(useSensor(PointerSensor));
+
+  const handleDragEnd = (event) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+
+    const oldIndex = colors.findIndex(
+      (c) => String(c.id) === String(active.id)
+    );
+    const newIndex = colors.findIndex((c) => String(c.id) === String(over.id));
+
+    if (oldIndex !== -1 && newIndex !== -1) {
+      moveColor(oldIndex, newIndex);
     }
-    return color;
   };
+
   const handleCopy = (color) => {
     navigator.clipboard.writeText("#" + color.color);
     toast((t) => (
@@ -65,6 +178,89 @@ export default function Colors({
     ));
   };
 
+  // onClick handler shared
+  const handleItemClick = (color) => {
+    if (!editable && color.color) handleCopy(color);
+    if (editable) {
+      setId(color.id - 1);
+      setColor(color.color);
+      setNombre(color.nombre);
+      setEditForm(true);
+    }
+  };
+
+  // Si editable === true -> habilitamos DnD (dnd-kit)
+  if (editable) {
+    return (
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCenter}
+        onDragEnd={handleDragEnd}
+      >
+        <SortableContext
+          items={colors.map((c) => String(c.id))}
+          strategy={verticalListSortingStrategy}
+        >
+          <div className="grid h-full grid-rows-4 grid-flow-col w-full gap-2 p-4">
+            {colors.map((color) => (
+              <SortableItem
+                displayColors={displayColors}
+                key={color.id}
+                color={color}
+                theme={theme}
+                textTheme={textTheme}
+                onClick={() => handleItemClick(color)}
+              />
+            ))}
+          </div>
+        </SortableContext>
+      </DndContext>
+    );
+  }
+
+  // Si editable === false -> grid estático, sin DnD
+  return (
+    <div className="grid h-full grid-rows-4 grid-flow-col w-full gap-2 p-4">
+      {colors.map((color) => (
+        <StaticItem
+          displayColors={displayColors}
+          key={color.id}
+          color={color}
+          editable={false}
+          theme={theme}
+          textTheme={textTheme}
+          onClick={() => handleItemClick(color)}
+        />
+      ))}
+    </div>
+  );
+}
+
+/* ------------------ Main component Colors (tu código adaptado) ------------------ */
+export default function Colors({
+  colors,
+  setColors,
+  theme,
+  textTheme,
+  setTheme,
+  setTextTheme,
+  moveColor,
+  displayColors,
+  setDisplayColors,
+}) {
+  const scrollRef = useRef(null);
+  const [editable, setEditable] = useState(false);
+  const [editForm, setEditForm] = useState(false);
+  const [id, setId] = useState(0);
+  const [color, setColor] = useState("");
+  const [nombre, setNombre] = useState("");
+
+  const manageFormat = (colorStr) => {
+    if (!colorStr) return "";
+    if (colorStr[0] === "#") return colorStr.slice(1);
+    return colorStr;
+  };
+
   useEffect(() => {
     const scrollContainer = scrollRef.current;
     if (!scrollContainer) return;
@@ -80,11 +276,13 @@ export default function Colors({
     scrollContainer.addEventListener("wheel", handleWheel, { passive: false });
     return () => scrollContainer.removeEventListener("wheel", handleWheel);
   }, []);
+
   useEffect(() => {
     if (!editForm) {
       setId(0);
     }
   }, [editForm]);
+
   return (
     <div
       style={{ border: `2px solid ${theme}` }}
@@ -94,9 +292,15 @@ export default function Colors({
         style={{
           backgroundColor: theme,
         }}
-        className={`relative  h-14 items-center justify-center grid grid-cols-6 grid-rows-1 w-full`}
+        className={`relative  h-14 items-center flex justify-between w-full px-4`}
       >
-        <div className="col-start-1 col-end-6 text-xl  w-full font-bold uppercase flex justify-center items-center">
+        <div
+          className=" h-full cursor-pointer flex items-center justify-center"
+          onClick={() => setDisplayColors()}
+        >
+          {!displayColors ? <IconEyeClosed size={40} /> : <IconEye size={40} />}
+        </div>
+        <div className=" text-xl  w-full font-bold uppercase flex justify-center items-center">
           Colors
         </div>
         <button
@@ -104,93 +308,35 @@ export default function Colors({
             boxShadow: editable ? `0px 0px 5px 2px white` : "",
           }}
           onClick={() => setEditable(!editable)}
-          className={`col-start-6 col-end-7 bg-white text-black flex justify-center w-12 h-5/6 rounded items-center absolute`}
+          className={` bg-white text-black flex justify-center w-12 h-12 rounded items-center`}
         >
           <IconPencil className={editable && styles.pulse} size={40} />
         </button>
       </div>
+
       <div
         ref={scrollRef}
         style={{
           "--theme": textTheme,
         }}
-        className={`w-full flex-1 overflow-x-auto overflow-y-hidden ${styles.scrollContainer}`}
+        className={`w-full flex-1 flex items-center overflow-x-auto overflow-y-hidden ${styles.scrollContainer}`}
       >
-        <div className="hidden md:flex gap-6 w-full">
-          {(editable
-            ? groups
-            : groups.filter((group) => group.some((e) => e.nombre))
-          ).map((group, i) => (
-            <div
-              key={i}
-              className="grid grid-cols-3 grid-rows-4 gap-2 w-full p-4 rounded-2xl flex-shrink-0"
-            >
-              {group.map((color, i) => (
-                <div
-                  key={i}
-                  onClick={() => {
-                    if (!editable && color.color) {
-                      handleCopy(color);
-                    }
-                    if (editable) {
-                      setId(color.id - 1);
-                      setColor(color.color);
-                      setNombre(color.nombre);
-                      setEditForm(true);
-                    }
-                  }}
-                >
-                  {(color.color || editable) && (
-                    <Color
-                      color={color}
-                      editable={editable}
-                      theme={theme}
-                      textTheme={textTheme}
-                    />
-                  )}
-                </div>
-              ))}
-            </div>
-          ))}
-        </div>
-        <div className="flex md:hidden gap-6 w-full">
-          {(editable
-            ? groupsMobile
-            : groupsMobile.filter((group) => group.some((e) => e.nombre))
-          ).map((group, i) => (
-            <div
-              key={i}
-              className="grid grid-cols-2 grid-rows-4 gap-2 w-full p-4 rounded-2xl flex-shrink-0"
-            >
-              {group.map((color, i) => (
-                <div
-                  key={i}
-                  onClick={() => {
-                    if (!editable && color.color) {
-                      handleCopy(color.color);
-                    }
-                    if (editable) {
-                      setId(color.id - 1);
-                      setColor(color.color);
-                      setNombre(color.nombre);
-                      setEditForm(true);
-                    }
-                  }}
-                >
-                  {(color.color || editable) && (
-                    <Color
-                      color={color}
-                      editable={editable}
-                      theme={theme}
-                      textTheme={textTheme}
-                    />
-                  )}
-                </div>
-              ))}
-            </div>
-          ))}
+        <div className="h-full">
+          <ColorsGrid
+            displayColors={displayColors}
+            colors={colors}
+            editable={editable}
+            moveColor={moveColor}
+            setEditForm={setEditForm}
+            setColor={setColor}
+            setId={setId}
+            setNombre={setNombre}
+            theme={theme}
+            textTheme={textTheme}
+          />
         </div>
       </div>
+
       <Dialog onOpenChange={setEditForm} open={editForm}>
         <DialogContent
           style={{ color: textTheme }}
@@ -210,12 +356,12 @@ export default function Colors({
               <Input
                 id="nombre"
                 type="text"
-                placeholder={colors[id].nombre || ""}
+                placeholder={colors[id]?.nombre || ""}
                 className="p-2 rounded placeholder:text-gray-500 placeholder:opacity-40"
                 value={nombre}
                 onChange={(e) => {
-                  const nombre = e.target.value;
-                  setNombre(nombre);
+                  const nombreV = e.target.value;
+                  setNombre(nombreV);
                 }}
               />
             </div>
@@ -239,11 +385,11 @@ export default function Colors({
                   maxLength={9}
                   className="p-2 w-40 rounded placeholder:opacity-40"
                   type="text"
-                  placeholder={colors[id].color || ""}
+                  placeholder={colors[id]?.color || ""}
                   value={color.toUpperCase()}
                   onChange={(e) => {
-                    const color = e.target.value;
-                    setColor(color);
+                    const colorV = e.target.value;
+                    setColor(colorV);
                   }}
                 />
               </div>
@@ -275,7 +421,7 @@ export default function Colors({
                 </div>
               </button>
             </div>
-            {colors[id].color && (
+            {colors[id]?.color && (
               <div className="w-full flex gap-8 items-center justify-center">
                 <Button
                   variant="outline"
@@ -302,11 +448,12 @@ export default function Colors({
   );
 }
 
-function Color({ color, theme, editable, textTheme }) {
+/* ------------------ Small Color component (keeps behavior) ------------------ */
+function Color({ color, theme, editable, textTheme, displayColors }) {
   const [hover, setHover] = useState(false);
   const borderStyle =
     hover && (color.color || editable)
-      ? `2px solid ${theme}`
+      ? `2px solid ${textTheme}`
       : "2px solid transparent";
 
   return (
@@ -314,11 +461,13 @@ function Color({ color, theme, editable, textTheme }) {
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
       style={{
-        border: borderStyle,
+        border: displayColors && borderStyle,
       }}
       className={`${
         (color.color || editable) && "cursor-pointer"
-      } w-full h-12 flex text-white items-center gap-1 p-2 rounded-xl border-2 border-transparent`}
+      } w-full p-2 rounded-xl flex text-white items-center justify-center gap-1 ${
+        hover && !displayColors && "scale-110 "
+      } `}
     >
       <div
         style={{
@@ -329,15 +478,16 @@ function Color({ color, theme, editable, textTheme }) {
             ? `1px solid ${textTheme}`
             : "none",
         }}
-        className="h-8 w-8 rounded flex-shrink-0"
+        className={`h-8 w-8 rounded flex-shrink-0 `}
       ></div>
-
-      <h1
-        style={{ color: textTheme, textShadow: `0 0 15px ${theme}` }}
-        className="flex-1 text-sm font-bold truncate"
-      >
-        {color.nombre}
-      </h1>
+      {displayColors && (
+        <h1
+          style={{ color: textTheme, textShadow: `0 0 15px ${theme}` }}
+          className="flex-1 text-sm truncate select-none "
+        >
+          {color.nombre}
+        </h1>
+      )}
     </div>
   );
 }
