@@ -178,7 +178,7 @@ function NotesGrid({
           items={notes.map((n) => String(n.id))}
           strategy={verticalListSortingStrategy}
         >
-          <div className="grid grid-rows-4 h-full grid-flow-col gap-2 w-full p-4">
+          <div className="grid grid-rows-4 h-full grid-flow-col gap-4 w-full p-4">
             {notes.map((note, index) => (
               <SortableNoteItem
                 key={note.id}
@@ -196,7 +196,7 @@ function NotesGrid({
   }
 
   return (
-    <div className="grid grid-rows-4 h-full grid-flow-col gap-2 w-full p-4">
+    <div className="grid grid-rows-4 h-full grid-flow-col gap-4 w-full p-4">
       {notes.map((note, index) => (
         <div key={note.id}>
           <StaticNoteItem
@@ -243,7 +243,7 @@ export default function NotesMobile({
     const handleWheel = (e) => {
       if (scrollContainer.scrollWidth > scrollContainer.clientWidth) {
         e.preventDefault();
-        const scrollSpeed = 5.5;
+        const scrollSpeed = 6.2;
         scrollContainer.scrollLeft += e.deltaY * scrollSpeed;
       }
     };

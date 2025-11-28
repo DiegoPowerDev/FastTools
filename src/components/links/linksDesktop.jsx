@@ -88,7 +88,7 @@ function SortableLinkItem({
     <div
       ref={setNodeRef}
       style={style}
-      className="w-full h-full"
+      className={cn(!displayLinks ? "w-full" : "w-[290px]")}
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
@@ -118,7 +118,7 @@ function StaticLinkItem({
 }) {
   return (
     <div
-      className={cn(!displayLinks ? "w-full" : "w-[270px]")}
+      className={cn(!displayLinks ? "w-full" : "w-[290px]")}
       onClick={onClick}
     >
       <LinkItemInner
@@ -229,10 +229,7 @@ function LinksGrid({
         >
           <div className="grid h-full grid-rows-4 grid-flow-col w-full gap-4 p-4">
             {links.map((l, index) => (
-              <div
-                key={l.id}
-                className={cn("h-full", displayLinks ? "w-[270px]" : "w-full")}
-              >
+              <div key={l.id} className={cn("h-full w-full")}>
                 <SortableLinkItem
                   displayLinks={displayLinks}
                   link={l}
@@ -252,10 +249,7 @@ function LinksGrid({
   return (
     <div className="grid grid-rows-4 grid-flow-col h-full w-full gap-4 p-4">
       {links.map((l, index) => (
-        <div
-          key={l.id}
-          className={cn("h-full", displayLinks ? "w-[270px]" : "w-full")}
-        >
+        <div key={l.id} className={cn("h-full w-full")}>
           <StaticLinkItem
             displayLinks={displayLinks}
             link={l}
@@ -302,7 +296,7 @@ export default function Links({
     const handleWheel = (e) => {
       if (scrollContainer.scrollWidth > scrollContainer.clientWidth) {
         e.preventDefault();
-        const scrollSpeed = 3.4;
+        const scrollSpeed = 6.2;
         scrollContainer.scrollLeft += e.deltaY * scrollSpeed;
       }
     };

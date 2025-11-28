@@ -83,7 +83,7 @@ function SortableItem({ color, onClick, theme, textTheme, displayColors }) {
 
   return (
     <div
-      className={cn(!displayColors ? "w-full" : "w-[190px]")}
+      className={cn(!displayColors ? "w-full" : "w-[195px]")}
       ref={setNodeRef}
       style={style}
       onPointerDown={handlePointerDown}
@@ -116,7 +116,7 @@ function StaticItem({
   // Simple wrapper que solo responde clicks/taps (sin DnD)
   return (
     <div
-      className={cn(!displayColors ? "w-full" : "w-[190px]")}
+      className={cn(!displayColors ? "w-full" : "w-[195px]")}
       onClick={onClick}
     >
       <Color
@@ -284,7 +284,7 @@ export default function ColorsDesktop({
     const handleWheel = (e) => {
       if (scrollContainer.scrollWidth > scrollContainer.clientWidth) {
         e.preventDefault();
-        const scrollSpeed = 3.4;
+        const scrollSpeed = 6.2;
         scrollContainer.scrollLeft += e.deltaY * scrollSpeed;
       }
     };
