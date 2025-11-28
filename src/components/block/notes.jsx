@@ -60,7 +60,7 @@ export default function Notes({ notes, setNotes, theme, textTheme }) {
     const handleWheel = (e) => {
       if (scrollContainer.scrollWidth > scrollContainer.clientWidth) {
         e.preventDefault();
-        const scrollSpeed = 3.4;
+        const scrollSpeed = 5.5;
         scrollContainer.scrollLeft += e.deltaY * scrollSpeed;
       }
     };
@@ -295,7 +295,7 @@ function NoteItem({ note, theme, textTheme, editable }) {
     >
       <div className="h-12 gap-2 w-full rounded-l-md flex items-center justify-start">
         <IconNote className="flex-shrink-0 h-8 w-8" />
-        {note && <h1 className="font-bold truncate">{note.title}</h1>}
+        {note && <h1 className="truncate">{note.title}</h1>}
       </div>
     </div>
   );

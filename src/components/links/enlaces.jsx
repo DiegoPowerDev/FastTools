@@ -39,7 +39,7 @@ export default function Links({ links, setLinks, theme, textTheme }) {
     const handleWheel = (e) => {
       if (scrollContainer.scrollWidth > scrollContainer.clientWidth) {
         e.preventDefault();
-        const scrollSpeed = 3.4;
+        const scrollSpeed = 5;
         scrollContainer.scrollLeft += e.deltaY * scrollSpeed;
       }
     };
@@ -254,7 +254,7 @@ function LinkItem({ link, textTheme, editable }) {
           />
         )}
       </div>
-      <h1 className="font-medium truncate">{link.nombre}</h1>
+      <h1 className="truncate">{link.nombre}</h1>
     </div>
   );
 }

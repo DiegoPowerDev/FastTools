@@ -72,7 +72,7 @@ export default function Colors({
     const handleWheel = (e) => {
       if (scrollContainer.scrollWidth > scrollContainer.clientWidth) {
         e.preventDefault();
-        const scrollSpeed = 3.4;
+        const scrollSpeed = 6;
         scrollContainer.scrollLeft += e.deltaY * scrollSpeed;
       }
     };
@@ -121,7 +121,7 @@ export default function Colors({
         >
           {colors.map((color, i) => (
             <div
-              className="w-[150px]"
+              className="w-[200px]"
               key={i}
               onClick={() => {
                 if (!editable && color.color) {
@@ -274,7 +274,7 @@ function Color({ color, theme, editable, textTheme }) {
       }}
       className={`${
         (color.color || editable) && "cursor-pointer"
-      } w-full h-12 flex text-white items-center gap-1 px-4 rounded-xl border-2 border-transparent`}
+      } w-full h-12 flex text-white items-center gap-2 px-4 rounded-xl border-2 border-transparent`}
     >
       <div
         style={{
@@ -290,7 +290,7 @@ function Color({ color, theme, editable, textTheme }) {
 
       <h1
         style={{ color: textTheme, textShadow: `0 0 15px ${theme}` }}
-        className="flex-1 text-sm font-bold truncate"
+        className="truncate"
       >
         {color.nombre}
       </h1>
