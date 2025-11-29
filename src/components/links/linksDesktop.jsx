@@ -150,8 +150,9 @@ function LinkItemInner({ link, textTheme, displayLinks, editable }) {
         border: !editable ? borderStyle : `1px solid ${textTheme}`,
       }}
       className={cn(
-        " h-12 flex  items-center gap-2  rounded-xl duration-200 w-full px-2",
-        (link.link || editable) && "bg-black  cursor-pointer"
+        " h-12 flex  items-center gap-2  rounded-xl duration-200 w-full",
+        (link.link || editable) && "bg-black  cursor-pointer",
+        displayLinks && "px-2"
       )}
     >
       <div className="h-12 w-12 rounded-l-md flex items-center justify-center flex-shrink-0">
@@ -230,7 +231,7 @@ function LinksGrid({
           items={links.map((l) => String(l.id))}
           strategy={verticalListSortingStrategy}
         >
-          <div className="grid h-full grid-rows-4 grid-flow-col w-full gap-4 p-4">
+          <div className="grid h-full grid-rows-4 grid-flow-col w-full gap-4 p-4 ">
             {links.map((l, index) => (
               <div key={l.id} className={cn("h-full w-full")}>
                 <SortableLinkItem
@@ -250,7 +251,7 @@ function LinksGrid({
   }
 
   return (
-    <div className="grid grid-rows-4 grid-flow-col h-full w-full gap-4 p-4">
+    <div className="grid grid-rows-4 grid-flow-col h-full w-full gap-4 p-4 ">
       {visibleLinks.map((l, index) => (
         <div key={l.id} className={cn("h-full w-full")}>
           <StaticLinkItem
@@ -350,7 +351,10 @@ export default function Links({
         style={{
           "--theme": textTheme,
         }}
-        className={`bg-black/50 w-full flex-1 flex items-center overflow-x-auto overflow-y-hidden ${styles.scrollContainer}`}
+        className={cn(
+          `bg-black/50 w-full flex-1 flex items-center overflow-x-auto  overflow-y-hidden ${styles.scrollContainer}`,
+          !displayLinks && editable ? "justify-center" : ""
+        )}
       >
         <div className="h-full">
           <LinksGrid
