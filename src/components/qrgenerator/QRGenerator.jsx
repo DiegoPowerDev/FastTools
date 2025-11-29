@@ -230,7 +230,7 @@ export default function QRGenerator({ theme, textTheme }) {
         </button>
       </div>
       <div className="grid grid-cols-2 grid-rows-[6fr_1fr] md:grid-rows-[3fr_1fr] w-full h-full items-center justify-center gap-2">
-        <div className="flex flex-col md:p-2 gap-2 md:gap-4 items-center justify-center h-full w-full">
+        <div className="flex flex-col md:p-2 gap-2 items-center justify-center h-full w-full">
           <label className="font-bold">Text or URL</label>
           <Input
             style={{
@@ -244,7 +244,9 @@ export default function QRGenerator({ theme, textTheme }) {
           />
           <div className="grid grid-cols-1 md:grid-cols-2 grid-rows-1 w-full items-center justify-center">
             <div className=" flex md:grid md:grid-cols-2 md:grid-rows-2 w-full gap-1 md:gap-4 justify-center items-center">
-              <label className="text-sm md:block hidden">Size (px):</label>
+              <label className="text-sm md:block hidden  font-bold">
+                Size (px):
+              </label>
               <Input
                 type="text"
                 style={{
@@ -265,9 +267,9 @@ export default function QRGenerator({ theme, textTheme }) {
                 }}
                 className="border rounded p-1 w-16"
               />
-              <span className="md:hidden">px</span>
+              <span className="md:hidden  font-bold">px</span>
 
-              <label className="hidden md:block">Colors:</label>
+              <label className="hidden md:block  font-bold">Colors:</label>
               <div className="flex">
                 <input
                   type="color"
@@ -284,9 +286,9 @@ export default function QRGenerator({ theme, textTheme }) {
               </div>
             </div>
 
-            <div className="md:col-span-1 col-span-2 flex flex-col items-center justify-center px-4">
+            <div className="md:col-span-1 col-span-2 flex flex-col items-center gap-4 justify-center px-4">
               <div className="flex gap-4 items-center justify-center">
-                <span className="text-sm font-medium hidden md:block">
+                <span className="text-sm  font-bold hidden md:block">
                   Logo:
                 </span>
                 <label htmlFor="QRLogo">
@@ -302,9 +304,9 @@ export default function QRGenerator({ theme, textTheme }) {
                     <div
                       style={{
                         color: textTheme,
-                        border: `1px solid ${theme}`,
+                        border: `1px solid ${textTheme}`,
                       }}
-                      className="h-12 w-12 flex justify-center items-center p-4 text-xs border-2 rounded"
+                      className="bg-black h-12 w-12 flex justify-center items-center p-4 text-xs border-2 rounded"
                     >
                       LOGO
                     </div>
@@ -321,7 +323,9 @@ export default function QRGenerator({ theme, textTheme }) {
               </div>
 
               <div className="w-full">
-                <label className="text-sm">Logo Size: {logoSize}%</label>
+                <label className="text-sm  font-bold">
+                  Logo Size: {logoSize}%
+                </label>
                 <Slider
                   style={theme}
                   disabled={!logo}
