@@ -8,6 +8,8 @@ export const pageStore = createStore(
     (set, get) => ({
       authenticate: false,
       background: "/background.webp",
+      mobileBackground: "/background.webp",
+      images: [],
       theme: "#b91c1c",
       textTheme: "#fafafa",
       colors: [

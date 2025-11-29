@@ -178,6 +178,8 @@ export default function Toolbar() {
     setTheme,
     setTextTheme,
     setBackground,
+    mobileBackground,
+    setMobileBackground,
     background,
   } = usePageStore();
 
@@ -324,7 +326,7 @@ export default function Toolbar() {
                 <Dialog>
                   <DialogTrigger aria-label="Settings">
                     <motion.div
-                    layout
+                      layout
                       whileHover={{
                         rotate: [0, 360],
                       }}
@@ -349,6 +351,8 @@ export default function Toolbar() {
                       <DialogDescription></DialogDescription>
                     </DialogHeader>
                     <MenuSettingsBasic
+                      setMobileBackground={setMobileBackground}
+                      mobileBackground={mobileBackground}
                       setBackground={setBackground}
                       background={background}
                       textTheme={textTheme}
