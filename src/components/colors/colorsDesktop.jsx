@@ -91,7 +91,12 @@ function SortableItem({ color, onClick, theme, textTheme, displayColors }) {
       onPointerUp={handlePointerUp}
       {...attributes}
     >
-      <div className="cursor-grab active:cursor-grabbing w-full h-full">
+      <div
+        style={{
+          border: `1px solid ${textTheme}`,
+        }}
+        className="cursor-grab rounded-xl active:cursor-grabbing w-full"
+      >
         <Color
           displayColors={displayColors}
           color={color}
@@ -489,22 +494,21 @@ function Color({ color, theme, editable, textTheme, displayColors }) {
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
       style={{
-        border: displayColors && borderStyle,
+        backgroundColor: color.color && color.nombre ? theme : "",
+        border: borderStyle,
       }}
-      className={`${
-        (color.color || editable) && "cursor-pointer"
-      } w-full p-2 rounded-xl flex text-white items-center justify-center gap-1 ${
-        hover && !displayColors && "scale-110 "
-      } `}
+      className={cn(
+        `${
+          (color.color || editable) && "cursor-pointer"
+        } w-full  rounded-xl flex p-1 text-white items-center justify-center gap-1 ${
+          hover && !displayColors && "scale-110 "
+        } `,
+        displayColors && "p-2"
+      )}
     >
       <div
         style={{
           backgroundColor: color.color && color.nombre ? `#${color.color}` : "",
-          border: color.color
-            ? `1px solid ${textTheme}`
-            : editable
-            ? `1px solid ${textTheme}`
-            : "none",
         }}
         className={`h-8 w-8 rounded flex-shrink-0 `}
       ></div>

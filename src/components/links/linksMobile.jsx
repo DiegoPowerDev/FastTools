@@ -16,8 +16,9 @@ export default function LinksMobile({ links, setLinks, theme, textTheme }) {
   const scrollRef = useRef(null);
   const [editable, setEditable] = useState(false);
   const [editForm, setEditForm] = useState(false);
-  const [id, setId] = useState(0);
-  const [link, setLink] = useState("");
+  // ✅ CAMBIO: Guardamos el índice del array, no el ID
+  const [editingIndex, setEditingIndex] = useState(null);
+  const [url, setUrl] = useState("");
   const [nombre, setNombre] = useState("");
   const [icono, setIcono] = useState("");
   const [isValid, setIsValid] = useState(true);
@@ -25,6 +26,7 @@ export default function LinksMobile({ links, setLinks, theme, textTheme }) {
   useEffect(() => {
     setIsValid(true);
   }, [icono]);
+
   useEffect(() => {
     const scrollContainer = scrollRef.current;
     if (!scrollContainer) return;
@@ -40,11 +42,13 @@ export default function LinksMobile({ links, setLinks, theme, textTheme }) {
     scrollContainer.addEventListener("wheel", handleWheel, { passive: false });
     return () => scrollContainer.removeEventListener("wheel", handleWheel);
   }, []);
+
   useEffect(() => {
     if (!editForm) {
-      setId(0);
+      setEditingIndex(null);
     }
   }, [editForm]);
+
   return (
     <div
       style={{ border: `2px solid ${theme}` }}
@@ -80,20 +84,20 @@ export default function LinksMobile({ links, setLinks, theme, textTheme }) {
           ref={scrollRef}
           className={` grid grid-rows-4 h-full grid-flow-col w-full gap-x-2 p-4 overflow-x-auto ${styles.scrollContainer}`}
         >
-          {links.map((link, e) => (
-            <div className="w-[280px]" key={e}>
+          {links.map((link, index) => (
+            <div className="w-[280px]" key={link.id}>
               {(link.link || editable) && (
                 <a
-                  className={editable ? "cursor-pointer" : "cursor-pointer"}
+                  className="cursor-pointer"
                   target="_blank"
                   {...(!editable && { href: link.link })}
                   onClick={() => {
                     if (editable) {
-                      setId(link.id - 1);
-                      setLink(link.link);
-                      setNombre(link.nombre);
+                      setEditingIndex(index);
+                      setUrl(link.link || "");
+                      setNombre(link.nombre || "");
+                      setIcono(link.icono || "");
                       setEditForm(true);
-                      setIcono(link.icono);
                     }
                   }}
                 >
@@ -109,6 +113,7 @@ export default function LinksMobile({ links, setLinks, theme, textTheme }) {
           ))}
         </div>
       </div>
+
       <Dialog onOpenChange={setEditForm} open={editForm}>
         <DialogContent
           style={{ color: textTheme }}
@@ -122,7 +127,7 @@ export default function LinksMobile({ links, setLinks, theme, textTheme }) {
           </DialogDescription>
           <div className="flex flex-col gap-4  p-4 h-full">
             <div className="flex w-full h-full items-center gap-4">
-              <label className="font-bold" htmlFor="color">
+              <label className="font-bold" htmlFor="link">
                 URL
               </label>
 
@@ -130,11 +135,13 @@ export default function LinksMobile({ links, setLinks, theme, textTheme }) {
                 id="link"
                 className="p-2 w-full rounded placeholder:opacity-40"
                 type="text"
-                placeholder={links[id].link || "URL"}
-                value={link}
+                placeholder={
+                  editingIndex !== null ? links[editingIndex]?.link : "URL"
+                }
+                value={url}
                 onChange={(e) => {
-                  const link = e.target.value;
-                  setLink(link);
+                  const newUrl = e.target.value;
+                  setUrl(newUrl);
                 }}
               />
             </div>
@@ -145,7 +152,9 @@ export default function LinksMobile({ links, setLinks, theme, textTheme }) {
               <Input
                 id="nombre"
                 type="text"
-                placeholder={links[id].nombre || ""}
+                placeholder={
+                  editingIndex !== null ? links[editingIndex]?.nombre : ""
+                }
                 className="p-2 rounded placeholder:text-gray-500 placeholder:opacity-40 "
                 value={nombre}
                 onChange={(e) => {
@@ -163,8 +172,8 @@ export default function LinksMobile({ links, setLinks, theme, textTheme }) {
                         src={icono}
                         alt="nuevo icono"
                         className="h-10 w-10"
-                        onError={() => setIsValid(false)} // si falla → no mostrar
-                        onLoad={() => setIsValid(true)} // si carga → mostrar
+                        onError={() => setIsValid(false)}
+                        onLoad={() => setIsValid(true)}
                       />
                     )}
                   </div>
@@ -192,12 +201,15 @@ export default function LinksMobile({ links, setLinks, theme, textTheme }) {
               <Button
                 variant="destructive"
                 onClick={() => {
-                  setEditForm(false);
-                  setLinks(id, "", "", "");
-                  setId(0);
-                  setNombre("");
-                  setLink("");
-                  setIcono("");
+                  if (editingIndex !== null) {
+                    // ✅ Usa el índice actual para eliminar
+                    setLinks(editingIndex, "", "", "");
+                    setEditForm(false);
+                    setEditingIndex(null);
+                    setNombre("");
+                    setUrl("");
+                    setIcono("");
+                  }
                 }}
               >
                 DELETE
@@ -205,8 +217,11 @@ export default function LinksMobile({ links, setLinks, theme, textTheme }) {
               <button
                 style={{ backgroundColor: theme, color: textTheme }}
                 onClick={() => {
-                  setLinks(id, nombre, link, icono);
-                  setEditForm(false);
+                  if (editingIndex !== null) {
+                    // ✅ Usa el índice actual para guardar
+                    setLinks(editingIndex, nombre, url, icono);
+                    setEditForm(false);
+                  }
                 }}
                 className="hover:opacity-60 w-full p-2 rounded  font-bold duration-200 active:scale-105 active:border-2 active:border-white"
               >

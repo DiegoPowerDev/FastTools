@@ -30,17 +30,19 @@ export default function ColorsMobile({
   const scrollRef = useRef(null);
   const [editable, setEditable] = useState(false);
   const [editForm, setEditForm] = useState(false);
-  const [id, setId] = useState(0);
+  // ✅ CAMBIO: Guardamos el índice del array, no el ID
+  const [editingIndex, setEditingIndex] = useState(null);
   const [color, setColor] = useState("");
   const [nombre, setNombre] = useState("");
 
   const manageFormat = (color) => {
+    if (!color) return "";
     if (color[0] === "#") {
-      console.log(color.slice(1, color.length));
       return color.slice(1, color.length);
     }
     return color;
   };
+
   const handleCopy = (color) => {
     navigator.clipboard.writeText("#" + color.color);
     toast((t) => (
@@ -73,11 +75,13 @@ export default function ColorsMobile({
     scrollContainer.addEventListener("wheel", handleWheel, { passive: false });
     return () => scrollContainer.removeEventListener("wheel", handleWheel);
   }, []);
+
   useEffect(() => {
     if (!editForm) {
-      setId(0);
+      setEditingIndex(null);
     }
   }, [editForm]);
+
   return (
     <div
       style={{ border: `2px solid ${theme}` }}
@@ -112,18 +116,18 @@ export default function ColorsMobile({
           ref={scrollRef}
           className={` grid grid-rows-4 h-full grid-flow-col w-full p-4 overflow-x-auto ${styles.scrollContainer}`}
         >
-          {colors.map((color, i) => (
+          {colors.map((color, index) => (
             <div
               className="w-[200px]"
-              key={i}
+              key={color.id}
               onClick={() => {
                 if (!editable && color.color) {
                   handleCopy(color);
                 }
                 if (editable) {
-                  setId(color.id - 1);
-                  setColor(color.color);
-                  setNombre(color.nombre);
+                  setEditingIndex(index);
+                  setColor(color.color || "");
+                  setNombre(color.nombre || "");
                   setEditForm(true);
                 }
               }}
@@ -159,7 +163,9 @@ export default function ColorsMobile({
               <Input
                 id="nombre"
                 type="text"
-                placeholder={colors[id].nombre || ""}
+                placeholder={
+                  editingIndex !== null ? colors[editingIndex]?.nombre : ""
+                }
                 className="p-2 rounded placeholder:text-gray-500 placeholder:opacity-40"
                 value={nombre}
                 onChange={(e) => {
@@ -188,7 +194,9 @@ export default function ColorsMobile({
                   maxLength={9}
                   className="p-2 w-40 rounded placeholder:opacity-40"
                   type="text"
-                  placeholder={colors[id].color || ""}
+                  placeholder={
+                    editingIndex !== null ? colors[editingIndex]?.color : ""
+                  }
                   value={color.toUpperCase()}
                   onChange={(e) => {
                     const color = e.target.value;
@@ -198,15 +206,17 @@ export default function ColorsMobile({
               </div>
             </div>
 
-            <div className="w-full h-full flex justify-center items-center gap-4">
+            <div className="w-full h-full flex justify-center items-center gap-2">
               <Button
                 variant="destructive"
                 onClick={() => {
-                  setEditForm(false);
-                  setColors(id, "", "");
-                  setColor("");
-                  setNombre("");
-                  setId(0);
+                  if (editingIndex !== null) {
+                    setEditForm(false);
+                    setColors(editingIndex, "", "");
+                    setColor("");
+                    setNombre("");
+                    setEditingIndex(null);
+                  }
                 }}
               >
                 DELETE
@@ -214,8 +224,10 @@ export default function ColorsMobile({
               <button
                 style={{ backgroundColor: theme, color: textTheme }}
                 onClick={() => {
-                  setColors(id, nombre, manageFormat(color));
-                  setEditForm(false);
+                  if (editingIndex !== null) {
+                    setColors(editingIndex, nombre, manageFormat(color));
+                    setEditForm(false);
+                  }
                 }}
                 className="hover:opacity-60 w-full p-2 rounded  font-bold duration-200 active:scale-105 active:border-2 active:border-white"
               >
@@ -224,8 +236,8 @@ export default function ColorsMobile({
                 </div>
               </button>
             </div>
-            {colors[id].color && (
-              <div className="w-full flex gap-8 items-center justify-center">
+            {editingIndex !== null && colors[editingIndex]?.color && (
+              <div className="w-full flex gap-2 items-center justify-center">
                 <Button
                   variant="outline"
                   className="text-white bg-black border-2 border-white"
