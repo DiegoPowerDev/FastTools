@@ -90,34 +90,55 @@ function SortableLinkItem({
   };
 
   return (
-    <TooltipProvider delayDuration={1}>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <div
-            ref={setNodeRef}
-            style={style}
-            className={cn(!displayLinks ? "w-full" : "w-[290px]")}
-            onPointerDown={handlePointerDown}
-            onPointerMove={handlePointerMove}
-            onPointerUp={handlePointerUp}
-            {...attributes}
-          >
-            <LinkItemInner
-              link={link}
-              editable={editable}
-              theme={theme}
-              textTheme={textTheme}
-              displayLinks={displayLinks}
-            />
-          </div>
-        </TooltipTrigger>
-        {!displayLinks && link.nombre && (
-          <TooltipContent>
-            <p>{link.nombre}</p>
-          </TooltipContent>
-        )}
-      </Tooltip>
-    </TooltipProvider>
+    <>
+      {!displayLinks && link.nombre ? (
+        <TooltipProvider delayDuration={1}>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div
+                ref={setNodeRef}
+                style={style}
+                className={cn(!displayLinks ? "w-full" : "w-[290px]")}
+                onPointerDown={handlePointerDown}
+                onPointerMove={handlePointerMove}
+                onPointerUp={handlePointerUp}
+                {...attributes}
+              >
+                <LinkItemInner
+                  link={link}
+                  editable={editable}
+                  theme={theme}
+                  textTheme={textTheme}
+                  displayLinks={displayLinks}
+                />
+              </div>
+            </TooltipTrigger>
+
+            <TooltipContent>
+              <p>{link.nombre}</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      ) : (
+        <div
+          ref={setNodeRef}
+          style={style}
+          className={cn(!displayLinks ? "w-full" : "w-[290px]")}
+          onPointerDown={handlePointerDown}
+          onPointerMove={handlePointerMove}
+          onPointerUp={handlePointerUp}
+          {...attributes}
+        >
+          <LinkItemInner
+            link={link}
+            editable={editable}
+            theme={theme}
+            textTheme={textTheme}
+            displayLinks={displayLinks}
+          />
+        </div>
+      )}
+    </>
   );
 }
 
@@ -126,28 +147,43 @@ function SortableLinkItem({
 ------------------------ */
 function StaticLinkItem({ link, onClick, theme, textTheme, displayLinks }) {
   return (
-    <TooltipProvider delayDuration={1}>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <div
-            className={cn(!displayLinks ? "w-full" : "w-[290px]")}
-            onClick={onClick}
-          >
-            <LinkItemInner
-              link={link}
-              displayLinks={displayLinks}
-              theme={theme}
-              textTheme={textTheme}
-            />
-          </div>
-        </TooltipTrigger>
-        {!displayLinks && link.nombre && (
-          <TooltipContent>
-            <p>{link.nombre}</p>
-          </TooltipContent>
-        )}
-      </Tooltip>
-    </TooltipProvider>
+    <>
+      {!displayLinks && link.nombre ? (
+        <TooltipProvider delayDuration={1}>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div
+                className={cn(!displayLinks ? "w-full" : "w-[290px]")}
+                onClick={onClick}
+              >
+                <LinkItemInner
+                  link={link}
+                  displayLinks={displayLinks}
+                  theme={theme}
+                  textTheme={textTheme}
+                />
+              </div>
+            </TooltipTrigger>
+
+            <TooltipContent>
+              <p>{link.nombre}</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      ) : (
+        <div
+          className={cn(!displayLinks ? "w-full" : "w-[290px]")}
+          onClick={onClick}
+        >
+          <LinkItemInner
+            link={link}
+            displayLinks={displayLinks}
+            theme={theme}
+            textTheme={textTheme}
+          />
+        </div>
+      )}
+    </>
   );
 }
 
@@ -320,7 +356,7 @@ export default function Links({
     const handleWheel = (e) => {
       if (scrollContainer.scrollWidth > scrollContainer.clientWidth) {
         e.preventDefault();
-        const scrollSpeed = 6.2;
+        const scrollSpeed = 3.1;
         scrollContainer.scrollLeft += e.deltaY * scrollSpeed;
       }
     };

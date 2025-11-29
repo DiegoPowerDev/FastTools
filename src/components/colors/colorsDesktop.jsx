@@ -89,41 +89,69 @@ function SortableItem({ color, onClick, theme, textTheme, displayColors }) {
   };
 
   return (
-    <TooltipProvider delayDuration={1}>
-      <Tooltip>
-        <TooltipTrigger asChild>
+    <>
+      {!displayColors && color.nombre ? (
+        <TooltipProvider delayDuration={1}>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div
+                className={cn(!displayColors ? "w-full" : "w-[194px]")}
+                ref={setNodeRef}
+                style={style}
+                onPointerDown={handlePointerDown}
+                onPointerMove={handlePointerMove}
+                onPointerUp={handlePointerUp}
+                {...attributes}
+              >
+                <div
+                  style={{
+                    border: `1px solid ${textTheme}`,
+                  }}
+                  className="cursor-grab rounded-xl active:cursor-grabbing w-full"
+                >
+                  <Color
+                    displayColors={displayColors}
+                    color={color}
+                    theme={theme}
+                    editable={true}
+                    textTheme={textTheme}
+                  />
+                </div>
+              </div>
+            </TooltipTrigger>
+
+            <TooltipContent>
+              <p>{color.nombre}</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      ) : (
+        <div
+          className={cn(!displayColors ? "w-full" : "w-[194px]")}
+          ref={setNodeRef}
+          style={style}
+          onPointerDown={handlePointerDown}
+          onPointerMove={handlePointerMove}
+          onPointerUp={handlePointerUp}
+          {...attributes}
+        >
           <div
-            className={cn(!displayColors ? "w-full" : "w-[194px]")}
-            ref={setNodeRef}
-            style={style}
-            onPointerDown={handlePointerDown}
-            onPointerMove={handlePointerMove}
-            onPointerUp={handlePointerUp}
-            {...attributes}
+            style={{
+              border: `1px solid ${textTheme}`,
+            }}
+            className="cursor-grab rounded-xl active:cursor-grabbing w-full"
           >
-            <div
-              style={{
-                border: `1px solid ${textTheme}`,
-              }}
-              className="cursor-grab rounded-xl active:cursor-grabbing w-full"
-            >
-              <Color
-                displayColors={displayColors}
-                color={color}
-                theme={theme}
-                editable={true}
-                textTheme={textTheme}
-              />
-            </div>
+            <Color
+              displayColors={displayColors}
+              color={color}
+              theme={theme}
+              editable={true}
+              textTheme={textTheme}
+            />
           </div>
-        </TooltipTrigger>
-        {!displayColors && color.nombre && (
-          <TooltipContent>
-            <p>{color.nombre}</p>
-          </TooltipContent>
-        )}
-      </Tooltip>
-    </TooltipProvider>
+        </div>
+      )}
+    </>
   );
 }
 
@@ -138,29 +166,45 @@ function StaticItem({
 }) {
   // Simple wrapper que solo responde clicks/taps (sin DnD)
   return (
-    <TooltipProvider delayDuration={1}>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <div
-            className={cn(!displayColors ? "w-full" : "w-[194px]")}
-            onClick={onClick}
-          >
-            <Color
-              color={color}
-              displayColors={displayColors}
-              theme={theme}
-              editable={editable}
-              textTheme={textTheme}
-            />
-          </div>
-        </TooltipTrigger>
-        {!displayColors && color.nombre && (
-          <TooltipContent>
-            <p>{color.nombre}</p>
-          </TooltipContent>
-        )}
-      </Tooltip>
-    </TooltipProvider>
+    <>
+      {!displayColors && color.nombre ? (
+        <TooltipProvider delayDuration={1}>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div
+                className={cn(!displayColors ? "w-full" : "w-[194px]")}
+                onClick={onClick}
+              >
+                <Color
+                  color={color}
+                  displayColors={displayColors}
+                  theme={theme}
+                  editable={editable}
+                  textTheme={textTheme}
+                />
+              </div>
+            </TooltipTrigger>
+
+            <TooltipContent>
+              <p>{color.nombre}</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      ) : (
+        <div
+          className={cn(!displayColors ? "w-full" : "w-[194px]")}
+          onClick={onClick}
+        >
+          <Color
+            color={color}
+            displayColors={displayColors}
+            theme={theme}
+            editable={editable}
+            textTheme={textTheme}
+          />
+        </div>
+      )}
+    </>
   );
 }
 
@@ -321,7 +365,7 @@ export default function ColorsDesktop({
     const handleWheel = (e) => {
       if (scrollContainer.scrollWidth > scrollContainer.clientWidth) {
         e.preventDefault();
-        const scrollSpeed = 6.2;
+        const scrollSpeed = 4.0;
         scrollContainer.scrollLeft += e.deltaY * scrollSpeed;
       }
     };
