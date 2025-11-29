@@ -1,4 +1,11 @@
 "use client";
+
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import toast from "react-hot-toast";
 
 import {
@@ -82,30 +89,41 @@ function SortableItem({ color, onClick, theme, textTheme, displayColors }) {
   };
 
   return (
-    <div
-      className={cn(!displayColors ? "w-full" : "w-[194px]")}
-      ref={setNodeRef}
-      style={style}
-      onPointerDown={handlePointerDown}
-      onPointerMove={handlePointerMove}
-      onPointerUp={handlePointerUp}
-      {...attributes}
-    >
-      <div
-        style={{
-          border: `1px solid ${textTheme}`,
-        }}
-        className="cursor-grab rounded-xl active:cursor-grabbing w-full"
-      >
-        <Color
-          displayColors={displayColors}
-          color={color}
-          theme={theme}
-          editable={true}
-          textTheme={textTheme}
-        />
-      </div>
-    </div>
+    <TooltipProvider delayDuration={1}>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <div
+            className={cn(!displayColors ? "w-full" : "w-[194px]")}
+            ref={setNodeRef}
+            style={style}
+            onPointerDown={handlePointerDown}
+            onPointerMove={handlePointerMove}
+            onPointerUp={handlePointerUp}
+            {...attributes}
+          >
+            <div
+              style={{
+                border: `1px solid ${textTheme}`,
+              }}
+              className="cursor-grab rounded-xl active:cursor-grabbing w-full"
+            >
+              <Color
+                displayColors={displayColors}
+                color={color}
+                theme={theme}
+                editable={true}
+                textTheme={textTheme}
+              />
+            </div>
+          </div>
+        </TooltipTrigger>
+        {!displayColors && color.nombre && (
+          <TooltipContent>
+            <p>{color.nombre}</p>
+          </TooltipContent>
+        )}
+      </Tooltip>
+    </TooltipProvider>
   );
 }
 
@@ -120,18 +138,29 @@ function StaticItem({
 }) {
   // Simple wrapper que solo responde clicks/taps (sin DnD)
   return (
-    <div
-      className={cn(!displayColors ? "w-full" : "w-[194px]")}
-      onClick={onClick}
-    >
-      <Color
-        color={color}
-        displayColors={displayColors}
-        theme={theme}
-        editable={editable}
-        textTheme={textTheme}
-      />
-    </div>
+    <TooltipProvider delayDuration={1}>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <div
+            className={cn(!displayColors ? "w-full" : "w-[194px]")}
+            onClick={onClick}
+          >
+            <Color
+              color={color}
+              displayColors={displayColors}
+              theme={theme}
+              editable={editable}
+              textTheme={textTheme}
+            />
+          </div>
+        </TooltipTrigger>
+        {!displayColors && color.nombre && (
+          <TooltipContent>
+            <p>{color.nombre}</p>
+          </TooltipContent>
+        )}
+      </Tooltip>
+    </TooltipProvider>
   );
 }
 
@@ -275,7 +304,6 @@ export default function ColorsDesktop({
   const scrollRef = useRef(null);
   const [editable, setEditable] = useState(false);
   const [editForm, setEditForm] = useState(false);
-  // ✅ CAMBIO: Ahora guardamos el índice del array, no el ID
   const [editingIndex, setEditingIndex] = useState(null);
   const [color, setColor] = useState("");
   const [nombre, setNombre] = useState("");

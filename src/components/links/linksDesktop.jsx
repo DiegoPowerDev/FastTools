@@ -1,5 +1,10 @@
 "use client";
-
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import {
   DndContext,
   closestCenter,
@@ -85,49 +90,64 @@ function SortableLinkItem({
   };
 
   return (
-    <div
-      ref={setNodeRef}
-      style={style}
-      className={cn(!displayLinks ? "w-full" : "w-[290px]")}
-      onPointerDown={handlePointerDown}
-      onPointerMove={handlePointerMove}
-      onPointerUp={handlePointerUp}
-      {...attributes}
-    >
-      <LinkItemInner
-        link={link}
-        editable={editable}
-        theme={theme}
-        textTheme={textTheme}
-        displayLinks={displayLinks}
-      />
-    </div>
+    <TooltipProvider delayDuration={1}>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <div
+            ref={setNodeRef}
+            style={style}
+            className={cn(!displayLinks ? "w-full" : "w-[290px]")}
+            onPointerDown={handlePointerDown}
+            onPointerMove={handlePointerMove}
+            onPointerUp={handlePointerUp}
+            {...attributes}
+          >
+            <LinkItemInner
+              link={link}
+              editable={editable}
+              theme={theme}
+              textTheme={textTheme}
+              displayLinks={displayLinks}
+            />
+          </div>
+        </TooltipTrigger>
+        {!displayLinks && link.nombre && (
+          <TooltipContent>
+            <p>{link.nombre}</p>
+          </TooltipContent>
+        )}
+      </Tooltip>
+    </TooltipProvider>
   );
 }
 
 /* -----------------------
   StaticItem (used when editable === false)
 ------------------------ */
-function StaticLinkItem({
-  link,
-  onClick,
-  theme,
-  textTheme,
-  editable,
-  displayLinks,
-}) {
+function StaticLinkItem({ link, onClick, theme, textTheme, displayLinks }) {
   return (
-    <div
-      className={cn(!displayLinks ? "w-full" : "w-[290px]")}
-      onClick={onClick}
-    >
-      <LinkItemInner
-        link={link}
-        displayLinks={displayLinks}
-        theme={theme}
-        textTheme={textTheme}
-      />
-    </div>
+    <TooltipProvider delayDuration={1}>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <div
+            className={cn(!displayLinks ? "w-full" : "w-[290px]")}
+            onClick={onClick}
+          >
+            <LinkItemInner
+              link={link}
+              displayLinks={displayLinks}
+              theme={theme}
+              textTheme={textTheme}
+            />
+          </div>
+        </TooltipTrigger>
+        {!displayLinks && link.nombre && (
+          <TooltipContent>
+            <p>{link.nombre}</p>
+          </TooltipContent>
+        )}
+      </Tooltip>
+    </TooltipProvider>
   );
 }
 
