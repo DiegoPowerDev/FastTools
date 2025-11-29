@@ -83,7 +83,7 @@ function SortableItem({ color, onClick, theme, textTheme, displayColors }) {
 
   return (
     <div
-      className={cn(!displayColors ? "w-full" : "w-[195px]")}
+      className={cn(!displayColors ? "w-full" : "w-[194px]")}
       ref={setNodeRef}
       style={style}
       onPointerDown={handlePointerDown}
@@ -116,7 +116,7 @@ function StaticItem({
   // Simple wrapper que solo responde clicks/taps (sin DnD)
   return (
     <div
-      className={cn(!displayColors ? "w-full" : "w-[195px]")}
+      className={cn(!displayColors ? "w-full" : "w-[194px]")}
       onClick={onClick}
     >
       <Color
