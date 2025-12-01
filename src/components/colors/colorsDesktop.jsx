@@ -105,7 +105,7 @@ function SortableItem({ color, onClick, theme, textTheme, displayColors }) {
               >
                 <div
                   style={{
-                    border: `1px solid ${textTheme}`,
+                    outline: `1px solid ${textTheme}`,
                   }}
                   className="cursor-grab rounded-xl active:cursor-grabbing w-full"
                 >
@@ -137,7 +137,7 @@ function SortableItem({ color, onClick, theme, textTheme, displayColors }) {
         >
           <div
             style={{
-              border: `1px solid ${textTheme}`,
+              outline: `1px solid ${textTheme}`,
             }}
             className="cursor-grab rounded-xl active:cursor-grabbing w-full"
           >
@@ -558,8 +558,8 @@ function Color({ color, theme, editable, textTheme, displayColors }) {
   const [hover, setHover] = useState(false);
   const borderStyle =
     hover && (color.color || editable)
-      ? `2px solid ${textTheme}`
-      : "2px solid transparent";
+      ? `1px solid ${textTheme}`
+      : "1px solid transparent";
 
   return (
     <div
@@ -567,12 +567,12 @@ function Color({ color, theme, editable, textTheme, displayColors }) {
       onMouseLeave={() => setHover(false)}
       style={{
         backgroundColor: color.color && color.nombre ? theme : "",
-        border: borderStyle,
+        outline: borderStyle,
       }}
       className={cn(
         `${
           (color.color || editable) && "cursor-pointer"
-        } w-full  rounded-xl flex p-1 text-white items-center justify-center gap-1 ${
+        } w-full  rounded-xl flex p-1 text-white items-center justify-center gap-2 ${
           hover && !displayColors && "scale-110 "
         } `,
         displayColors && "p-2"

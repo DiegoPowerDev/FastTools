@@ -26,7 +26,6 @@ import {
   DialogDescription,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Toaster } from "react-hot-toast";
 import {
   IconDeviceFloppy,
   IconEye,
@@ -193,9 +192,9 @@ function StaticLinkItem({ link, onClick, theme, textTheme, displayLinks }) {
 function LinkItemInner({ link, textTheme, displayLinks, editable }) {
   const [hover, setHover] = useState(false);
   const borderStyle =
-    (hover && link.link) || link.nombre
+    editable || (hover && link.link && link.nombre)
       ? `1px solid ${textTheme}`
-      : "1px solid transparent";
+      : "";
 
   return (
     <div
@@ -203,7 +202,7 @@ function LinkItemInner({ link, textTheme, displayLinks, editable }) {
       onMouseLeave={() => setHover(false)}
       style={{
         color: textTheme,
-        border: !editable ? borderStyle : `1px solid ${textTheme}`,
+        outline: editable ? borderStyle : hover ? borderStyle : "",
       }}
       className={cn(
         " h-12 flex  items-center gap-2  rounded-xl duration-200 w-full",
@@ -287,7 +286,7 @@ function LinksGrid({
           items={links.map((l) => String(l.id))}
           strategy={verticalListSortingStrategy}
         >
-          <div className="grid h-full grid-rows-4 grid-flow-col w-full gap-4 p-4 ">
+          <div className="grid h-full grid-rows-4 grid-flow-col w-full gap-4 p-2 ">
             {links.map((l, index) => (
               <div key={l.id} className={cn("h-full w-full")}>
                 <SortableLinkItem
@@ -307,7 +306,7 @@ function LinksGrid({
   }
 
   return (
-    <div className="grid grid-rows-4 grid-flow-col h-full w-full gap-4 p-4 ">
+    <div className="grid grid-rows-4 grid-flow-col h-full w-full gap-4 p-2 ">
       {visibleLinks.map((l, index) => (
         <div key={l.id} className={cn("h-full w-full")}>
           <StaticLinkItem
@@ -409,7 +408,7 @@ export default function Links({
         }}
         className={cn(
           `bg-black/50 w-full flex-1 flex items-center overflow-x-auto  overflow-y-hidden ${styles.scrollContainer}`,
-          !displayLinks && editable ? "justify-center" : ""
+          !displayLinks && "px-12"
         )}
       >
         <div className="h-full">
@@ -519,7 +518,6 @@ export default function Links({
                 onClick={() => {
                   if (editingIndex !== null) {
                     setEditForm(false);
-                    // ✅ Usa el índice actual para editar
                     setLinks(editingIndex, "", "", "");
                     setEditingIndex(null);
                     setNombre("");
