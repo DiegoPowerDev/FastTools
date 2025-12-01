@@ -410,6 +410,12 @@ export const fireStore = createStore((set, get) => ({
   loadUserData: () => {
     const auth = getAuth();
     const uid = auth.currentUser?.uid;
+
+    if (!uid) {
+      console.error("No hay usuario autenticado");
+      set({ loading: false });
+      return;
+    }
     const userDoc = doc(db, "stores", uid);
     const unsubscribe = onSnapshot(
       userDoc,
@@ -417,11 +423,10 @@ export const fireStore = createStore((set, get) => ({
         if (snapshot.exists()) {
           set({ ...snapshot.data(), uid: uid, loading: false });
         } else {
-          // Crear documento inicial limpio (sin funciones)
-          const initialData = Object.fromEntries(
-            Object.entries(get()).filter(([_, v]) => typeof v !== "function")
-          );
+          // ✅ Usar initialState en lugar de get()
+          const initialData = { ...initialState, uid };
           setDoc(userDoc, initialData);
+          set({ ...initialData, loading: false });
         }
       },
       (error) => {

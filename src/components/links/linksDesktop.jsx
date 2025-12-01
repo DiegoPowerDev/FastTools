@@ -549,8 +549,6 @@ export default function Links({
           </div>
         </DialogContent>
       </Dialog>
-
-      <Toaster />
     </div>
   );
 }

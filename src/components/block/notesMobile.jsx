@@ -16,7 +16,6 @@ import {
   DialogDescription,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Toaster } from "react-hot-toast";
 import {
   IconDeviceFloppy,
   IconDownload,
@@ -264,7 +263,6 @@ export default function NotesMobile({ notes, setNotes, theme, textTheme }) {
           </div>
         </DialogContent>
       </Dialog>
-      <Toaster />
     </div>
   );
 }

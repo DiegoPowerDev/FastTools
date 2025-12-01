@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/select";
 import styles from "../style.module.css";
 import { motion } from "framer-motion";
-import toast, { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
 import {
   Dialog,
   DialogContent,
@@ -400,7 +400,6 @@ export default function Rest({ theme, textTheme, api, setApi }) {
           </div>
         </div>
       </div>
-      <Toaster />
     </>
   );
 }

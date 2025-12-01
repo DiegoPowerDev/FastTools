@@ -33,12 +33,11 @@ export default function Page() {
 
   useEffect(() => {
     const auth = getAuth();
-    const uid = auth.currentUser?.uid;
 
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
       if (firebaseUser) {
         setUser(firebaseUser);
-        const unsubFirestore = loadUserData(uid);
+        const unsubFirestore = loadUserData(); // loadUserData ya obtiene el uid internamente
         loadImages(firebaseUser.uid);
         window.__UNSUB_FIRESTORE__ = unsubFirestore;
       } else {

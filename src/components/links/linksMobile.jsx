@@ -5,7 +5,6 @@ import {
   DialogDescription,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Toaster } from "react-hot-toast";
 import { IconDeviceFloppy, IconPencil } from "@tabler/icons-react";
 import styles from "../style.module.css";
 import { useRef, useEffect, useState } from "react";
@@ -233,7 +232,6 @@ export default function LinksMobile({ links, setLinks, theme, textTheme }) {
           </div>
         </DialogContent>
       </Dialog>
-      <Toaster />
     </div>
   );
 }
