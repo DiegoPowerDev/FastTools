@@ -143,7 +143,7 @@ const Calculator = ({ theme = "#3b82f6", textTheme = "#ffffff" }) => {
             {result ? (
               <div
                 style={{ color: error ? "red" : textTheme }}
-                className={`font-mono font-bold transition-all duration-300 ${
+                className={`font-bold transition-all duration-300 ${
                   result.length > 16
                     ? "text-xl md:text-2xl"
                     : "text-2xl md:text-3xl"
@@ -158,7 +158,6 @@ const Calculator = ({ theme = "#3b82f6", textTheme = "#ffffff" }) => {
         </div>
 
         <div className="grid grid-rows-[auto,1fr,auto]">
-          {/* Display de entrada */}
           <div
             style={{ borderLeft: `1px solid ${textTheme}` }}
             className="flex items-center"

@@ -39,7 +39,7 @@ export default function ColorGrill({ colors, theme, setTheme, mode }) {
             </TooltipTrigger>
             {e.nombre && (
               <TooltipContent>
-                <p>{e.nombre}</p>
+                <p className="select-none">{e.nombre}</p>
               </TooltipContent>
             )}
           </Tooltip>

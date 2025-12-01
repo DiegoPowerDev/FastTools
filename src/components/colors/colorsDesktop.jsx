@@ -121,7 +121,7 @@ function SortableItem({ color, onClick, theme, textTheme, displayColors }) {
             </TooltipTrigger>
 
             <TooltipContent>
-              <p>{color.nombre}</p>
+              <p className="select-none">{color.nombre}</p>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
@@ -186,7 +186,7 @@ function StaticItem({
             </TooltipTrigger>
 
             <TooltipContent>
-              <p>{color.nombre}</p>
+              <p className="select-none">{color.nombre}</p>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>

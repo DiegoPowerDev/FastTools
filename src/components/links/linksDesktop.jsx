@@ -114,7 +114,7 @@ function SortableLinkItem({
             </TooltipTrigger>
 
             <TooltipContent>
-              <p>{link.nombre}</p>
+              <p className="select-none">{link.nombre}</p>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
@@ -165,7 +165,7 @@ function StaticLinkItem({ link, onClick, theme, textTheme, displayLinks }) {
             </TooltipTrigger>
 
             <TooltipContent>
-              <p>{link.nombre}</p>
+              <p className="select-none">{link.nombre}</p>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
