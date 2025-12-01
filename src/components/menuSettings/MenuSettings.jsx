@@ -1,11 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
 import styles from "../style.module.css";
 import { Button } from "../ui/button";
-import { IconColorSwatch, IconPencil } from "@tabler/icons-react";
-import { Input } from "../ui/input";
+import { IconPencil } from "@tabler/icons-react";
 import { getAuth } from "firebase/auth";
 import { useFireStore } from "@/store/fireStore";
 import toast from "react-hot-toast";
+import ColorGrill from "./colorGrill";
+import { cn } from "@/lib/utils";
 
 export default function MenuSettings() {
   const {
@@ -17,131 +18,66 @@ export default function MenuSettings() {
     setMobileBackground,
     images,
     setImages,
+    colors,
   } = useFireStore();
 
-  const [newTheme, setNewTheme] = useState("");
-  const [newTextTheme, setNewTextTheme] = useState("");
   const [editable, setEditable] = useState(false);
-
-  const manageFormat = (color) => {
-    if (color[0] === "#") {
-      return color.slice(1, color.length);
-    }
-    return color;
-  };
-
-  useEffect(() => {
-    setNewTheme(theme);
-    setNewTextTheme(textTheme);
-  }, []);
+  const [mode, setMode] = useState("Theme");
 
   return (
     <div className="flex flex-col w-full h-full items-center justify-center md:pb-8">
-      <div className="w-full flex flex-col gap-2 md:gap-8 items-center justify-center">
-        <div className="w-full h-full flex items-center justify-center gap-2">
-          <div
-            style={{
-              backgroundColor: `#${manageFormat(newTheme)}`,
-            }}
-            className="h-16 w-16 rounded "
-          ></div>
-          <div className="w-6/12">
-            <Input
-              value={newTheme}
-              onChange={(e) => setNewTheme(e.target.value)}
-            />
+      <div className="w-full flex flex-col gap-2 md:gap-4 items-center justify-center">
+        <div className="w-full h-full flex flex-col items-center justify-center gap-4">
+          <div className="flex w-full h-full gap-2 items-center">
             <Button
-              style={{ backgroundColor: theme, color: textTheme }}
-              className="text-white w-full bg-black border-2 border-white"
+              style={{
+                backgroundColor: theme,
+                color: textTheme,
+                outline: mode === "Theme" && "2px solid white",
+              }}
+              className={cn(
+                mode != "Theme" && "opacity-50",
+                "hover:animate-in font-bold "
+              )}
               onClick={() => {
-                if (newTheme === "") {
-                  setTheme(manageFormat("#b91c1c"));
-                  toast((t) => (
-                    <span className="flex items-center justify-center gap-4">
-                      Updated theme color
-                      <div
-                        className="h-4 w-4"
-                        style={{
-                          backgroundColor: "#b91c1c",
-                          border: `1px solid ${textTheme}`,
-                        }}
-                      ></div>
-                    </span>
-                  ));
-                } else {
-                  setTheme(manageFormat(newTheme));
-                  toast((t) => (
-                    <span className="flex items-center justify-center gap-4">
-                      Updated theme color
-                      <div
-                        className="h-4 w-4"
-                        style={{
-                          backgroundColor: newTheme,
-                          border: `1px solid ${textTheme}`,
-                        }}
-                      ></div>
-                    </span>
-                  ));
-                }
+                setMode("Theme");
               }}
             >
-              <IconColorSwatch />
-              SET THEME COLOR
+              THEME
             </Button>
-          </div>
-        </div>
-
-        <div className="w-full h-full flex items-center justify-center gap-2">
-          <div
-            style={{
-              backgroundColor: `#${manageFormat(newTextTheme)}`,
-            }}
-            className="h-16 w-16 rounded "
-          ></div>
-          <div className="w-6/12">
-            <Input
-              value={newTextTheme}
-              onChange={(e) => setNewTextTheme(e.target.value)}
-            />
             <Button
-              style={{ backgroundColor: theme, color: textTheme }}
-              className="text-white w-full bg-black border-2 border-white"
+              style={{
+                backgroundColor: theme,
+                color: textTheme,
+                outline: mode != "Theme" && "2px solid white",
+              }}
+              className={cn(mode === "Theme" && "opacity-50", "font-bold")}
               onClick={() => {
-                if (newTextTheme === "") {
-                  setTextTheme(manageFormat("#fafafa"));
-                  toast((t) => (
-                    <span className="flex items-center justify-center gap-4">
-                      Updated text color
-                      <div
-                        className="h-4 w-4"
-                        style={{
-                          backgroundColor: "#fafafa",
-                          border: `1px solid ${textTheme}`,
-                        }}
-                      ></div>
-                    </span>
-                  ));
-                } else {
-                  setTextTheme(manageFormat(newTextTheme));
-                  toast((t) => (
-                    <span className="flex items-center justify-center gap-4">
-                      Updated text color
-                      <div
-                        className="h-4 w-4"
-                        style={{
-                          backgroundColor: "#fafafa",
-                          border: `1px solid ${newTextTheme}`,
-                        }}
-                      ></div>
-                    </span>
-                  ));
-                }
+                setMode("Text");
               }}
             >
-              <IconColorSwatch />
-              SET TEXT COLOR
+              TEXT
             </Button>
           </div>
+          {mode === "Theme" ? (
+            <div className="flex w-full h-full items-center justify-center border-2 border-white rounded p-2">
+              <ColorGrill
+                colors={colors}
+                theme={theme}
+                setTheme={setTheme}
+                mode={mode}
+              />
+            </div>
+          ) : (
+            <div className="flex w-full h-full items-center justify-center border-2 border-white rounded p-2">
+              <ColorGrill
+                mode={mode}
+                colors={colors}
+                theme={textTheme}
+                setTheme={setTextTheme}
+              />
+            </div>
+          )}
         </div>
 
         <div className="w-full h-full flex flex-col items-center justify-center gap-4">
