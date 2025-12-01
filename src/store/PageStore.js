@@ -12,6 +12,9 @@ export const pageStore = createStore(
       images: [],
       theme: "#b91c1c",
       textTheme: "#fafafa",
+
+      displayColors: true,
+      displayLinks: true,
       colors: [
         { id: 1, nombre: "theme", color: "b91c1c" },
         { id: 2, nombre: "text", color: "fafafa" },
@@ -184,7 +187,14 @@ export const pageStore = createStore(
               : updater,
         }));
       },
-
+      setDisplayColors: () => {
+        const value = get().displayColors;
+        set({ displayColors: !value });
+      },
+      setDisplayLinks: () => {
+        const value = get().displayLinks;
+        set({ displayLinks: !value });
+      },
       // Función de traslado (ya la tenías)
       moveButton: (id, from, to) => {
         if (from === to) return;

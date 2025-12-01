@@ -78,6 +78,10 @@ export default function LocalTable() {
     textTheme,
     background,
     setBackground,
+    displayColors,
+    setDisplayColors,
+    displayLinks,
+    setDisplayLinks,
   } = usePageStore();
 
   const componentsArray = toolbarArea.map((item) => ({
@@ -132,6 +136,10 @@ export default function LocalTable() {
               setApi={setApi}
               socketApi={socketApi}
               setSocketApi={setSocketApi}
+              displayColors={displayColors}
+              setDisplayColors={setDisplayColors}
+              displayLinks={displayLinks}
+              setDisplayLinks={setDisplayLinks}
             />
           </motion.div>
         ))}

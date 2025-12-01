@@ -165,6 +165,7 @@ function DroppableArea({ id, items, theme, textTheme }) {
 
 export default function Toolbar() {
   const {
+    colors,
     theme,
     setAuthenticate,
     textTheme,
@@ -357,6 +358,7 @@ export default function Toolbar() {
                       background={background}
                       textTheme={textTheme}
                       theme={theme}
+                      colors={colors}
                       setTheme={setTheme}
                       setTextTheme={setTextTheme}
                     />
