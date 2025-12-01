@@ -129,17 +129,17 @@ const Calculator = ({ theme = "#3b82f6", textTheme = "#ffffff" }) => {
       style={{ border: `2px solid ${theme}`, color: textTheme }}
       className=" h-full rounded-xl overflow-hidden shadow-2xl"
     >
-      <div className="h-full  grid grid-cols-1 md:grid-cols-2">
+      <div className="h-full  grid grid-cols-1 md:grid-cols-2 grid-rows-[1fr_3fr] md:grid-rows-1">
         <div
           style={{
             backgroundColor: "black",
           }}
           className="  h-full grid grid-rows-[auto,1fr]"
         >
-          <div className="flex w-full p-4 text-sm md:text-xl items-center justify-center font-semibold tracking-wider">
+          <div className="flex w-full md:p-4 text-sm md:text-xl items-center justify-center font-semibold tracking-wider">
             RESULT
           </div>
-          <div className="flex flex-col items-center justify-center pb-12">
+          <div className="flex flex-col items-center justify-center md:pb-12">
             {result ? (
               <div
                 style={{ color: error ? "red" : textTheme }}

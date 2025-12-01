@@ -30,7 +30,6 @@ export default function ColorsMobile({
   const scrollRef = useRef(null);
   const [editable, setEditable] = useState(false);
   const [editForm, setEditForm] = useState(false);
-  // ✅ CAMBIO: Guardamos el índice del array, no el ID
   const [editingIndex, setEditingIndex] = useState(null);
   const [color, setColor] = useState("");
   const [nombre, setNombre] = useState("");
@@ -236,26 +235,6 @@ export default function ColorsMobile({
                 </div>
               </button>
             </div>
-            {editingIndex !== null && colors[editingIndex]?.color && (
-              <div className="w-full flex gap-2 items-center justify-center">
-                <Button
-                  variant="outline"
-                  className="text-white bg-black border-2 border-white"
-                  onClick={() => setTheme(manageFormat(color))}
-                >
-                  <IconColorSwatch />
-                  SET THEME COLOR
-                </Button>
-                <Button
-                  variant="outline"
-                  className="text-white bg-black border-2 border-white"
-                  onClick={() => setTextTheme(manageFormat(color))}
-                >
-                  <IconTextColor size={10} />
-                  SET TEXT COLOR
-                </Button>
-              </div>
-            )}
           </div>
         </DialogContent>
       </Dialog>

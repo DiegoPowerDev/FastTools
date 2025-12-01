@@ -208,7 +208,6 @@ function StaticItem({
   );
 }
 
-/* ------------------ ColorsGrid: condicional DnD según editable ------------------ */
 function ColorsGrid({
   colors,
   editable,
@@ -339,8 +338,6 @@ export default function ColorsDesktop({
   setColors,
   theme,
   textTheme,
-  setTheme,
-  setTextTheme,
   moveColor,
   displayColors,
   setDisplayColors,
@@ -526,26 +523,6 @@ export default function ColorsDesktop({
                 </div>
               </button>
             </div>
-            {editingIndex !== null && colors[editingIndex]?.color && (
-              <div className="w-full flex gap-8 items-center justify-center">
-                <Button
-                  variant="outline"
-                  className="text-white bg-black border-2 border-white"
-                  onClick={() => setTheme(manageFormat(color))}
-                >
-                  <IconColorSwatch />
-                  SET THEME COLOR
-                </Button>
-                <Button
-                  variant="outline"
-                  className="text-white bg-black border-2 border-white"
-                  onClick={() => setTextTheme(manageFormat(color))}
-                >
-                  <IconTextColor size={10} />
-                  SET TEXT COLOR
-                </Button>
-              </div>
-            )}
           </div>
         </DialogContent>
       </Dialog>

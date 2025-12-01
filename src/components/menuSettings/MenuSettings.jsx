@@ -7,6 +7,7 @@ import { useFireStore } from "@/store/fireStore";
 import toast from "react-hot-toast";
 import ColorGrill from "./colorGrill";
 import { cn } from "@/lib/utils";
+import ColorGrillMobile from "./colorGrillMobile";
 
 export default function MenuSettings() {
   const {
@@ -23,6 +24,14 @@ export default function MenuSettings() {
 
   const [editable, setEditable] = useState(false);
   const [mode, setMode] = useState("Theme");
+  const [isDesktop, setIsDesktop] = useState(false);
+
+  useEffect(() => {
+    const check = () => setIsDesktop(window.innerWidth >= 768);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
 
   return (
     <div className="flex flex-col w-full h-full items-center justify-center md:pb-8">
@@ -59,24 +68,51 @@ export default function MenuSettings() {
               TEXT
             </Button>
           </div>
-          {mode === "Theme" ? (
-            <div className="flex w-full h-full items-center justify-center border-2 border-white rounded p-2">
-              <ColorGrill
-                colors={colors}
-                theme={theme}
-                setTheme={setTheme}
-                mode={mode}
-              />
-            </div>
-          ) : (
-            <div className="flex w-full h-full items-center justify-center border-2 border-white rounded p-2">
-              <ColorGrill
-                mode={mode}
-                colors={colors}
-                theme={textTheme}
-                setTheme={setTextTheme}
-              />
-            </div>
+          {mode === "Theme" && (
+            <>
+              {isDesktop ? (
+                <div className=" w-full h-full items-center justify-center border-2 border-white rounded p-2 flex">
+                  <ColorGrill
+                    colors={colors}
+                    theme={theme}
+                    setTheme={setTheme}
+                    mode={mode}
+                  />
+                </div>
+              ) : (
+                <div className="flex w-full h-full items-center justify-center border-2 border-white rounded p-2 ">
+                  <ColorGrillMobile
+                    colors={colors}
+                    theme={theme}
+                    setTheme={setTheme}
+                    mode={mode}
+                  />
+                </div>
+              )}
+            </>
+          )}
+          {mode === "Text" && (
+            <>
+              {isDesktop ? (
+                <div className=" w-full h-full items-center justify-center border-2 border-white rounded p-2 flex ">
+                  <ColorGrill
+                    mode={mode}
+                    colors={colors}
+                    theme={textTheme}
+                    setTheme={setTextTheme}
+                  />
+                </div>
+              ) : (
+                <div className="flex w-full h-full items-center justify-center border-2 border-white rounded p-2 ">
+                  <ColorGrillMobile
+                    mode={mode}
+                    colors={colors}
+                    theme={textTheme}
+                    setTheme={setTextTheme}
+                  />
+                </div>
+              )}
+            </>
           )}
         </div>
 
