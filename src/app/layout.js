@@ -43,7 +43,6 @@ export default function RootLayout({ children }) {
       <body
         className={`min-h-screen antialiased relative bg-transparent font-tommy`}
       >
-        <div className="w-full h-full absolute inset-0 flex justify-center items-center -z-20"></div>
         {children}
         <Analytics />
       </body>

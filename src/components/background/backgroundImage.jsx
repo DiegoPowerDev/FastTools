@@ -5,7 +5,7 @@ import { usePageStore } from "@/store/PageStore";
 export default function BackgroundImage() {
   const { background, mobileBackground } = usePageStore();
   return (
-    <picture className="absolute inset-0 -z-10 pointer-events-none select-none">
+    <picture className="fixed inset-0 -z-10 pointer-events-none select-none">
       {/* Mobile: se usará cuando el viewport sea <= 767px */}
       <source media="(max-width: 767px)" srcSet={mobileBackground} />
 
