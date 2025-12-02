@@ -281,39 +281,39 @@ export default function Conversor({ theme, textTheme }) {
       >
         <label htmlFor="conversorInput" className="w-full h-full">
           <div className="md:col-span-1 h-full w-full flex justify-center items-center cursor-pointer">
-            <Input id="conversorInput" {...getInputProps()} />
-
-            <div className="h-full w-full flex gap-4 items-center justify-center">
-              {preview ? (
-                <div className="w-full flex justify-center items-center p-4">
-                  <img
-                    style={{ border: `2px solid ${theme}` }}
-                    src={preview}
-                    alt="Vista previa"
-                    className="max-h-48 md:max-h-64 rounded"
-                  />
-                </div>
-              ) : (
-                <>
-                  {isDragActive ? (
-                    <div className="w-28">
-                      <ImageUpscale
-                        size={48}
-                        style={{ color: textTheme }}
-                        className="animate-bounce"
-                      />
-                    </div>
-                  ) : (
-                    <div
+            {preview ? (
+              // 🖼️ Preview de Imagen Cargada
+              <div className="w-full flex justify-center items-center p-4">
+                <img
+                  style={{ border: `2px solid ${theme}` }}
+                  src={preview}
+                  alt="Vista previa"
+                  className="max-h-48 md:max-h-64 rounded"
+                />
+              </div>
+            ) : (
+              // 🖱️ Dropzone / Selector de Archivo
+              <div
+                {...getRootProps()}
+                className="h-full w-full flex flex-col items-center justify-center bg-black/30"
+                style={{ color: textTheme }}
+              >
+                <Input id="conversorInput" {...getInputProps()} />
+                {isDragActive ? (
+                  <div className="w-28">
+                    <ImageUpscale
+                      size={48}
                       style={{ color: textTheme }}
-                      className="font-bold select-none opacity-60 text-xl"
-                    >
-                      SELECT OR DRAG IMAGE
-                    </div>
-                  )}
-                </>
-              )}
-            </div>
+                      className="animate-bounce"
+                    />
+                  </div>
+                ) : (
+                  <div className="font-bold select-none opacity-60 text-xl">
+                    SELECT OR DRAG IMAGE
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </label>
 
