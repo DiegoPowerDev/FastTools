@@ -9,11 +9,10 @@ import { IconDeviceFloppy } from "@tabler/icons-react";
 import toast from "react-hot-toast";
 
 export default function ImageCropper({ theme, textTheme }) {
-  const [imageUrl, setImageUrl] = useState(null); // object URL
+  const [imageUrl, setImageUrl] = useState(null);
   const [imageName, setImageName] = useState("image");
   const [format, setFormat] = useState("png");
   const [imageReady, setImageReady] = useState(false);
-  // crop stored in percent by default (unit="%")
   const [crop, setCrop] = useState({
     unit: "%",
     x: 25,
