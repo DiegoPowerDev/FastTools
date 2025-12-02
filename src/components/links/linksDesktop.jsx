@@ -57,7 +57,7 @@ function SortableLinkItem({
     transition,
     isDragging,
   } = useSortable({ id: String(link.id) });
-
+  const [open, setOpen] = useState(false);
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
@@ -92,9 +92,13 @@ function SortableLinkItem({
     <>
       {!displayLinks && link.nombre ? (
         <TooltipProvider delayDuration={1}>
-          <Tooltip>
+          <Tooltip open={open} onOpenChange={(v) => setOpen(v)}>
             <TooltipTrigger asChild>
               <div
+                onPointerEnter={() => setOpen(true)}
+                onPointerLeave={() => {
+                  setTimeout(() => setOpen(false), 0);
+                }}
                 ref={setNodeRef}
                 style={style}
                 className={cn(!displayLinks ? "w-full" : "w-[290px]")}
@@ -113,7 +117,7 @@ function SortableLinkItem({
               </div>
             </TooltipTrigger>
 
-            <TooltipContent>
+            <TooltipContent onPointerEnter={() => setOpen(false)}>
               <p className="select-none">{link.nombre}</p>
             </TooltipContent>
           </Tooltip>
@@ -145,13 +149,18 @@ function SortableLinkItem({
   StaticItem (used when editable === false)
 ------------------------ */
 function StaticLinkItem({ link, onClick, theme, textTheme, displayLinks }) {
+  const [open, setOpen] = useState(false);
   return (
     <>
       {!displayLinks && link.nombre ? (
-        <TooltipProvider delayDuration={1}>
-          <Tooltip>
+        <TooltipProvider delayDuration={100}>
+          <Tooltip open={open} onOpenChange={(v) => setOpen(v)}>
             <TooltipTrigger asChild>
               <div
+                onPointerEnter={() => setOpen(true)}
+                onPointerLeave={() => {
+                  setTimeout(() => setOpen(false), 0);
+                }}
                 className={cn(!displayLinks ? "w-full" : "w-[290px]")}
                 onClick={onClick}
               >
@@ -164,7 +173,7 @@ function StaticLinkItem({ link, onClick, theme, textTheme, displayLinks }) {
               </div>
             </TooltipTrigger>
 
-            <TooltipContent>
+            <TooltipContent onPointerEnter={() => setOpen(false)}>
               <p className="select-none">{link.nombre}</p>
             </TooltipContent>
           </Tooltip>

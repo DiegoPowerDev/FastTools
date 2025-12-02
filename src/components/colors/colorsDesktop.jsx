@@ -54,7 +54,7 @@ function SortableItem({ color, onClick, theme, textTheme, displayColors }) {
     transition,
     isDragging,
   } = useSortable({ id: String(color.id) });
-
+  const [open, setOpen] = useState(false);
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
@@ -92,9 +92,13 @@ function SortableItem({ color, onClick, theme, textTheme, displayColors }) {
     <>
       {!displayColors && color.nombre ? (
         <TooltipProvider delayDuration={1}>
-          <Tooltip>
+          <Tooltip open={open} onOpenChange={(v) => setOpen(v)}>
             <TooltipTrigger asChild>
               <div
+                onPointerEnter={() => setOpen(true)}
+                onPointerLeave={() => {
+                  setTimeout(() => setOpen(false), 0);
+                }}
                 className={cn(!displayColors ? "w-full" : "w-[194px]")}
                 ref={setNodeRef}
                 style={style}
@@ -115,7 +119,7 @@ function SortableItem({ color, onClick, theme, textTheme, displayColors }) {
               </div>
             </TooltipTrigger>
 
-            <TooltipContent>
+            <TooltipContent onPointerEnter={() => setOpen(false)}>
               <p className="select-none">{color.nombre}</p>
             </TooltipContent>
           </Tooltip>
@@ -154,14 +158,18 @@ function StaticItem({
   editable,
   displayColors,
 }) {
-  // Simple wrapper que solo responde clicks/taps (sin DnD)
+  const [open, setOpen] = useState(false);
   return (
     <>
       {!displayColors && color.nombre ? (
         <TooltipProvider delayDuration={1}>
-          <Tooltip>
+          <Tooltip open={open} onOpenChange={(v) => setOpen(v)}>
             <TooltipTrigger asChild>
               <div
+                onPointerEnter={() => setOpen(true)}
+                onPointerLeave={() => {
+                  setTimeout(() => setOpen(false), 0);
+                }}
                 className={cn(!displayColors ? "w-full" : "w-[194px]")}
                 onClick={onClick}
               >
@@ -175,7 +183,7 @@ function StaticItem({
               </div>
             </TooltipTrigger>
 
-            <TooltipContent>
+            <TooltipContent onPointerEnter={() => setOpen(false)}>
               <p className="select-none">{color.nombre}</p>
             </TooltipContent>
           </Tooltip>
