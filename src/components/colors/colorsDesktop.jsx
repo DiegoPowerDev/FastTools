@@ -543,16 +543,14 @@ function Color({ color, theme, editable, textTheme, displayColors }) {
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
       style={{
-        backgroundColor: color.color && color.nombre ? theme : "",
         outline: borderStyle,
       }}
       className={cn(
-        `${
-          (color.color || editable) && "cursor-pointer"
-        } w-full  rounded-xl flex p-1 text-white items-center justify-center gap-2 ${
-          hover && !displayColors && "scale-110 "
-        } `,
-        displayColors && "p-2"
+        color.color && color.nombre && displayColors && `bg-black`,
+        (color.color || editable) && "cursor-pointer",
+        " w-full  rounded flex  text-white items-center justify-center gap-2",
+        hover && !displayColors && "scale-110 ",
+        displayColors && "p-2 rounded-xl"
       )}
     >
       <div
