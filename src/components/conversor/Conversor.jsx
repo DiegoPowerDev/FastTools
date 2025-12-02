@@ -11,6 +11,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { ImageUp } from "lucide-react";
 import toast from "react-hot-toast";
+import { IconDeviceFloppy } from "@tabler/icons-react";
+import { Button } from "../ui/button";
 
 export default function Conversor({ theme, textTheme }) {
   const canvasRef = useRef();
@@ -405,30 +407,16 @@ export default function Conversor({ theme, textTheme }) {
             </div>
 
             <div className="h-full w-full flex items-center justify-center md:mt-4">
-              <button
-                style={{ backgroundColor: theme, color: textTheme }}
+              <Button
                 onClick={descargar}
-                className="flex w-3/4 text-center md:w-full active:scale-95 transition-transform border-white border-2 justify-center items-center font-bold p-3 rounded hover:opacity-80"
+                style={{ backgroundColor: theme, color: textTheme }}
+                className="hover:opacity-80 w-full"
               >
-                <div className="flex flex-col md:flex-row gap-2 items-center justify-center">
-                  <span className="text-lg hidden md:block">DOWNLOAD</span>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <path d="M6 2h12a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z" />
-                    <path d="M12 18h.01" />
-                    <path d="M10 8v4l2 2 2-2V8" />
-                  </svg>
+                <div className="flex gap-2 items-center justify-center">
+                  <span className="">DOWNLOAD</span>
+                  <IconDeviceFloppy size={18} />
                 </div>
-              </button>
+              </Button>
             </div>
           </div>
         )}

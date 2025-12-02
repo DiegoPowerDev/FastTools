@@ -19,7 +19,6 @@ export default function ImageCropper({ theme, textTheme }) {
   const [imageName, setImageName] = useState("image");
   const [format, setFormat] = useState("png");
   const [imageReady, setImageReady] = useState(false);
-
   // crop stored in percent by default (unit="%")
   const [crop, setCrop] = useState({
     unit: "%",
@@ -44,7 +43,8 @@ export default function ImageCropper({ theme, textTheme }) {
     if (!file) return;
     const nameWithoutExt = file.name.replace(/\.[^/.]+$/, "");
     setImageName(nameWithoutExt);
-
+    const ext = file.type.split("/")[1] || "png";
+    setFormat(ext.toLowerCase());
     // revoke previous
     if (prevObjectUrl.current) URL.revokeObjectURL(prevObjectUrl.current);
 
@@ -167,14 +167,11 @@ export default function ImageCropper({ theme, textTheme }) {
       pixelCrop.height
     );
 
-    const mime =
-      format === "png"
-        ? "image/png"
-        : format === "webp"
-        ? "image/webp"
-        : "image/jpeg";
+    const mime = `image/${format}`;
     const blob = await canvasToBlob(canvas, mime, 1);
-
+    if (alsoReturnBase64) {
+      return canvas.toDataURL(mime);
+    }
     // download
     const link = document.createElement("a");
     link.download = `${imageName}.${format}`;
@@ -184,9 +181,6 @@ export default function ImageCropper({ theme, textTheme }) {
     link.remove();
 
     // optionally return base64
-    if (alsoReturnBase64) {
-      return canvas.toDataURL(mime);
-    }
   };
 
   const reset = () => {
@@ -275,55 +269,34 @@ export default function ImageCropper({ theme, textTheme }) {
             style={{ color: textTheme }}
             className="md:col-span-1 flex md:flex-col gap-4 items-center"
           >
-            <div className="font-bold text-lg">FORMAT</div>
-
-            <Select value={format} onValueChange={(v) => setFormat(v)}>
-              <SelectTrigger
-                style={{ color: textTheme, border: `1px solid ${theme}` }}
-                className="w-[120px]"
-              >
-                <SelectValue placeholder="Format" />
-              </SelectTrigger>
-              <SelectContent
-                style={{ color: textTheme, backgroundColor: "black" }}
-              >
-                <SelectItem value="png">PNG</SelectItem>
-                <SelectItem value="jpeg">JPG</SelectItem>
-                <SelectItem value="webp">WEBP</SelectItem>
-              </SelectContent>
-            </Select>
-
             <div className="w-full flex flex-col gap-2">
               <Button
                 style={{ backgroundColor: theme, color: textTheme }}
                 disabled={!imageReady}
+                onClick={async () => {
+                  const base64 = await downloadCroppedImage(true);
+                  if (!base64) return;
+
+                  try {
+                    await navigator.clipboard.writeText(base64);
+                    alert("Base64 copied!");
+                  } catch {
+                    alert("Could not copy. Base64 generated.");
+                  }
+                }}
+              >
+                COPY BASE64
+              </Button>
+              <Button
+                disabled={!imageReady}
                 onClick={() => downloadCroppedImage(false)}
+                style={{ backgroundColor: theme, color: textTheme }}
                 className="hover:opacity-80 w-full"
               >
                 <div className="flex gap-2 items-center justify-center">
                   <span className="">DOWNLOAD</span>
                   <IconDeviceFloppy size={18} />
                 </div>
-              </Button>
-              <Button
-                style={{ backgroundColor: theme, color: textTheme }}
-                onClick={async () => {
-                  // get base64 and show / copy (example)
-                  const base64 = await downloadCroppedImage(true);
-                  if (base64) {
-                    // copy to clipboard (try)
-                    try {
-                      await navigator.clipboard.writeText(base64);
-                      alert("Base64 copied to clipboard");
-                    } catch {
-                      alert("Base64 generated");
-                    }
-                  }
-                }}
-                disabled={!imageReady}
-                className="w-full"
-              >
-                COPY BASE64
               </Button>
             </div>
           </div>
