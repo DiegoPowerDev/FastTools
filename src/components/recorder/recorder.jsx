@@ -1,7 +1,7 @@
 "use client";
 import { motion } from "framer-motion";
 import React, { useState, useRef, useEffect } from "react";
-import toast, { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
 import {
   IconVolume,
   IconScreenShare,
@@ -55,7 +55,7 @@ export default function Recorder({ theme, textTheme }) {
 
   const videoRecorder = async () => {
     try {
-      alert("SE GRABARÁ VIDEO SIN AUDIO");
+      toast("SE GRABARÁ VIDEO SIN AUDIO");
       const media = await navigator.mediaDevices.getDisplayMedia({
         video: { frameRate: { ideal: 30 } },
       });
@@ -75,7 +75,7 @@ export default function Recorder({ theme, textTheme }) {
 
   const videoAndAudioRecorder = async () => {
     try {
-      alert("SE GRABARÁ VIDEO CON AUDIO");
+      toast("SE GRABARÁ VIDEO CON AUDIO");
       const media = await navigator.mediaDevices.getDisplayMedia({
         video: { frameRate: { ideal: 30 } },
         audio: true,
@@ -204,8 +204,6 @@ export default function Recorder({ theme, textTheme }) {
           </div>
         )}
       </div>
-
-      <Toaster />
     </>
   );
 }

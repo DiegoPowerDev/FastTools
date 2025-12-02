@@ -4,15 +4,9 @@ import ReactCrop from "react-image-crop";
 import "react-image-crop/dist/ReactCrop.css";
 import { useDropzone } from "react-dropzone";
 import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectTrigger,
-  SelectContent,
-  SelectItem,
-  SelectValue,
-} from "@/components/ui/select";
 import { ImageUpscale } from "lucide-react";
 import { IconDeviceFloppy } from "@tabler/icons-react";
+import toast from "react-hot-toast";
 
 export default function ImageCropper({ theme, textTheme }) {
   const [imageUrl, setImageUrl] = useState(null); // object URL
@@ -279,9 +273,9 @@ export default function ImageCropper({ theme, textTheme }) {
 
                   try {
                     await navigator.clipboard.writeText(base64);
-                    alert("Base64 copied!");
+                    toast("Base64 copied!");
                   } catch {
-                    alert("Could not copy. Base64 generated.");
+                    console.log("Could not copy. Base64 generated.");
                   }
                 }}
               >
