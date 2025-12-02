@@ -77,8 +77,8 @@ export default function Page() {
           <>
             <FireToolBar />
 
-            <div className="relative w-full flex-1 flex flex-col justify-center items-center">
-              <div className="w-screen h-screen absolute bg-black inset-0 flex justify-center items-center -z-10">
+            <div className="w-full flex-1 flex flex-col justify-center items-center">
+              <div className="w-screen h-screen fixed bg-black inset-0 flex justify-center items-center -z-10">
                 <UserBackgroundImage />
               </div>
 

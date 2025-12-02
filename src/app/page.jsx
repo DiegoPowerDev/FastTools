@@ -9,15 +9,15 @@ import Toolbar from "@/components/toolbars/toolbar";
 export default function Page() {
   return (
     <>
-      <div
+      <main
         className={`flex w-full  flex-col min-h-dvh overflow-hidden  ${
           process.env.NODE_ENV === "development" ? "debug-screens" : ""
         }`}
       >
         <Toolbar />
 
-        <div className="relative w-full flex-1 flex flex-col justify-center items-center">
-          <div className="w-screen h-screen absolute bg-black inset-0 flex justify-center items-center -z-10">
+        <div className=" w-full flex-1 flex flex-col justify-center items-center">
+          <div className="w-screen h-screen fixed bg-black inset-0 flex justify-center items-center -z-10">
             <BackgroundImage />
           </div>
 
@@ -25,7 +25,7 @@ export default function Page() {
         </div>
 
         <Footer />
-      </div>
+      </main>
 
       <ToasterClient />
       <AuthDialog />
