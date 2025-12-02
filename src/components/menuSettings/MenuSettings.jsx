@@ -23,7 +23,7 @@ export default function MenuSettings() {
   } = useFireStore();
 
   const [editable, setEditable] = useState(false);
-  const [mode, setMode] = useState("Theme");
+  const [mode, setMode] = useState("Text");
   const [isDesktop, setIsDesktop] = useState(false);
 
   useEffect(() => {

@@ -20,7 +20,7 @@ export default function MenuSettingsBasic({
   const [newBackground, setNewBackground] = useState("/background.webp");
   const [newMobileBackground, setNewMobileBackground] =
     useState("/background.webp");
-  const [mode, setMode] = useState("Theme");
+  const [mode, setMode] = useState("Text");
   const [isDesktop, setIsDesktop] = useState(false);
 
   useEffect(() => {
