@@ -9,49 +9,30 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
-import { useDropzone } from "react-dropzone";
-import { ImageUpscale } from "lucide-react";
-
-const Toast = ({ message, type, onClose }) => {
-  useEffect(() => {
-    const timer = setTimeout(onClose, 3000);
-    return () => clearTimeout(timer);
-  }, [onClose]);
-
-  return (
-    <div
-      className={`fixed top-4 right-4 px-6 py-3 rounded-lg shadow-lg z-50 ${
-        type === "error"
-          ? "bg-red-500 text-white"
-          : type === "loading"
-          ? "bg-blue-500 text-white"
-          : "bg-green-500 text-white"
-      }`}
-    >
-      {message}
-    </div>
-  );
-};
+import { ImageUp } from "lucide-react";
+import toast from "react-hot-toast";
 
 export default function Conversor({ theme, textTheme }) {
   const canvasRef = useRef();
+  const dragCounterRef = useRef(0);
   const [preview, setPreview] = useState(null);
-  const [webUrl, setWebpUrl] = useState(null);
   const [filename, setFilename] = useState("");
   const [format, setFormat] = useState("webp");
   const [height, setHeight] = useState("");
   const [width, setWidth] = useState("");
   const [aspectRatio, setAspectRatio] = useState(null);
   const [originalImage, setOriginalImage] = useState(null);
-  const [toast, setToast] = useState(null);
+  const [isDragging, setIsDragging] = useState(false);
 
-  const showToast = (message, type = "success") => {
-    setToast({ message, type });
-  };
+  useEffect(() => {
+    return () => {
+      if (preview) URL.revokeObjectURL(preview);
+    };
+  }, [preview]);
 
   const reset = () => {
+    if (preview) URL.revokeObjectURL(preview);
     setPreview(null);
-    setWebpUrl(null);
     setFilename("");
     setFormat("webp");
     setHeight("");
@@ -61,70 +42,80 @@ export default function Conversor({ theme, textTheme }) {
   };
 
   const handleImage = (file) => {
-    if (!file || !file.type.startsWith("image/")) return;
+    if (!file || !file.type.startsWith("image/")) {
+      toast.error("Please select a valid image file");
+      return;
+    }
     if (file.name.endsWith(".ico")) {
-      showToast("Format ICO can't be converted", "error");
+      toast.error("Format ICO can't be converted");
       return;
     }
 
     const nameWithoutExt = file.name.replace(/\.[^/.]+$/, "");
     setFilename(nameWithoutExt);
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      const img = new Image();
-      img.onload = () => {
-        setPreview(img.src);
-        setOriginalImage(img);
-        setAspectRatio(img.width / img.height);
-        setWidth(img.width);
-        setHeight(img.height);
-      };
 
-      img.src = event.target.result;
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+
+    img.onload = () => {
+      setPreview(url);
+      setOriginalImage(img);
+      setAspectRatio(img.width / img.height);
+      setWidth(img.width);
+      setHeight(img.height);
     };
-    reader.readAsDataURL(file);
+
+    img.onerror = () => {
+      toast.error("Error loading image");
+      URL.revokeObjectURL(url);
+    };
+
+    img.src = url;
   };
 
-  useEffect(() => {
-    if (!originalImage || !canvasRef.current) return;
+  // Drag & Drop handlers con contador
+  const handleDragEnter = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    dragCounterRef.current++;
+    if (e.dataTransfer.items && e.dataTransfer.items.length > 0) {
+      setIsDragging(true);
+    }
+  };
 
-    const parsedWidth = parseInt(width);
-    const parsedHeight = parseInt(height);
+  const handleDragLeave = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    dragCounterRef.current--;
+    if (dragCounterRef.current === 0) {
+      setIsDragging(false);
+    }
+  };
 
-    if (isNaN(parsedWidth) || isNaN(parsedHeight)) return;
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
 
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext("2d");
+  const handleDrop = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+    dragCounterRef.current = 0;
 
-    canvas.width = parsedWidth;
-    canvas.height = parsedHeight;
+    const files = e.dataTransfer.files;
+    if (files && files.length > 0) {
+      handleImage(files[0]);
+    }
+  };
 
-    ctx.clearRect(0, 0, parsedWidth, parsedHeight);
-    ctx.drawImage(originalImage, 0, 0, parsedWidth, parsedHeight);
+  const handleFileInput = (e) => {
+    const files = e.target.files;
+    if (files && files.length > 0) {
+      handleImage(files[0]);
+    }
+  };
 
-    const mimeType = `image/${format}`;
-    canvas.toBlob((blob) => {
-      const blobUrl = URL.createObjectURL(blob);
-      setWebpUrl(blobUrl);
-    }, mimeType);
-  }, [format, width, height, originalImage]);
-
-  // Configuración de react-dropzone
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    onDrop: (acceptedFiles) => {
-      if (acceptedFiles && acceptedFiles.length > 0) {
-        handleImage(acceptedFiles[0]);
-      }
-    },
-    accept: {
-      "image/*": [".png", ".jpg", ".jpeg", ".webp", ".gif", ".bmp", ".svg"],
-    },
-    maxFiles: 1,
-    noClick: false,
-    noKeyboard: false,
-  });
-
-  // Función mejorada para generar ICO válido con múltiples tamaños
   const generateICO = async () => {
     const sizes = [16, 32, 48, 64, 128, 256];
     const images = [];
@@ -146,12 +137,11 @@ export default function Conversor({ theme, textTheme }) {
       images.push({ size, data: new Uint8Array(arrayBuffer) });
     }
 
-    // Construir el archivo ICO
     const header = new Uint8Array(6);
     const headerView = new DataView(header.buffer);
-    headerView.setUint16(0, 0, true); // Reserved
-    headerView.setUint16(2, 1, true); // Type: 1 = ICO
-    headerView.setUint16(4, images.length, true); // Number of images
+    headerView.setUint16(0, 0, true);
+    headerView.setUint16(2, 1, true);
+    headerView.setUint16(4, images.length, true);
 
     const entries = [];
     let offset = 6 + images.length * 16;
@@ -160,20 +150,19 @@ export default function Conversor({ theme, textTheme }) {
       const entry = new Uint8Array(16);
       const entryView = new DataView(entry.buffer);
 
-      entryView.setUint8(0, img.size === 256 ? 0 : img.size); // Width (0 = 256)
-      entryView.setUint8(1, img.size === 256 ? 0 : img.size); // Height (0 = 256)
-      entryView.setUint8(2, 0); // Color palette
-      entryView.setUint8(3, 0); // Reserved
-      entryView.setUint16(4, 1, true); // Color planes
-      entryView.setUint16(6, 32, true); // Bits per pixel
-      entryView.setUint32(8, img.data.length, true); // Image size
-      entryView.setUint32(12, offset, true); // Offset to image data
+      entryView.setUint8(0, img.size === 256 ? 0 : img.size);
+      entryView.setUint8(1, img.size === 256 ? 0 : img.size);
+      entryView.setUint8(2, 0);
+      entryView.setUint8(3, 0);
+      entryView.setUint16(4, 1, true);
+      entryView.setUint16(6, 32, true);
+      entryView.setUint32(8, img.data.length, true);
+      entryView.setUint32(12, offset, true);
 
       entries.push(entry);
       offset += img.data.length;
     }
 
-    // Combinar todo
     const totalSize =
       6 +
       images.length * 16 +
@@ -204,42 +193,57 @@ export default function Conversor({ theme, textTheme }) {
       isNaN(parseInt(width)) ||
       isNaN(parseInt(height))
     ) {
-      showToast("Por favor ingresa una resolución válida.", "error");
+      toast.error("Please enter a valid resolution");
       return;
     }
 
     const canvas = canvasRef.current;
-    if (!canvas) return;
+    if (!canvas || !originalImage) return;
+
+    const parsedWidth = parseInt(width);
+    const parsedHeight = parseInt(height);
+
+    canvas.width = parsedWidth;
+    canvas.height = parsedHeight;
+
+    const ctx = canvas.getContext("2d");
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = "high";
+    ctx.clearRect(0, 0, parsedWidth, parsedHeight);
+    ctx.drawImage(originalImage, 0, 0, parsedWidth, parsedHeight);
 
     if (format === "ico") {
       try {
-        showToast("Generando ICO con múltiples tamaños...", "loading");
         const icoBlob = await generateICO();
         const link = document.createElement("a");
         link.href = URL.createObjectURL(icoBlob);
         link.download = `${filename}.ico`;
         link.click();
+        toast.success("ICO generated successfully!");
       } catch (error) {
-        showToast("Error al generar el ICO: " + error.message, "error");
+        toast.error("Error generating ICO: " + error.message);
       }
       return;
     }
 
-    // Otros formatos normales
     const mimeType = `image/${format}`;
-    canvas.toBlob((blob) => {
-      if (!blob) {
-        showToast(
-          `El formato "${format}" no es soportado por tu navegador.`,
-          "error"
-        );
-        return;
-      }
-      const link = document.createElement("a");
-      link.href = URL.createObjectURL(blob);
-      link.download = `${filename}.${format}`;
-      link.click();
-    }, mimeType);
+    const quality = format === "png" ? undefined : 0.92;
+
+    canvas.toBlob(
+      (blob) => {
+        if (!blob) {
+          toast.error(`Format "${format}" not supported`);
+          return;
+        }
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = `${filename}.${format}`;
+        link.click();
+        toast.success("Image converted successfully!");
+      },
+      mimeType,
+      quality
+    );
   };
 
   return (
@@ -247,26 +251,16 @@ export default function Conversor({ theme, textTheme }) {
       style={{ border: `2px solid ${theme}` }}
       className="bg-black/30 flex flex-col h-full rounded-xl overflow-hidden"
     >
-      {toast && (
-        <Toast
-          message={toast.message}
-          type={toast.type}
-          onClose={() => setToast(null)}
-        />
-      )}
-
       <div
-        style={{
-          backgroundColor: theme,
-        }}
+        style={{ backgroundColor: theme }}
         className="relative h-14 items-center justify-center grid grid-cols-6 grid-rows-1 w-full"
       >
         <div className="col-start-1 col-end-6 text-xl w-full font-bold uppercase flex justify-center items-center">
           CONVERT IMAGE
         </div>
         <button
-          onClick={() => reset()}
-          className="active:scale-110 duration-200  md:col-start-6 border-2 border-black bg-white text-black font-bold md:col-end-7 flex justify-center items-center gap-4 p-2 rounded md:m-4 hover:opacity-80 cursor-pointer transition-opacity"
+          onClick={reset}
+          className="active:scale-110 duration-200 md:col-start-6 border-2 border-black bg-white text-black font-bold md:col-end-7 flex justify-center items-center gap-4 p-2 rounded md:m-4 hover:opacity-80 cursor-pointer transition-opacity"
         >
           CLEAR
         </button>
@@ -274,59 +268,74 @@ export default function Conversor({ theme, textTheme }) {
 
       <div
         className={`${
-          webUrl
-            ? "grid md:grid-cols-[5fr_1fr] grid-cols-1 grid-rows-[auto_auto] md:grid-rows-1"
+          preview
+            ? "grid md:grid-cols-[5fr_1fr] grid-cols-1 grid-rows-[2fr_1fr] md:grid-rows-1"
             : "grid grid-cols-1 grid-rows-[5fr] w-full h-full"
         } justify-center items-center h-full`}
       >
-        <label htmlFor="conversorInput" className="w-full h-full">
-          <div className="md:col-span-1 h-full w-full flex justify-center items-center cursor-pointer">
-            {preview ? (
-              // 🖼️ Preview de Imagen Cargada
-              <div className="w-full flex justify-center items-center p-4">
-                <img
-                  style={{ border: `2px solid ${theme}` }}
-                  src={preview}
-                  alt="Vista previa"
-                  className="max-h-48 md:max-h-64 rounded"
-                />
-              </div>
-            ) : (
-              // 🖱️ Dropzone / Selector de Archivo
-              <div
-                {...getRootProps()}
-                className="h-full w-full flex flex-col items-center justify-center bg-black/30"
-                style={{ color: textTheme }}
-              >
-                <Input id="conversorInput" {...getInputProps()} />
-                {isDragActive ? (
-                  <div className="w-28">
-                    <ImageUpscale
-                      size={48}
-                      style={{ color: textTheme }}
-                      className="animate-bounce"
+        <div
+          className="w-full h-full"
+          onDragEnter={handleDragEnter}
+          onDragLeave={handleDragLeave}
+          onDragOver={handleDragOver}
+          onDrop={handleDrop}
+        >
+          <label
+            htmlFor="conversorInput"
+            className="w-full h-full cursor-pointer block"
+          >
+            <div className="md:col-span-1 h-full w-full flex justify-center items-center">
+              <input
+                id="conversorInput"
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={handleFileInput}
+              />
+
+              <div className="h-full w-full flex gap-4 items-center justify-center pointer-events-none">
+                {preview ? (
+                  <div className="w-full flex justify-center items-center p-4">
+                    <img
+                      style={{ border: `2px solid ${theme}` }}
+                      src={preview}
+                      alt="Preview"
+                      className="max-h-32 md:max-h-64 rounded"
                     />
                   </div>
                 ) : (
-                  <div className="font-bold select-none opacity-60 text-xl">
-                    SELECT OR DRAG IMAGE
+                  <div className="h-full w-full flex flex-col items-center justify-center">
+                    {isDragging ? (
+                      <div className="w-28">
+                        <ImageUp
+                          size={48}
+                          style={{ color: textTheme }}
+                          className="animate-bounce"
+                        />
+                      </div>
+                    ) : (
+                      <div
+                        style={{ color: textTheme }}
+                        className="font-bold select-none opacity-60 text-xl"
+                      >
+                        SELECT OR DRAG IMAGE
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
-            )}
-          </div>
-        </label>
+            </div>
+          </label>
+        </div>
 
-        {webUrl && (
+        {preview && (
           <div
-            style={{
-              color: theme,
-            }}
-            className="md:p-4 flex md:flex-col gap-2 h-full p-4"
+            style={{ color: theme }}
+            className="md:p-4 flex md:flex-col gap-2 h-full"
           >
             <div
               style={{ color: textTheme }}
-              className="flex h-full gap-4 md:flex-col md:py-2"
+              className="flex flex-col h-full gap-4 md:flex-col md:py-2"
             >
               <div className="w-full flex flex-col items-center justify-center md:items-start">
                 <p className="text-xl font-bold mb-2 hidden md:block">
@@ -367,7 +376,7 @@ export default function Conversor({ theme, textTheme }) {
                     className="w-[70px] md:w-full text-center p-2 rounded"
                     value={width}
                     onChange={(e) => {
-                      e.target.value = e.target.value.replace(/[^0-9.]/g, "");
+                      e.target.value = e.target.value.replace(/[^0-9]/g, "");
                       const val = e.target.value;
                       setWidth(val);
                       if (val && aspectRatio) {
@@ -383,7 +392,7 @@ export default function Conversor({ theme, textTheme }) {
                     className="w-[70px] md:w-full text-center p-2 rounded"
                     value={height}
                     onChange={(e) => {
-                      e.target.value = e.target.value.replace(/[^0-9.]/g, "");
+                      e.target.value = e.target.value.replace(/[^0-9]/g, "");
                       const val = e.target.value;
                       setHeight(val);
                       if (val && aspectRatio) {
@@ -395,14 +404,11 @@ export default function Conversor({ theme, textTheme }) {
               </div>
             </div>
 
-            <div className="h-full flex items-center justify-center md:mt-4">
+            <div className="h-full w-full flex items-center justify-center md:mt-4">
               <button
-                style={{
-                  backgroundColor: theme,
-                  color: textTheme,
-                }}
-                onClick={() => descargar()}
-                className="flex text-center w-full active:scale-95 transition-transform border-white border-2 justify-center items-center font-bold p-3 rounded hover:opacity-80"
+                style={{ backgroundColor: theme, color: textTheme }}
+                onClick={descargar}
+                className="flex w-3/4 text-center md:w-full active:scale-95 transition-transform border-white border-2 justify-center items-center font-bold p-3 rounded hover:opacity-80"
               >
                 <div className="flex flex-col md:flex-row gap-2 items-center justify-center">
                   <span className="text-lg hidden md:block">DOWNLOAD</span>
