@@ -103,12 +103,7 @@ function SortableItem({ color, onClick, theme, textTheme, displayColors }) {
                 onPointerUp={handlePointerUp}
                 {...attributes}
               >
-                <div
-                  style={{
-                    outline: `1px solid ${textTheme}`,
-                  }}
-                  className="cursor-grab rounded-xl active:cursor-grabbing w-full"
-                >
+                <div className="cursor-grab rounded-xl active:cursor-grabbing w-full">
                   <Color
                     displayColors={displayColors}
                     color={color}
@@ -135,12 +130,7 @@ function SortableItem({ color, onClick, theme, textTheme, displayColors }) {
           onPointerUp={handlePointerUp}
           {...attributes}
         >
-          <div
-            style={{
-              outline: `1px solid ${textTheme}`,
-            }}
-            className="cursor-grab rounded-xl active:cursor-grabbing w-full"
-          >
+          <div className="cursor-grab rounded-xl active:cursor-grabbing w-full">
             <Color
               displayColors={displayColors}
               color={color}
@@ -413,7 +403,10 @@ export default function ColorsDesktop({
         style={{
           "--theme": textTheme,
         }}
-        className={`bg-black/50 w-full flex-1 flex items-center overflow-x-auto overflow-y-hidden ${styles.scrollContainer}`}
+        className={cn(
+          !displayColors && "justify-center",
+          `bg-black/50 w-full flex-1 flex items-center overflow-x-auto overflow-y-hidden ${styles.scrollContainer}`
+        )}
       >
         <div className="h-full">
           <ColorsGrid
@@ -533,31 +526,32 @@ export default function ColorsDesktop({
 /* ------------------ Small Color component (keeps behavior) ------------------ */
 function Color({ color, theme, editable, textTheme, displayColors }) {
   const [hover, setHover] = useState(false);
-  const borderStyle =
-    hover && (color.color || editable)
+  const borderStyle = !editable
+    ? hover && (color.color || editable)
       ? `1px solid ${textTheme}`
-      : "1px solid transparent";
+      : "1px solid transparent"
+    : `1px solid ${textTheme}`;
 
   return (
     <div
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
       style={{
-        outline: borderStyle,
+        border: borderStyle,
       }}
       className={cn(
-        color.color && color.nombre && displayColors && `bg-black`,
+        color.color && color.nombre && `bg-black`,
         (color.color || editable) && "cursor-pointer",
-        " w-full  rounded flex  text-white items-center justify-center gap-2",
         hover && !displayColors && "scale-110 ",
-        displayColors && "p-2 rounded-xl"
+        displayColors ? " rounded-xl p-2" : "rounded p-1",
+        " w-full  flex  text-white items-center justify-center gap-2"
       )}
     >
       <div
         style={{
           backgroundColor: color.color && color.nombre ? `#${color.color}` : "",
         }}
-        className={`h-8 w-8 rounded flex-shrink-0 `}
+        className={`h-8 w-8 flex-shrink-0 `}
       ></div>
       {displayColors && (
         <h1
