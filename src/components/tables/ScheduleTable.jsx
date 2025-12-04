@@ -24,43 +24,6 @@ endDate.setHours(17);
 endDate.setMinutes(0);
 endDate.setSeconds(0);
 
-const listTask = [
-  {
-    id: 1,
-    name: "primero",
-    referenceImage: "/background.webp",
-    notes: [
-      {
-        note: "probando nota1",
-        description: "description1",
-        date: "12/10/2025",
-        image: "/background.webp",
-      },
-      {
-        note: "probando nota2",
-        date: "12/10/2025 12:35",
-        image: "/background.webp",
-      },
-      { note: "probando nota3", date: "12/10/2025", image: "  " },
-      { note: "probando nota4", date: "12/10/2025", image: "  " },
-      { note: "probando nota5", date: "12/10/2025", image: "/background.webp" },
-      { note: "probando nota4", date: "12/10/2025", image: "  " },
-      { note: "probando nota5", date: "12/10/2025", image: "/background.webp" },
-      { note: "probando nota4", date: "12/10/2025", image: "  " },
-      { note: "probando nota5", date: "12/10/2025", image: "/background.webp" },
-      { note: "probando nota4", date: "12/10/2025", image: "  " },
-      { note: "probando nota5", date: "12/10/2025", image: "/background.webp" },
-      { note: "probando nota4", date: "12/10/2025", image: "  " },
-      { note: "probando nota5", date: "12/10/2025", image: "/background.webp" },
-      { note: "probando nota4", date: "12/10/2025", image: "  " },
-      { note: "probando nota5", date: "12/10/2025", image: "/background.webp" },
-    ],
-    taskDescription: "Creación de landing con popup de contacto",
-    startDate: startDate,
-    endDate: startDate,
-  },
-];
-
 export default function ScheduleTable({ time }) {
   const { task, newTask, deleteTask, addNote, deleteNote, lastTaskId } =
     useFireStore();
@@ -155,7 +118,7 @@ export default function ScheduleTable({ time }) {
 
     newTask(form);
 
-    // Reset
+    setExpiration(false);
     setName("");
     setDescrition("");
     setEndDate("");

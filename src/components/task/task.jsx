@@ -125,7 +125,10 @@ export default function Task({
         className="w-48 h-16 rounded-xl p-4"
       >
         <div className="w-full h-full flex justify-center items-center p-2">
-          <div style={{ color: textTheme }} className="font-bold uppercase">
+          <div
+            style={{ color: textTheme }}
+            className="font-bold uppercase text-center"
+          >
             {task.name}
           </div>
         </div>
