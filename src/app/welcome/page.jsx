@@ -10,10 +10,13 @@ import FireToolBar from "@/components/toolbars/fireToolBar";
 import UserBackgroundImage from "@/components/background/UserBackground";
 import { IconRocket } from "@tabler/icons-react";
 import UserToasterClient from "@/components/toast/UserToasterClient";
+import ScheduleTable from "@/components/tables/ScheduleTable";
+import { set } from "react-hook-form";
 
 export default function Page() {
   const { setUser } = useUserStore();
-  const { loadUserData, uid, setAllImages } = useFireStore();
+  const { loadUserData, uid, setAllImages, mode } = useFireStore();
+  const [time, setTime] = useState(new Date());
 
   const router = useRouter();
 
@@ -33,7 +36,6 @@ export default function Page() {
 
   useEffect(() => {
     const auth = getAuth();
-
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
       if (firebaseUser) {
         setUser(firebaseUser);
@@ -60,6 +62,11 @@ export default function Page() {
     };
   }, [router, setUser, loadUserData]);
 
+  useEffect(() => {
+    setInterval(() => {
+      setTime(new Date());
+    }, 1000);
+  }, []);
   return (
     <>
       <div
@@ -75,14 +82,13 @@ export default function Page() {
           </div>
         ) : (
           <>
-            <FireToolBar />
+            <FireToolBar time={time} />
 
-            <div className="w-full flex-1 flex flex-col justify-center items-center">
+            <div className="w-full flex-1 flex flex-col  items-center">
               <div className="w-screen h-screen fixed bg-black inset-0 flex justify-center items-center -z-10">
                 <UserBackgroundImage />
               </div>
-
-              <UserTable />
+              {mode === "tools" ? <UserTable /> : <ScheduleTable time={time} />}
             </div>
             <UserFooter />
           </>

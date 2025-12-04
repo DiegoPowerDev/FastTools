@@ -43,6 +43,8 @@ import {
   IconRocket,
   IconDoor,
   IconSettings,
+  IconClock,
+  IconTools,
 } from "@tabler/icons-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
@@ -164,7 +166,7 @@ function DroppableArea({ id, items, theme, textTheme }) {
   );
 }
 
-export default function FireToolBar() {
+export default function FireToolBar({ time }) {
   const {
     theme,
     textTheme,
@@ -183,6 +185,9 @@ export default function FireToolBar() {
     setMobileBackground,
     images,
     setImages,
+    setMode,
+    mode,
+    task,
   } = useFireStore();
 
   const router = useRouter();
@@ -312,6 +317,10 @@ export default function FireToolBar() {
   const handleDragCancel = () => {
     setActiveId(null);
   };
+  function format(value) {
+    if (value < 10) return `0${value}`;
+    else return value;
+  }
 
   return (
     <DndContext
@@ -332,7 +341,7 @@ export default function FireToolBar() {
         >
           <AnimatePresence mode="popLayout">
             <div
-              className="w-full h-full flex items-center justify-center"
+              className="w-full h-full flex items-center justify-between"
               key="headerBar"
             >
               <div className="w-24 flex h-full items-center justify-center p-2">
@@ -388,7 +397,7 @@ export default function FireToolBar() {
                   duration: 0.4,
                   ease: "easeInOut",
                 }}
-                className="w-screen flex flex-col items-center justify-center "
+                className="w-full flex flex-col items-center justify-center "
               >
                 <span
                   style={{ textShadow: `0 0 20px ${textTheme}` }}
@@ -396,22 +405,31 @@ export default function FireToolBar() {
                 >
                   FAST TOOLS
                 </span>
-
-                <DroppableArea
-                  id="headerArea"
-                  items={headerArea}
-                  theme={theme}
-                  textTheme={textTheme}
-                />
+                {mode === "tools" && (
+                  <DroppableArea
+                    id="headerArea"
+                    items={headerArea}
+                    theme={theme}
+                    textTheme={textTheme}
+                  />
+                )}
               </motion.div>
-              <div className="w-24 flex h-full items-center justify-center p-2"></div>
+
+              <div
+                className=" flex items-center justify-center h-full hover:scale-125 duration-300 p-8"
+                onClick={() => {
+                  getOut();
+                }}
+              >
+                <IconDoor color={textTheme} size={40} />
+              </div>
             </div>
           </AnimatePresence>
         </div>
       )}
 
       {/* TOOLBAR AREA */}
-      <div className=" w-screen flex justify-center items-center gap-2 py-2 px-8">
+      <div className=" w-screen flex justify-between items-center gap-2 py-2 px-8">
         <motion.div
           animate={{
             x: [1, -1, 1, -1, 1, 0],
@@ -436,21 +454,58 @@ export default function FireToolBar() {
         >
           <IconRocket size={40} />
         </motion.div>
-        <div className="flex-1">
-          <DroppableArea
-            id="toolbarArea"
-            items={toolbarArea}
-            theme={theme}
-            textTheme={textTheme}
-          />
-        </div>
-        <div
-          onClick={() => {
-            getOut();
-          }}
-          className="hover:scale-125 duration-300 flex justify-end pr-4 cursor-pointer"
-        >
-          <IconDoor color={textTheme} size={40} />
+
+        <AnimatePresence mode="popLayout">
+          <motion.div layout className="flex-1">
+            {mode === "tools" ? (
+              <DroppableArea
+                id="toolbarArea"
+                items={toolbarArea}
+                theme={theme}
+                textTheme={textTheme}
+              />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center">
+                <div
+                  style={{
+                    color: textTheme,
+                    backgroundColor: theme,
+                    textShadow: `0 0 15px ${textTheme}`,
+                  }}
+                  onClick={() => console.log(task)}
+                  className=" w-56 rounded text-center font-bolt text-5xl py-2"
+                >
+                  {format(time.getHours())}:{format(time.getMinutes())}:
+                  {format(time.getSeconds())}
+                </div>
+              </div>
+            )}
+          </motion.div>
+        </AnimatePresence>
+
+        <div className="flex justify-end cursor-pointer gap-4">
+          <div
+            onClick={() => setMode("tools")}
+            style={{
+              boxShadow: mode === "tools" && `0 0 5px 2px ${textTheme}`,
+              backgroundColor: theme,
+              color: textTheme,
+            }}
+            className={`h-14 w-14 p-2 rounded flex-shrink-0}`}
+          >
+            <IconTools color={textTheme} size={40} />
+          </div>
+          <div
+            onClick={() => setMode("schedule")}
+            style={{
+              boxShadow: mode === "schedule" && `0 0 5px 2px ${textTheme}`,
+              backgroundColor: theme,
+              color: textTheme,
+            }}
+            className={`h-14 w-14 p-2 rounded flex-shrink-0}`}
+          >
+            <IconClock color={textTheme} size={40} />
+          </div>
         </div>
       </div>
 

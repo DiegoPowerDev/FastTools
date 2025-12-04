@@ -47,8 +47,8 @@ export async function POST(req, { params }) {
 }
 
 export async function GET(req, { params }) {
-  const { uid } = await params;
   try {
+    const { uid } = await params;
     // Buscar imágenes dentro de la carpeta del usuario
     const result = await cloudinary.search
       .expression(`folder:fasttools/${uid}`)

@@ -24,7 +24,10 @@ const initialState = {
   textTheme: "#fafafa",
   displayColors: true,
   displayLinks: true,
+  mode: "tools",
   images: [],
+  task: [],
+  lastTaskId: 0,
   colors: [
     { id: 1, nombre: "theme", color: "b91c1c" },
     { id: 2, nombre: "text", color: "fafafa" },
@@ -195,6 +198,11 @@ const initialState = {
 };
 
 export const fireStore = createStore((set, get) => ({
+  mode: "tools",
+  setMode: (mode) => {
+    set({ mode });
+    get().saveToFirestore();
+  },
   background: "/background.webp",
   mobileBackground: "/background.webp",
   images: [],
@@ -202,6 +210,8 @@ export const fireStore = createStore((set, get) => ({
   textTheme: "#fafafa",
   displayColors: true,
   displayLinks: true,
+  task: [],
+  lastTaskId: 0,
   colors: [
     { id: 1, nombre: "theme", color: "b91c1c" },
     { id: 2, nombre: "text", color: "fafafa" },
@@ -405,7 +415,6 @@ export const fireStore = createStore((set, get) => ({
   api: "http://localhost:3000",
   socketApi: "http://localhost:3000",
   loading: true,
-  loadingBackground: true,
   error: null,
   loadUserData: () => {
     const auth = getAuth();
@@ -515,9 +524,8 @@ export const fireStore = createStore((set, get) => ({
     set({ colors: updatedColors });
     get().saveToFirestore();
   },
-  loadingBackground: true,
   setAllImages: (images) => {
-    set({ images, loadingBackground: false });
+    set({ images });
   },
 
   setImages: (index, newUrl) => {
@@ -543,7 +551,111 @@ export const fireStore = createStore((set, get) => ({
     set({ notes: updateNotes });
     get().saveToFirestore();
   },
+  newTask: async (taskData) => {
+    const lastId = get().lastTaskId;
+    const newId = lastId + 1;
 
+    const newTask = {
+      ...taskData,
+      id: newId,
+    };
+    set({ task: [...get().task, newTask], lastTaskId: newId });
+    get().saveToFirestore();
+  },
+  deleteTask: async (taskId) => {
+    const auth = getAuth();
+    const uid = auth.currentUser?.uid;
+    try {
+      // 1. Llamar al DELETE del backend para borrar imágenes
+      await fetch(`/api/task/${uid}/${taskId}`, {
+        method: "DELETE",
+      });
+
+      const tasks = get().task;
+      const updatedTasks = tasks.filter((t) => t.id !== taskId);
+
+      set({ task: updatedTasks });
+
+      await get().saveToFirestore();
+
+      console.log("Task deleted completely. How delightful.");
+    } catch (error) {
+      console.error("Error deleting task:", error);
+    }
+  },
+  addNote: async (taskId, note) => {
+    const uid = get().uid;
+
+    // Generamos ID ANTES
+    const noteId = crypto.randomUUID();
+
+    let imageUrl = null;
+    let imagePublicId = null;
+
+    if (note.image) {
+      const formData = new FormData();
+      formData.append("file", note.image);
+
+      const res = await fetch(`/api/notes/${uid}/${taskId}/${noteId}`, {
+        method: "POST",
+        body: formData,
+      });
+
+      // si Cloudinary falla → respuesta vacía → evitamos crash
+      if (!res.ok) throw new Error("Upload failed");
+
+      const data = await res.json();
+
+      imageUrl = data.url;
+      imagePublicId = data.publicId;
+    }
+
+    const newNote = {
+      id: noteId,
+      text: note.text ?? "",
+      title: note.title ?? "",
+      imageUrl,
+      imagePublicId,
+      createdAt: Date.now(),
+    };
+
+    set((state) => ({
+      task: state.task.map((t) =>
+        t.id === taskId ? { ...t, notes: [...t.notes, newNote] } : t
+      ),
+    }));
+
+    get().saveToFirestore();
+  },
+
+  deleteNote: async (taskId, noteId) => {
+    const uid = get().uid;
+
+    const tasks = get().task;
+    const task = tasks.find((t) => t.id === taskId);
+    const note = task.notes.find((n) => n.id === noteId);
+
+    // 1. Borrar imagen si existe
+    if (note.imagePublicId) {
+      await fetch(`/api/notes/${uid}/${taskId}/${noteId}`, {
+        method: "DELETE",
+      });
+    }
+
+    // 2. Borrar local
+    set((state) => ({
+      task: state.task.map((t) =>
+        t.id === taskId
+          ? {
+              ...t,
+              notes: t.notes.filter((n) => n.id !== noteId),
+            }
+          : t
+      ),
+    }));
+
+    get().saveToFirestore();
+  },
   // === NUEVOS MÉTODOS PARA DRAG AND DROP ===
 
   setHeaderArea: (updater) => {
