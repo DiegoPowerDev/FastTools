@@ -158,7 +158,7 @@ export default function Task({
                   </div>
                 )}
                 <div className="w-full  flex flex-col gap-2">
-                  <span className="font-bold w-full">Description</span>
+                  <span className="font-bold w-full">DESCRIPTION</span>
                   <div
                     style={{ "--theme": textTheme, backgroundColor: theme }}
                     className={cn(
@@ -183,7 +183,7 @@ export default function Task({
                       "h-full flex flex-col"
                     )}
                   >
-                    <div className="font-bold">Started:</div>
+                    <div className="font-bold">STARTED</div>
                     <div
                       style={{
                         border: `2px solid ${textTheme}`,
@@ -195,7 +195,7 @@ export default function Task({
                       {format(startDate.getMinutes())} <br />
                       {format(startDate.getDay())} /
                       {format(startDate.getMonth() + 1)}/
-                      {format(startDate.getYear())}
+                      {format(startDate.getFullYear())}
                     </div>
                   </div>
 
@@ -206,7 +206,7 @@ export default function Task({
                         "h-full flex flex-col"
                       )}
                     >
-                      <div className="font-bold">End:</div>
+                      <div className="font-bold">END</div>
                       <div
                         style={{
                           border: `2px solid ${textTheme}`,
@@ -262,7 +262,7 @@ export default function Task({
               </div>
             </div>
             <div className="w-full h-full flex flex-col gap-4">
-              <div className="font-bold w-full text-center">Notes</div>
+              <div className="font-bold w-full text-center">NOTES</div>
               <div
                 style={{
                   "--theme": textTheme,
