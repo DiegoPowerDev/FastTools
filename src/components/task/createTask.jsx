@@ -1,11 +1,17 @@
 import { useEffect, useRef, useState } from "react";
 import {
+  Select,
+  SelectTrigger,
+  SelectContent,
+  SelectItem,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import { TimePicker } from "../ui/timePicker";
 import { Input } from "../ui/input";
@@ -15,7 +21,12 @@ import { getAuth } from "firebase/auth";
 import toast from "react-hot-toast";
 import { useFireStore } from "@/store/fireStore";
 
-export default function CreateTask({ open, setOpen }) {
+export default function CreateTask({ open, setOpen, mode }) {
+  const [descrition, setDescrition] = useState("");
+  const [name, setName] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [newImage, setNewImage] = useState(null);
+  const [every, setEvery] = useState("");
   const { newTask, lastTaskId, theme, textTheme } = useFireStore();
   const auth = getAuth();
   const uid = auth.currentUser?.uid;
@@ -67,10 +78,7 @@ export default function CreateTask({ open, setOpen }) {
   };
   const onSubmit = async (e) => {
     e.preventDefault();
-    setOpen(false);
-    if (!expiration) {
-      setEndDate("");
-    }
+
     const nextId = lastTaskId + 1;
 
     let uploadedImageUrl = null;
@@ -85,22 +93,79 @@ export default function CreateTask({ open, setOpen }) {
         console.error(err);
       }
     }
+    let finalEndDate = null;
+    let finalFrequency = "none";
 
-    // 2. Crear task con url incluida si existe
+    if (mode === "special" || mode === "all") {
+      finalFrequency = "special";
+      finalEndDate = endDate;
+      console.log(finalEndDate);
+    }
+    if (mode === "daily") {
+      const now = new Date();
+
+      const end = new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate(),
+        23,
+        59,
+        59,
+        999
+      );
+
+      finalFrequency = "daily";
+      finalEndDate = end;
+    }
+    if (mode === "monthly") {
+      const now = new Date();
+      const end = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+      end.setHours(23, 59, 59, 999);
+
+      finalFrequency = "monthly";
+      finalEndDate = end;
+    }
+
+    if (mode === "weekly") {
+      const now = new Date();
+
+      const currentDay = now.getDay(); // 0–6
+      const targetDay = Number(every); // 0–6
+
+      let diff = targetDay - currentDay;
+      if (diff <= 0) diff += 7; // si el día ya pasó esta semana → siguiente semana
+
+      const end = new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate() + diff,
+        23,
+        59,
+        59,
+        999
+      );
+
+      finalFrequency = "weekly";
+      finalEndDate = end;
+    }
+    if (!finalEndDate || finalEndDate <= new Date()) {
+      toast.error("End date must be greater than the current time");
+      return;
+    }
     const form = {
       id: nextId,
       name,
       descrition,
       startDate: new Date(),
-      endDate,
+      endDate: finalEndDate, // ← YA tienes el valor correcto
+      frequency: finalFrequency, // ← YA tienes el valor correcto
       state: "active",
       notes: [],
       image: uploadedImageUrl ?? "",
     };
 
     newTask(form);
-
-    setExpiration(false);
+    setOpen(false);
     setName("");
     setDescrition("");
     setEndDate("");
@@ -122,18 +187,11 @@ export default function CreateTask({ open, setOpen }) {
     return () => window.removeEventListener("paste", handlePaste);
   }, []);
 
-  const [descrition, setDescrition] = useState("");
-  const [name, setName] = useState("");
-  const [endDate, setEndDate] = useState("");
-  const [newImage, setNewImage] = useState(null);
-  const [expiration, setExpiration] = useState(false);
-
   useEffect(() => {
     if (!open) {
       setName("");
       setDescrition("");
       setEndDate("");
-      setExpiration(false);
       setNewImage(null);
     }
   }, [open]);
@@ -197,24 +255,55 @@ export default function CreateTask({ open, setOpen }) {
                 />
               </div>
             </div>
-            <div className="w-full flex flex-col pt-2 gap-2 ">
-              <div className="flex gap-2">
-                <span className="font-bold ">End Date:</span>
-                <input
-                  onChange={(e) => setExpiration(e.target.checked)}
-                  type="checkbox"
-                />
-              </div>
-              {expiration && (
+            <div className="w-full flex flex-col pt-2 items-center justify-center gap-2 ">
+              {(mode === "special" || mode === "all") && (
                 <div className="flex flex-col">
                   <TimePicker setNewDate={setEndDate} />
+                </div>
+              )}
+              {mode === "daily" && (
+                <div className="flex flex-col">
+                  <div>All Day</div>
+                </div>
+              )}
+              {mode === "monthly" && (
+                <div className="flex flex-col">
+                  <div>Last day of the month</div>
+                </div>
+              )}
+              {mode === "weekly" && (
+                <div className="h-full flex gap-2 items-center justify-center">
+                  <label>Every </label>
+                  <Select
+                    style={{ color: textTheme }}
+                    value={every}
+                    onValueChange={setEvery}
+                    className="p-2 rounded w-full bg-transparent"
+                  >
+                    <SelectTrigger
+                      style={{ color: textTheme, border: `1px solid ${theme}` }}
+                      className=" w-[100px] md:w-[130px]"
+                    >
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent
+                      style={{ color: textTheme, backgroundColor: "black" }}
+                    >
+                      <SelectItem value="0">Sunday</SelectItem>
+                      <SelectItem value="1">Monday</SelectItem>
+                      <SelectItem value="2">Tuesday</SelectItem>
+                      <SelectItem value="3">Wednesday</SelectItem>
+                      <SelectItem value="4">Thursday</SelectItem>
+                      <SelectItem value="5">Friday</SelectItem>
+                      <SelectItem value="6">Saturday</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
               )}
             </div>
           </div>
           <div className="w-full flex justify-center px-4 pt-4">
             <Button
-              onClick={() => console.log(endDate)}
               style={{ backgroundColor: theme, color: textTheme }}
               className="w-full font-bold"
             >

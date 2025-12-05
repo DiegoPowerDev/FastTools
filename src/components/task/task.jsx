@@ -65,13 +65,18 @@ export default function Task({ task }) {
   }
 
   const colorCondition = () => {
+    if (!endDate) {
+      return "transparent";
+    }
+    if (time < middleTime()) {
+      return "#b2dddd";
+    }
     if (time >= endDate) {
       return "#E31B1C";
     }
     if (middleTime() < time) {
       return "#CEC102";
     }
-    return "#b2dddd";
   };
 
   const handleFileInput = (e) => {
@@ -182,7 +187,7 @@ export default function Task({ task }) {
                       "h-full flex flex-col"
                     )}
                   >
-                    <div className="font-bold">STARTED</div>
+                    <div className="font-bold text-center">STARTED</div>
                     <div
                       style={{
                         border: `2px solid ${textTheme}`,
@@ -190,11 +195,7 @@ export default function Task({ task }) {
                       }}
                       className="rounded-xl w-full text-center p-1"
                     >
-                      {/* {format(startDate.getHours())}:
-                      {format(startDate.getMinutes())} <br />
-                      {format(startDate.getDay())} /
-                      {format(startDate.getMonth() + 1)}/
-                      {format(startDate.getFullYear())} */}
+                      {startDate.toLocaleString()}
                     </div>
                   </div>
 
@@ -205,7 +206,7 @@ export default function Task({ task }) {
                         "h-full flex flex-col"
                       )}
                     >
-                      <div className="font-bold">END</div>
+                      <div className="font-bold text-center">END</div>
                       <div
                         style={{
                           border: `2px solid ${textTheme}`,
@@ -213,19 +214,19 @@ export default function Task({ task }) {
                         }}
                         className="rounded-xl w-full text-center p-1"
                       >
-                        {format(endDate.getHours())}:
-                        {format(endDate.getMinutes())}
-                        <br />
-                        {format(endDate.getDay())} /
-                        {format(endDate.getMonth() + 1)}/
-                        {format(endDate.getFullYear())}
+                        {endDate.toLocaleString()}
                       </div>
                     </div>
                   )}
                 </div>
+                <div className="w-full flex uppercase gap-2 items-center justify-center">
+                  <span className="text-xl font-bold">Frequency:</span>
+                  <span>{task.frequency != "none" && task.frequency}</span>
+                </div>
+                <span></span>
                 <AlertDialog>
                   <AlertDialogTrigger className="flex gap-2 w-full justify-center">
-                    <div className="border-2 flex items-center justify-center bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90 w-full text-sm p-2 rounded  font-bold duration-200 active:scale-105 active:border-2 active:border-white">
+                    <div className=" border-2 flex items-center justify-center bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90 w-full text-sm p-2 rounded  font-bold duration-200 active:scale-105 active:border-2 active:border-white">
                       DELETE <IconEraser />
                     </div>
                   </AlertDialogTrigger>
@@ -243,14 +244,15 @@ export default function Task({ task }) {
                       </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
-                      <AlertDialogCancel className="text-black">
-                        Cancel
+                      <AlertDialogCancel className="text-black font-bold">
+                        CANCEL
                       </AlertDialogCancel>
                       <Button
+                        className="font-bold"
                         variant="destructive"
                         onClick={async () => {
-                          await deleteTask(task.id);
                           setOpen(false);
+                          await deleteTask(task.id);
                         }}
                       >
                         DELETE
