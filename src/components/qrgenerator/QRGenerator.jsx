@@ -1,7 +1,6 @@
 "use client";
 import { useRef, useState, useEffect } from "react";
 import QRCode from "qrcode";
-import QRSVG from "qrcode-svg";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
@@ -122,72 +121,75 @@ export default function QRGenerator({ theme, textTheme }) {
     a.click();
   };
 
-  const generateSVG = () => {
+  const generateSVG = async () => {
     try {
-      const svg = new QRSVG({
-        content: text,
+      const svg = await QRCode.toString(text, {
+        type: "svg",
         width: size,
-        height: size,
-        color: fgColor,
-        background: bgColor,
-        ecl: "H",
-      }).svg();
+        margin: 1,
+        errorCorrectionLevel: "H",
+        color: {
+          dark: fgColor,
+          light: bgColor,
+        },
+      });
 
-      if (logo && logoImgRef.current) {
-        const logoImg = logoImgRef.current;
-        const maxLogoPx = (size * logoSize) / 100;
-        const bgPadding = maxLogoPx * 0.08;
+      // Si no hay logo → guardar SVG normal
+      if (!logo || !logoImgRef.current) {
+        setSvgData(svg);
+        return;
+      }
 
-        // Calcular dimensiones preservando aspect ratio
-        const aspectRatio = logoImg.width / logoImg.height;
-        let logoWidth, logoHeight;
+      const logoImg = logoImgRef.current;
+      const maxLogoPx = (size * logoSize) / 100;
+      const padding = maxLogoPx * 0.08;
 
-        if (aspectRatio > 1) {
-          logoWidth = maxLogoPx;
-          logoHeight = maxLogoPx / aspectRatio;
-        } else {
-          logoHeight = maxLogoPx;
-          logoWidth = maxLogoPx * aspectRatio;
-        }
+      // cálculos del logo
+      const aspectRatio = logoImg.width / logoImg.height;
+      let logoWidth, logoHeight;
 
-        // Fondo con padding uniforme alrededor del logo
-        const bgWidth = logoWidth + bgPadding * 2;
-        const bgHeight = logoHeight + bgPadding * 2;
-        const bgX = (size - bgWidth) / 2;
-        const bgY = (size - bgHeight) / 2;
+      if (aspectRatio > 1) {
+        logoWidth = maxLogoPx;
+        logoHeight = maxLogoPx / aspectRatio;
+      } else {
+        logoHeight = maxLogoPx;
+        logoWidth = maxLogoPx * aspectRatio;
+      }
 
-        // Posición del logo dentro del fondo
-        const logoX = bgX + bgPadding;
-        const logoY = bgY + bgPadding;
+      const bgWidth = logoWidth + padding * 2;
+      const bgHeight = logoHeight + padding * 2;
+      const bgX = (size - bgWidth) / 2;
+      const bgY = (size - bgHeight) / 2;
 
-        const patchedSVG = svg.replace(
-          /<\/svg>\s*$/i,
-          `
+      const logoX = bgX + padding;
+      const logoY = bgY + padding;
+
+      // insertar rect + logo en el SVG
+      const patchedSVG = svg.replace(
+        /<\/svg>\s*$/i,
+        `
         <rect 
           x="${bgX}" 
           y="${bgY}" 
           width="${bgWidth}" 
           height="${bgHeight}" 
-          rx="8" 
-          fill="${bgColor}"
+          rx="8"
+          fill="${bgColor}" 
         />
-        <image 
+        <image
           href="${logo.base64}"
-          width="${logoWidth}" 
-          height="${logoHeight}" 
-          x="${logoX}" 
-          y="${logoY}" 
+          width="${logoWidth}"
+          height="${logoHeight}"
+          x="${logoX}"
+          y="${logoY}"
           preserveAspectRatio="xMidYMid meet"
         />
       </svg>`
-        );
+      );
 
-        setSvgData(patchedSVG);
-      } else {
-        setSvgData(svg);
-      }
-    } catch {
-      console.log("Incorrect values");
+      setSvgData(patchedSVG);
+    } catch (err) {
+      console.log("SVG generation failed", err);
     }
   };
 
