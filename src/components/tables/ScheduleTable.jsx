@@ -62,9 +62,10 @@ export default function ScheduleTable() {
                 style={{
                   backgroundColor: mode != "all" ? theme : "black",
                   color: mode !== "all" ? textTheme : "white",
+                  border: mode == "all" && "1px solid white",
                 }}
                 onClick={() => setMode("all")}
-                className={cn("font-bold text-xl")}
+                className={cn("font-bold text-xl rounded")}
               >
                 ALL
               </Button>
@@ -72,9 +73,10 @@ export default function ScheduleTable() {
                 style={{
                   backgroundColor: mode != "daily" ? theme : "black",
                   color: mode !== "daily" ? textTheme : "white",
+                  border: mode == "daily" && "1px solid white",
                 }}
                 onClick={() => setMode("daily")}
-                className={cn("font-bold text-xl")}
+                className={cn("font-bold text-xl rounded")}
               >
                 DAILY
               </Button>
@@ -83,8 +85,9 @@ export default function ScheduleTable() {
                 style={{
                   backgroundColor: mode != "weekly" ? theme : "black",
                   color: mode !== "weekly" ? textTheme : "white",
+                  border: mode == "weekly" && "1px solid white",
                 }}
-                className={cn("font-bold text-xl")}
+                className={cn("font-bold text-xl rounded ")}
               >
                 WEEKLY
               </Button>
@@ -93,8 +96,9 @@ export default function ScheduleTable() {
                 style={{
                   backgroundColor: mode != "monthly" ? theme : "black",
                   color: mode !== "monthly" ? textTheme : "white",
+                  border: mode == "monthly" && "1px solid white",
                 }}
-                className={cn("font-bold text-xl")}
+                className={cn("font-bold text-xl rounded")}
               >
                 MONTHLY
               </Button>
@@ -102,9 +106,10 @@ export default function ScheduleTable() {
                 onClick={() => setMode("special")}
                 style={{
                   backgroundColor: mode != "special" ? theme : "black",
-                  color: mode !== "special" ? textTheme : "white",
+                  color: mode != "special" ? textTheme : "white",
+                  border: mode == "special" && "1px solid white",
                 }}
-                className={cn("font-bold text-xl")}
+                className={cn("font-bold text-xl rounded")}
               >
                 SPECIAL
               </Button>
