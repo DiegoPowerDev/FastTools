@@ -59,15 +59,8 @@ export default function Task({ task }) {
 
     return new Date(middleTimestamp);
   }
-  function format(value) {
-    if (value < 10) return `0${value}`;
-    else return value;
-  }
 
   const colorCondition = () => {
-    if (!endDate) {
-      return "transparent";
-    }
     if (time < middleTime()) {
       return "#b2dddd";
     }
@@ -123,7 +116,7 @@ export default function Task({ task }) {
 
           color: textTheme,
         }}
-        className="w-48 h-16 rounded-xl p-4"
+        className="w-full h-16 rounded-xl p-4 cursor-pointer select-none"
       >
         <div className="w-full h-full flex justify-center items-center p-2">
           <div
@@ -136,10 +129,14 @@ export default function Task({ task }) {
       </div>
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent
-          style={{ color: textTheme, border: `2px solid ${colorCondition()}` }}
+          style={{
+            color: textTheme,
+            backgroundColor: theme,
+            border: `2px solid ${colorCondition()}`,
+          }}
           className={cn(
-            task.image ? "max-w-5xl" : "max-w-3xl",
-            "border-white border-2 h-5/6 overflow-y-auto flex flex-col gap-1 p-8 bg-black "
+            "animate-none",
+            "max-w-3xl border-white border-2 overflow-y-auto flex flex-col gap-1 p-4 bg-black "
           )}
         >
           <DialogHeader className="pb-4">
@@ -148,37 +145,49 @@ export default function Task({ task }) {
             </DialogTitle>
             <DialogDescription></DialogDescription>
           </DialogHeader>
-          <div className={"h-full grid grid-cols-[3fr_2fr] gap-8"}>
-            <div
-              className={cn(
-                task.image ? "grid grid-cols-[2fr_1fr]" : "flex flex-col ",
-                "gap-4 w-full h-full"
-              )}
-            >
+          <div
+            className={
+              "h-full flex flex-col md:grid md:grid-cols-[2fr_2fr] gap-8"
+            }
+          >
+            <div className={cn("flex flex-col ", "gap-4 w-full h-full")}>
               <div className="flex flex-col w-full items-center justify-center">
-                {task.image && (
-                  <div className="h-full w-full flex items-center justify-center">
-                    <img className="max-w-64 max-h-64" src={task.image} />
-                  </div>
-                )}
+                <div
+                  className={
+                    task.image && "w-full h-48 overflow-hidden rounded-lg" // altura para tasks con imagen
+                  }
+                >
+                  {task.image ? (
+                    <img
+                      src={task.image}
+                      alt={task.name}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-neutral-900 flex items-center justify-center"></div>
+                  )}
+                </div>
                 <div className="w-full  flex flex-col gap-2">
                   <span className="font-bold w-full">DESCRIPTION</span>
                   <div
-                    style={{ "--theme": textTheme, backgroundColor: theme }}
+                    style={{
+                      "--theme": textTheme,
+                      backgroundColor: theme,
+                      border: `2px solid ${textTheme}`,
+                    }}
                     className={cn(
                       styles.scrollContainer,
-                      "overflow-y-auto min-h-28 p-2 rounded"
+                      "overflow-y-auto min-h-16 p-2 text-sm rounded border-2"
                     )}
                   >
                     {task.descrition}
                   </div>
                 </div>
               </div>
-              <div className="w-full flex flex-col items-center h-full justify-between gap-4  ">
+              <div className="w-full flex flex-col items-center h-full justify-between gap-2  ">
                 <div
                   className={cn(
-                    task.image && "flex-col",
-                    "w-full flex  gap-4 items-center justify-center"
+                    "w-full flex text-sm gap-4 items-center justify-center"
                   )}
                 >
                   <div
@@ -193,9 +202,9 @@ export default function Task({ task }) {
                         border: `2px solid ${textTheme}`,
                         backgroundColor: theme,
                       }}
-                      className="rounded-xl w-full text-center p-1"
+                      className="rounded w-full text-center p-1"
                     >
-                      {startDate.toLocaleString()}
+                      {startDate.toLocaleString("en-GB")}
                     </div>
                   </div>
 
@@ -212,9 +221,9 @@ export default function Task({ task }) {
                           border: `2px solid ${textTheme}`,
                           backgroundColor: theme,
                         }}
-                        className="rounded-xl w-full text-center p-1"
+                        className="rounded w-full text-center p-1"
                       >
-                        {endDate.toLocaleString()}
+                        {endDate.toLocaleString("en-GB")}
                       </div>
                     </div>
                   )}
@@ -262,7 +271,7 @@ export default function Task({ task }) {
                 </AlertDialog>
               </div>
             </div>
-            <div className="w-full h-full flex flex-col gap-4">
+            <div className="hidden w-full h-full md:flex flex-col gap-4">
               <div className="font-bold w-full text-center">NOTES</div>
               <div
                 style={{
@@ -285,29 +294,11 @@ export default function Task({ task }) {
                           }}
                           className="flex w-full justify-between p-2 h-12 hover:opacity-70 rounded "
                         >
-                          <div
-                            onClick={() => console.log(manageDate(note.date))}
-                          >
+                          <div>
                             <div className="truncate">{note.title}</div>
                           </div>
                           <div>
-                            {format(
-                              manageDate(new Date(note.createdAt)).getDay()
-                            )}
-                            /
-                            {format(
-                              manageDate(new Date(note.createdAt)).getMonth()
-                            )}
-                            /
-                            {manageDate(new Date(note.createdAt)).getFullYear()}
-                            &nbsp;
-                            {format(
-                              manageDate(new Date(note.createdAt)).getHours()
-                            )}
-                            :
-                            {format(
-                              manageDate(new Date(note.createdAt)).getMinutes()
-                            )}
+                            {new Date(note.createdAt).toLocaleString("en-GB")}
                           </div>
                         </div>
                       </DialogTrigger>
@@ -321,15 +312,24 @@ export default function Task({ task }) {
                           </DialogTitle>
                         </DialogHeader>
 
-                        <div className="w-full h-full flex items-center justify-center ">
-                          {note.imageUrl && (
+                        <div
+                          className={
+                            note.imageUrl &&
+                            "w-full h-48 overflow-hidden rounded-lg" // altura para tasks con imagen
+                          }
+                        >
+                          {note.imageUrl ? (
                             <img
-                              className="max-w-64 max-h-48"
                               src={note.imageUrl}
+                              alt={note.title}
+                              className="w-full h-full object-cover"
                             />
+                          ) : (
+                            <div className="w-full h-full bg-neutral-900 flex items-center justify-center"></div>
                           )}
                         </div>
-                        <DialogDescription className="text-center">
+
+                        <DialogDescription className="text-center ">
                           {note.text && note.text}
                         </DialogDescription>
                         <DialogClose
@@ -413,7 +413,7 @@ export default function Task({ task }) {
                     </div>
                     <div className="w-full h-full flex justify-center">
                       <Button
-                        className="font-bold"
+                        className="w-full font-bold bg-black text-white hover:bg-white hover:text-black active:opacity-50"
                         onClick={async () => {
                           console.log(task.id);
                           await addNote(task.id, {
@@ -424,9 +424,8 @@ export default function Task({ task }) {
 
                           setOpenForm(false);
                         }}
-                        style={{ backgroundColor: theme, color: textTheme }}
                       >
-                        Create Note
+                        CREATE NOTE
                       </Button>
                     </div>
                   </DialogContent>

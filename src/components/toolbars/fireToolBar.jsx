@@ -53,6 +53,7 @@ import { logout } from "@/firebase/auth";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { useClock } from "@/hooks/useClock";
+import { cn } from "@/lib/utils";
 
 // === Icon Map ===
 const iconMap = {
@@ -483,7 +484,11 @@ export default function FireToolBar() {
           </motion.div>
         </AnimatePresence>
 
-        <div className="flex justify-end cursor-pointer gap-4">
+        <div
+          className={cn(
+            "flex flex-col md:flex-row justify-end cursor-pointer gap-4"
+          )}
+        >
           <div
             onClick={() => setMode("tools")}
             style={{

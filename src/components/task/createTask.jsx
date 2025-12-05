@@ -199,7 +199,7 @@ export default function CreateTask({ open, setOpen, mode }) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent
-        style={{ color: textTheme }}
+        style={{ color: textTheme, backgroundColor: theme }}
         className="max-w-2xl  bg-black border-white border-2 overflow-y-auto flex flex-col gap-4 "
       >
         <DialogHeader className="flex flex-col items-center">
@@ -303,11 +303,8 @@ export default function CreateTask({ open, setOpen, mode }) {
             </div>
           </div>
           <div className="w-full flex justify-center px-4 pt-4">
-            <Button
-              style={{ backgroundColor: theme, color: textTheme }}
-              className="w-full font-bold"
-            >
-              Create Task
+            <Button className="w-full font-bold bg-black text-white hover:bg-white hover:text-black active:opacity-50">
+              CREATE TASK
             </Button>
           </div>
         </form>

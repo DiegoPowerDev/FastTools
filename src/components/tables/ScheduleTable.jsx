@@ -54,10 +54,10 @@ export default function ScheduleTable() {
 
   return (
     <>
-      <div className="w-full h-full flex justify-center items-center p-4">
-        <div className="w-full h-full grid grid-cols-2 gap-4 px-12 justify-center">
+      <div className="w-full h-full flex justify-center items-center md:p-4">
+        <div className="w-full h-full flex md:grid md:grid-cols-2 gap-4 p-2 md:px-12 justify-center">
           <div className="w-full h-full flex flex-col  items-center ">
-            <div className="w-full h-16 flex items-center justify-center gap-2 ">
+            <div className="w-full h-full md:h-16 p-4 grid grid-cols-2 md:flex items-center justify-center gap-2 ">
               <Button
                 style={{
                   backgroundColor: mode != "all" ? theme : "black",
@@ -109,10 +109,10 @@ export default function ScheduleTable() {
                 SPECIAL
               </Button>
             </div>
-            <div className="w-full">
+            <div className="w-full ">
               <div className="w-full grid grid-cols-[auto_auto_auto]">
                 <AnimatePresence mode="popLayout">
-                  <div className="w-full grid grid-cols-3 gap-4">
+                  <div className="w-full grid grid-cols-3 auto-cols-fr grid-flow-row gap-4">
                     {taskList() &&
                       taskList().map((e, i) => (
                         <motion.div
@@ -152,8 +152,8 @@ export default function ScheduleTable() {
               </div>
             </div>
           </div>
-          <div className="w-full h-full flex flex-col  items-center ">
-            <div className="w-full h-20 flex items-center justify-center gap-2 ">
+          <div className="hidden w-full h-full md:flex flex-col  items-center ">
+            <div className="w-full h-20 flex items-center justify-center gap-2 p-4">
               <h2
                 style={{ backgroundColor: theme, color: textTheme }}
                 className=" px-4 py-2 text-2xl font-bold rounded-xl flex items-center justify-center"
