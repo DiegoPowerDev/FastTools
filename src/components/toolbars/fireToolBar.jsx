@@ -52,6 +52,7 @@ import MenuSettings from "../menuSettings/MenuSettings";
 import { logout } from "@/firebase/auth";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
+import { useClock } from "@/hooks/useClock";
 
 // === Icon Map ===
 const iconMap = {
@@ -166,7 +167,7 @@ function DroppableArea({ id, items, theme, textTheme }) {
   );
 }
 
-export default function FireToolBar({ time }) {
+export default function FireToolBar() {
   const {
     theme,
     textTheme,
@@ -189,7 +190,7 @@ export default function FireToolBar({ time }) {
     mode,
     task,
   } = useFireStore();
-
+  const time = useClock();
   const router = useRouter();
   const getOut = () => {
     fireStore.getState().resetStore();
@@ -212,7 +213,6 @@ export default function FireToolBar({ time }) {
   );
   const [mounted, setMounted] = useState(false);
   const [activeId, setActiveId] = useState(null);
-
   useEffect(() => setMounted(true), []);
   if (!mounted) return null;
 

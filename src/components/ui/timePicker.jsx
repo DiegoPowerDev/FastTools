@@ -11,8 +11,10 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { useFireStore } from "@/store/fireStore";
 
 export function TimePicker({ setNewDate }) {
+  const { theme, textTheme } = useFireStore();
   const [open, setOpen] = useState(false);
   const [date, setDate] = useState(new Date());
   const [time, newTime] = useState("");
@@ -38,6 +40,7 @@ export function TimePicker({ setNewDate }) {
         <Popover open={open} onOpenChange={setOpen}>
           <PopoverTrigger asChild>
             <Button
+              style={{ backgroundColor: theme, color: textTheme }}
               variant="outline"
               id="date-picker"
               className="w-32 justify-between font-normal"
@@ -48,6 +51,7 @@ export function TimePicker({ setNewDate }) {
           </PopoverTrigger>
           <PopoverContent className="w-auto overflow-hidden p-0" align="start">
             <Calendar
+              className="bg-black!"
               mode="single"
               selected={date}
               captionLayout="dropdown"
@@ -67,8 +71,9 @@ export function TimePicker({ setNewDate }) {
           type="time"
           id="time-picker"
           step="1"
+          style={{ backgroundColor: theme, color: textTheme }}
           onChange={(e) => newTime(e.currentTarget.value)}
-          className="bg-background appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
+          className="appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
         />
       </div>
     </div>

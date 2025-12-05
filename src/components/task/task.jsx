@@ -20,20 +20,16 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
-import { IconEraser, IconPencil, IconPlus } from "@tabler/icons-react";
+import { IconEraser, IconPlus } from "@tabler/icons-react";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
+import { useFireStore } from "@/store/fireStore";
+import { useClock } from "@/hooks/useClock";
 
-export default function Task({
-  theme,
-  textTheme,
-  task,
-  time,
-  deleteTask,
-  addNote,
-  deleteNote,
-}) {
+export default function Task({ task }) {
+  const { theme, textTheme, deleteTask, addNote } = useFireStore();
+  const time = useClock();
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState("");
   const [openForm, setOpenForm] = useState(false);
@@ -127,7 +123,7 @@ export default function Task({
         <div className="w-full h-full flex justify-center items-center p-2">
           <div
             style={{ color: textTheme }}
-            className="font-bold uppercase text-center"
+            className="font-bold uppercase text-sm text-wrap text-center truncate"
           >
             {task.name}
           </div>
@@ -194,11 +190,11 @@ export default function Task({
                       }}
                       className="rounded-xl w-full text-center p-1"
                     >
-                      {format(startDate.getHours())}:
+                      {/* {format(startDate.getHours())}:
                       {format(startDate.getMinutes())} <br />
                       {format(startDate.getDay())} /
                       {format(startDate.getMonth() + 1)}/
-                      {format(startDate.getFullYear())}
+                      {format(startDate.getFullYear())} */}
                     </div>
                   </div>
 
@@ -290,7 +286,7 @@ export default function Task({
                           <div
                             onClick={() => console.log(manageDate(note.date))}
                           >
-                            {note.title}
+                            <div className="truncate">{note.title}</div>
                           </div>
                           <div>
                             {format(

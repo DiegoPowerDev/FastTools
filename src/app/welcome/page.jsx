@@ -1,5 +1,5 @@
 "use client";
-import { use, useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useFireStore } from "@/store/fireStore";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { useRouter } from "next/navigation";
@@ -11,12 +11,10 @@ import UserBackgroundImage from "@/components/background/UserBackground";
 import { IconRocket } from "@tabler/icons-react";
 import UserToasterClient from "@/components/toast/UserToasterClient";
 import ScheduleTable from "@/components/tables/ScheduleTable";
-import { set } from "react-hook-form";
 
 export default function Page() {
   const { setUser } = useUserStore();
   const { loadUserData, uid, setAllImages, mode } = useFireStore();
-  const [time, setTime] = useState(new Date());
 
   const router = useRouter();
 
@@ -62,11 +60,6 @@ export default function Page() {
     };
   }, [router, setUser, loadUserData]);
 
-  useEffect(() => {
-    setInterval(() => {
-      setTime(new Date());
-    }, 1000);
-  }, []);
   return (
     <>
       <div
@@ -82,13 +75,13 @@ export default function Page() {
           </div>
         ) : (
           <>
-            <FireToolBar time={time} />
+            <FireToolBar />
 
             <div className="w-full flex-1 flex flex-col  items-center">
               <div className="w-screen h-screen fixed bg-black inset-0 flex justify-center items-center -z-10">
                 <UserBackgroundImage />
               </div>
-              {mode === "tools" ? <UserTable /> : <ScheduleTable time={time} />}
+              {mode === "tools" ? <UserTable /> : <ScheduleTable />}
             </div>
             <UserFooter />
           </>
