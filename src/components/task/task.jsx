@@ -16,6 +16,7 @@ import {
   DialogContent,
   DialogDescription,
   DialogHeader,
+  DialogOverlay,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
@@ -26,6 +27,7 @@ import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
 import { useFireStore } from "@/store/fireStore";
 import { useClock } from "@/hooks/useClock";
+import { X } from "lucide-react";
 
 export default function Task({ task }) {
   const { theme, textTheme, deleteTask, addNote } = useFireStore();
@@ -37,17 +39,7 @@ export default function Task({ task }) {
   const [newImagePreview, setNewImagePreview] = useState(null);
   const [newImageFile, setNewImageFile] = useState(null);
   const imageRef = useRef(null);
-  function manageDate(value) {
-    // Si viene como Timestamp de Firestore (tiene .toDate)
-    if (value?.toDate) {
-      return value.toDate();
-    }
-
-    // Si ya es un Date, te lo devuelvo como buen siervo
-    if (value instanceof Date) {
-      return value;
-    }
-  }
+  const [movilSeccion, setMovilSeccion] = useState("description");
 
   const startDate = task.startDate?.toDate?.() ?? task.startDate;
   const endDate = task.endDate?.toDate?.() ?? task.endDate;
@@ -144,13 +136,36 @@ export default function Task({ task }) {
               <span className="text-center">{task.name}</span>
             </DialogTitle>
             <DialogDescription></DialogDescription>
+            <div className="flex w-full gap-2 md:hidden items-center justify-center">
+              <Button
+                style={{
+                  border: movilSeccion === "description" && "1px solid white",
+                }}
+                onClick={() => setMovilSeccion("description")}
+              >
+                DESCRIPTION
+              </Button>{" "}
+              <Button
+                style={{
+                  border: movilSeccion === "notes" && "1px solid white",
+                }}
+                onClick={() => setMovilSeccion("notes")}
+              >
+                NOTES
+              </Button>
+            </div>
           </DialogHeader>
           <div
             className={
               "h-full flex flex-col md:grid md:grid-cols-[2fr_2fr] gap-8"
             }
           >
-            <div className={cn("flex flex-col ", "gap-4 w-full h-full")}>
+            <div
+              className={cn(
+                movilSeccion === "description" ? "flex flex-col" : "hidden",
+                "gap-4 w-full h-full"
+              )}
+            >
               <div className="flex flex-col w-full items-center justify-center">
                 <div
                   className={
@@ -158,11 +173,38 @@ export default function Task({ task }) {
                   }
                 >
                   {task.image ? (
-                    <img
-                      src={task.image}
-                      alt={task.name}
-                      className="w-full h-full object-cover"
-                    />
+                    <>
+                      <Dialog>
+                        <DialogOverlay className="hidden"></DialogOverlay>
+                        <DialogTitle></DialogTitle>
+                        <DialogDescription></DialogDescription>
+                        <DialogTrigger asChild>
+                          <img
+                            src={task.image}
+                            alt={task.name}
+                            className="w-full h-full object-cover cursor-pointer"
+                          />
+                        </DialogTrigger>
+
+                        <DialogContent
+                          style={{ border: `1px solid ${textTheme}` }}
+                          className="max-w-[100vw] md:max-w-[70vw] max-h-[90vh] p-0 border-none bg-black/80 flex items-center justify-center"
+                        >
+                          <DialogHeader className="absolute top-2 right-2">
+                            <DialogClose className="text-red-800 font-bold hover:text-red-400 transition text-3xl">
+                              <X size={28} />
+                            </DialogClose>
+                          </DialogHeader>
+                          <div className="w-full h-full flex items-center justify-center p-4">
+                            <img
+                              src={task.image}
+                              alt={task.name}
+                              className="max-w-[65vw] max-h-[85vh] w-auto h-auto object-contain rounded-lg"
+                            />
+                          </div>
+                        </DialogContent>
+                      </Dialog>
+                    </>
                   ) : (
                     <div className="w-full h-full bg-neutral-900 flex items-center justify-center"></div>
                   )}
@@ -271,7 +313,14 @@ export default function Task({ task }) {
                 </AlertDialog>
               </div>
             </div>
-            <div className="hidden w-full h-full md:flex flex-col gap-4">
+            <div
+              className={cn(
+                movilSeccion === "notes"
+                  ? "flex flex-col h-96"
+                  : "hidden md:flex md:flex-col md:h-full",
+                "w-full  gap-4"
+              )}
+            >
               <div className="font-bold w-full text-center">NOTES</div>
               <div
                 style={{
@@ -292,19 +341,16 @@ export default function Task({ task }) {
                             border: `1px solid ${textTheme}`,
                             backgroundColor: theme,
                           }}
-                          className="flex w-full justify-between p-2 h-12 hover:opacity-70 rounded "
+                          className="w-full flex flex-col justify-center text-sm gap-2 h-16 items-center p-2  hover:opacity-70 rounded "
                         >
-                          <div>
-                            <div className="truncate">{note.title}</div>
-                          </div>
-                          <div>
-                            {new Date(note.createdAt).toLocaleString("en-GB")}
-                          </div>
+                          {new Date(note.createdAt).toLocaleString("en-GB")}
+
+                          <div className="truncate ">{note.title}</div>
                         </div>
                       </DialogTrigger>
                       <DialogContent
                         style={{ color: textTheme }}
-                        className="w-1/2 bg-black border-white border-2 overflow-x-hidden overflow-y-auto flex flex-col"
+                        className="w-full md:w-1/2 bg-black border-white border-2 overflow-x-hidden overflow-y-auto flex flex-col"
                       >
                         <DialogHeader className="pb-4">
                           <DialogTitle className="text-center font-bold">
@@ -319,19 +365,59 @@ export default function Task({ task }) {
                           }
                         >
                           {note.imageUrl ? (
-                            <img
-                              src={note.imageUrl}
-                              alt={note.title}
-                              className="w-full h-full object-cover"
-                            />
+                            <Dialog>
+                              <DialogOverlay className="hidden"></DialogOverlay>
+                              <DialogTitle></DialogTitle>
+                              <DialogDescription></DialogDescription>
+                              <DialogTrigger asChild>
+                                <img
+                                  src={note.imageUrl}
+                                  alt={note.title}
+                                  className="w-full h-full object-cover cursor-pointer"
+                                />
+                              </DialogTrigger>
+
+                              <DialogContent
+                                style={{ border: `1px solid ${textTheme}` }}
+                                className="max-w-[100vw] md:max-w-[70vw] max-h-[90vh] p-0 border-none bg-black/80 flex items-center justify-center"
+                              >
+                                <DialogHeader className="absolute top-2 right-2">
+                                  <DialogClose className="text-red-800 font-bold hover:text-red-400 transition text-3xl">
+                                    <X size={28} />
+                                  </DialogClose>
+                                </DialogHeader>
+                                <div className="w-full h-full flex items-center justify-center p-4">
+                                  <img
+                                    src={note.imageUrl}
+                                    alt={note.title}
+                                    className="max-w-[65vw] max-h-[85vh] w-auto h-auto object-contain rounded-lg"
+                                  />
+                                </div>
+                              </DialogContent>
+                            </Dialog>
                           ) : (
                             <div className="w-full h-full bg-neutral-900 flex items-center justify-center"></div>
                           )}
                         </div>
 
-                        <DialogDescription className="text-center ">
+                        <DialogDescription></DialogDescription>
+                        <div
+                          style={{
+                            "--theme": textTheme,
+                            backgroundColor: theme,
+                            border: `2px solid ${textTheme}`,
+                            whiteSpace: "pre-wrap",
+                            overflowX: "hidden",
+                            wordBreak: "break-word",
+                            overflowWrap: "break-word",
+                          }}
+                          className={cn(
+                            styles.scrollContainer,
+                            "overflow-y-auto min-h-16 max-h-40 p-2 text-sm  rounded border-2"
+                          )}
+                        >
                           {note.text && note.text}
-                        </DialogDescription>
+                        </div>
                         <DialogClose
                           style={{ backgroundColor: theme, color: textTheme }}
                           className="font-bold h-12 rounded w-full hover:opacity-70 duration-300"
@@ -356,7 +442,7 @@ export default function Task({ task }) {
                       backgroundColor: theme,
                       border: `1px solid ${textTheme}`,
                     }}
-                    className="w-1/2 bg-black  overflow-x-hidden overflow-y-auto flex flex-col"
+                    className="w-full md:w-1/2 bg-black  overflow-x-hidden overflow-y-auto flex flex-col"
                   >
                     <DialogHeader>
                       <DialogTitle className="text-center font-bold">
