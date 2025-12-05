@@ -351,8 +351,12 @@ export default function Task({ task }) {
                 <Dialog open={openForm} onOpenChange={setOpenForm}>
                   <DialogContent
                     ref={imageRef}
-                    style={{ color: textTheme }}
-                    className="w-1/2 bg-black border-white border-2 overflow-x-hidden overflow-y-auto flex flex-col"
+                    style={{
+                      color: textTheme,
+                      backgroundColor: theme,
+                      border: `1px solid ${textTheme}`,
+                    }}
+                    className="w-1/2 bg-black  overflow-x-hidden overflow-y-auto flex flex-col"
                   >
                     <DialogHeader>
                       <DialogTitle className="text-center font-bold">
@@ -394,9 +398,9 @@ export default function Task({ task }) {
                         id="newImage"
                       />
                     </div>
-                    <div className="w-full h-full flex flex-col gap-2 items-center justify-center">
+                    <div className="w-full h-full flex flex-col gap-2 justify-center">
                       <label htmlFor="note" className="font-bold">
-                        Coment
+                        COMMENT
                       </label>
                       <Textarea
                         style={{ "--theme": textTheme }}
