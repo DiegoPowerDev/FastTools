@@ -349,11 +349,11 @@ export default function Task({ task }) {
                         </div>
                       </DialogTrigger>
                       <DialogContent
-                        style={{ color: textTheme }}
-                        className="w-full md:w-1/2 bg-black border-white border-2 overflow-x-hidden overflow-y-auto flex flex-col"
+                        style={{ color: textTheme, backgroundColor: theme }}
+                        className="w-full md:w-1/2  border-white border-2 overflow-x-hidden overflow-y-auto flex flex-col"
                       >
                         <DialogHeader className="pb-4">
-                          <DialogTitle className="text-center font-bold">
+                          <DialogTitle className="text-center font-bold uppercase">
                             {note.title}
                           </DialogTitle>
                         </DialogHeader>
@@ -418,10 +418,7 @@ export default function Task({ task }) {
                         >
                           {note.text && note.text}
                         </div>
-                        <DialogClose
-                          style={{ backgroundColor: theme, color: textTheme }}
-                          className="font-bold h-12 rounded w-full hover:opacity-70 duration-300"
-                        >
+                        <DialogClose className="w-full h-12 font-bold bg-black text-white hover:bg-white hover:text-black active:opacity-50 duration-300 rounded">
                           OK
                         </DialogClose>
                       </DialogContent>
@@ -429,8 +426,11 @@ export default function Task({ task }) {
                   ))}
                 <div
                   onClick={() => setOpenForm(true)}
-                  style={{ border: `1px dotted ${textTheme}` }}
-                  className="flex w-full h-12 justify-center items-center p-2 hover:bg-gray-900 rounded "
+                  style={{
+                    border: `1px dotted ${textTheme}`,
+                    backgroundColor: theme,
+                  }}
+                  className="flex w-full h-12 justify-center items-center p-2 hover:opacity-70 rounded "
                 >
                   <IconPlus color={textTheme} size={20} />
                 </div>
@@ -499,7 +499,7 @@ export default function Task({ task }) {
                     </div>
                     <div className="w-full h-full flex justify-center">
                       <Button
-                        className="w-full font-bold bg-black text-white hover:bg-white hover:text-black active:opacity-50"
+                        className="w-full h-12 font-bold bg-black text-white hover:bg-white hover:text-black active:opacity-50 duration-300 rounded"
                         onClick={async () => {
                           console.log(task.id);
                           await addNote(task.id, {

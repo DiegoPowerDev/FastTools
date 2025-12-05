@@ -303,7 +303,7 @@ export default function CreateTask({ open, setOpen, mode }) {
             </div>
           </div>
           <div className="w-full flex justify-center px-4 pt-4">
-            <Button className="w-full font-bold bg-black text-white hover:bg-white hover:text-black active:opacity-50">
+            <Button className="w-full md:w-2/3 h-12 duration-300 rounded font-bold bg-black text-white hover:bg-white hover:text-black active:opacity-50">
               CREATE TASK
             </Button>
           </div>

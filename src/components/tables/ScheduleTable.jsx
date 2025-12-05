@@ -115,46 +115,44 @@ export default function ScheduleTable() {
               </Button>
             </div>
             <div className="w-full ">
-              <div className="w-full grid grid-cols-[auto_auto_auto]">
-                <AnimatePresence mode="popLayout">
-                  <div className="w-full grid grid-cols-3 auto-cols-fr grid-flow-row gap-4">
-                    {taskList() &&
-                      taskList().map((e, i) => (
-                        <motion.div
-                          key={i}
-                          layout
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: 1 }}
-                          exit={{ opacity: 0 }}
-                          transition={{
-                            layout: {
-                              type: "spring",
-                              stiffness: 300,
-                              damping: 25,
-                            },
-                            duration: 0.4,
-                            ease: "easeInOut",
-                          }}
-                          className="w-full"
-                        >
-                          <Task task={e} />
-                        </motion.div>
-                      ))}
-                    <motion.div
-                      style={{
-                        border: `2px dotted ${textTheme}`,
-                        backgroundColor: theme,
-                      }}
-                      onClick={() => setOpen(true)}
-                      key="extra-box"
-                      layout
-                      className="opacity-70 h-16 w-full rounded-xl p-4 flex justify-center items-center hover:opacity-80 "
-                    >
-                      <IconPlus color={textTheme} size={40} />
-                    </motion.div>
-                  </div>
-                </AnimatePresence>
-              </div>
+              <AnimatePresence mode="popLayout">
+                <div className="w-full grid grid-cols-3 auto-cols-fr grid-flow-row gap-4">
+                  {taskList() &&
+                    taskList().map((e, i) => (
+                      <motion.div
+                        key={i}
+                        layout
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{
+                          layout: {
+                            type: "spring",
+                            stiffness: 300,
+                            damping: 25,
+                          },
+                          duration: 0.4,
+                          ease: "easeInOut",
+                        }}
+                        className="w-full"
+                      >
+                        <Task task={e} />
+                      </motion.div>
+                    ))}
+                  <motion.div
+                    style={{
+                      border: `2px dotted ${textTheme}`,
+                      backgroundColor: theme,
+                    }}
+                    onClick={() => setOpen(true)}
+                    key="extra-box"
+                    layout
+                    className="opacity-80 h-16 w-full rounded-xl p-4 flex justify-center items-center hover:opacity-100 "
+                  >
+                    <IconPlus color={textTheme} size={40} />
+                  </motion.div>
+                </div>
+              </AnimatePresence>
             </div>
           </div>
           <div className="hidden w-full h-full md:flex flex-col  items-center ">
