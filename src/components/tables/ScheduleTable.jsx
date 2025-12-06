@@ -14,7 +14,7 @@ export default function ScheduleTable() {
   const time = useClock();
   const [open, setOpen] = useState(false);
   const { theme, textTheme } = useFireStore();
-  const [mode, setMode] = useState("all");
+  const [mode, setMode] = useState("daily");
   useEffect(() => {
     const interval = setInterval(() => {
       updateExpiredTasks();

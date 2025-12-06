@@ -454,7 +454,7 @@ export default function FireToolBar() {
               textTheme={textTheme}
             />
           ) : (
-            <div className="w-full h-full flex items-center justify-center">
+            <div className="w-full h-full hidden md:flex items-center justify-center">
               <div
                 style={{
                   color: textTheme,

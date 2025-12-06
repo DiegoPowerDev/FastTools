@@ -13,6 +13,7 @@ export default function UserToasterClient() {
           background: "black",
           color: "#fafafa",
           border: `1px solid ${textTheme}`,
+          userSelect: "none",
         },
         success: {
           style: { background: "black", color: "white" },

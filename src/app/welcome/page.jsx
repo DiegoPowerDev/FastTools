@@ -81,7 +81,13 @@ export default function Page() {
               <div className="w-screen h-screen fixed bg-black inset-0 flex justify-center items-center -z-10">
                 <UserBackgroundImage />
               </div>
-              {mode === "tools" ? <UserTable /> : <ScheduleTable />}
+
+              <div className={`${mode === "tools" ? "block" : "hidden"}`}>
+                <UserTable />
+              </div>
+              <div className={`${mode === "schedule" ? "block" : "hidden"}`}>
+                <ScheduleTable />
+              </div>
             </div>
             <UserFooter />
           </>
