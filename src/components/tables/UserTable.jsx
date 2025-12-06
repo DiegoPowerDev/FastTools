@@ -2,7 +2,6 @@
 import { AnimatePresence, motion } from "framer-motion";
 import dynamic from "next/dynamic";
 
-import React from "react";
 import { useFireStore } from "@/store/fireStore";
 function ComponentSkeleton({ height }) {
   return (
@@ -57,6 +56,13 @@ const componentMap = {
     ssr: false,
     loading: () => <ComponentSkeleton height="500px" />,
   }),
+  videoTrimmer: dynamic(
+    () => import("@/components/videoTrimmer/videoTrimmer"),
+    {
+      ssr: false,
+      loading: () => <ComponentSkeleton height="350px" />,
+    }
+  ),
 };
 export default function UserTable() {
   const {
@@ -113,7 +119,9 @@ export default function UserTable() {
               ease: "easeInOut",
             }}
             className={`rounded-xl overflow-hidden ${
-              component.label === "apiTester" || component.label === "jwt"
+              component.label === "apiTester" ||
+              component.label === "jwt" ||
+              component.label === "videoTrimmer"
                 ? "h-[500px]"
                 : "h-[350px]"
             } ${

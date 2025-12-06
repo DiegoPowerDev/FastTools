@@ -190,6 +190,7 @@ const initialState = {
     { id: 6, label: "links" },
     { id: 8, label: "apiTester" },
     { id: 9, label: "jwt" },
+    { id: 12, label: "videoTrimmer" },
   ],
   api: "http://localhost:3000",
   socketApi: "http://localhost:3000",
@@ -402,6 +403,7 @@ export const fireStore = createStore((set, get) => ({
     { id: 6, label: "links" },
     { id: 8, label: "apiTester" },
     { id: 9, label: "jwt" },
+    { id: 12, label: "videoTrimmer" },
   ],
 
   setTheme: (color) => {

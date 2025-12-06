@@ -45,6 +45,7 @@ import {
   IconSettings,
   IconClock,
   IconTools,
+  IconPhotoVideo,
 } from "@tabler/icons-react";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
@@ -69,6 +70,7 @@ const iconMap = {
   editor: IconCrop,
   qr: IconQrcode,
   picker: IconColorPicker,
+  videoTrimmer: IconPhotoVideo,
 };
 
 // === Sortable Button ===
@@ -420,31 +422,33 @@ export default function FireToolBar() {
 
       {/* TOOLBAR AREA */}
       <div className=" w-screen flex justify-between items-center gap-2 h-20 px-8">
-        <motion.div
-          animate={{
-            x: [1, -1, 1, -1, 1, 0],
-            y: [0, -1, 1, -1, 1, 0],
-          }}
-          transition={{
-            duration: 0.1,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-          style={{
-            boxShadow: `0 0 15px 5px ${textTheme}`,
-            backgroundColor: theme,
-            color: textTheme,
-          }}
-          onClick={() => {
-            setTabs("header");
-          }}
-          className={`h-14 w-14 p-2 rounded flex-shrink-0 ${
-            tabs.header ? "opacity-70" : ""
-          }`}
-        >
-          <IconRocket size={40} />
-        </motion.div>
-
+        <div className={cn("flex justify-center cursor-pointer gap-4")}>
+          <motion.div
+            animate={{
+              x: [1, -1, 1, -1, 1, 0],
+              y: [0, -1, 1, -1, 1, 0],
+            }}
+            transition={{
+              duration: 0.1,
+              repeat: Infinity,
+              ease: "easeInOut",
+            }}
+            style={{
+              boxShadow: `0 0 15px 5px ${textTheme}`,
+              backgroundColor: theme,
+              color: textTheme,
+            }}
+            onClick={() => {
+              setTabs("header");
+            }}
+            className={`h-14 w-14 p-2 rounded flex-shrink-0 ${
+              tabs.header ? "opacity-70" : ""
+            }`}
+          >
+            <IconRocket size={40} />
+          </motion.div>
+          <div className={`h-14 w-14 p-2 }`}></div>
+        </div>
         <div className="flex-1">
           {mode === "tools" ? (
             <DroppableArea

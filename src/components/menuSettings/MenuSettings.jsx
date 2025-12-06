@@ -207,14 +207,15 @@ function BackgroundImage({
 
     // Preview inmediato
     const localUrl = URL.createObjectURL(file);
-    setLocalImage(localUrl); // 👈 ESTO SÍ re-renderiza
+    setLocalImage(localUrl);
 
     try {
       const cloud = await replaceImage(file);
 
-      // Después de Cloudinary, mostrar la imagen definitiva
+      // Después de Cloudinary, mostrar imagen final y actualizar el STORE
       if (cloud.secure_url) {
         setLocalImage(cloud.secure_url);
+        setImages(slot, cloud.secure_url); // ← IMPORTANTE
       }
     } catch (error) {
       console.error("Error al subir imagen:", error);
