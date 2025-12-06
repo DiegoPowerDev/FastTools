@@ -40,16 +40,34 @@ export default function ScheduleTable() {
     }
   };
   const expiredMiddleTasks = () => {
-    return task.filter((t) => {
-      const start = t.startDate?.toDate?.() ?? t.startDate;
-      const end = t.endDate?.toDate?.() ?? t.endDate;
+    const now = time; // tu variable de tiempo actual
 
-      if (!start || !end) return false;
+    return (
+      task
+        .map((t) => {
+          const start = t.startDate?.toDate?.() ?? new Date(t.startDate);
+          const end = t.endDate?.toDate?.() ?? new Date(t.endDate);
 
-      const middle = new Date((start.getTime() + end.getTime()) / 2);
+          if (!start || !end) return null;
 
-      return time > middle;
-    });
+          const middle = new Date((start.getTime() + end.getTime()) / 2);
+
+          return {
+            ...t,
+            isExpired: now > end,
+            isMiddleExpired: now > middle,
+          };
+        })
+        .filter((t) => t && t.isMiddleExpired)
+        // ⬆ Solo las que TRASPASARON middleTime
+        .sort((a, b) => {
+          // Primero las que excedieron endTime
+          if (a.isExpired && !b.isExpired) return -1;
+          if (!a.isExpired && b.isExpired) return 1;
+
+          return 0; // si ambas están en el mismo grupo, mantener orden
+        })
+    );
   };
 
   return (
@@ -155,28 +173,30 @@ export default function ScheduleTable() {
               </AnimatePresence>
             </div>
           </div>
-          <div className="hidden w-full h-full md:flex flex-col  items-center ">
-            <div className="w-full h-20 flex items-center justify-center gap-2 p-4">
-              <h2
-                style={{ backgroundColor: theme, color: textTheme }}
-                className=" px-4 py-2 text-2xl font-bold rounded-xl flex items-center justify-center"
-              >
-                ATTENTION
-              </h2>
-            </div>
-            <div className="w-full h-full grid grid-rows-4 grid-flow-col place-content-center gap-4">
-              {expiredMiddleTasks().map((e, i) => (
-                <motion.div
-                  key={i}
-                  layout
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  className="w-full"
+          <div className="w-full h-full flex justify-center">
+            <div className="hidden w-2/3 h-full md:flex flex-col  items-center ">
+              <div className="w-full h-16 flex items-center justify-center gap-2 p-4">
+                <h2
+                  style={{ backgroundColor: theme, color: textTheme }}
+                  className=" px-4 py-2 text-2xl font-bold rounded-xl flex items-center justify-center"
                 >
-                  <Task task={e} />
-                </motion.div>
-              ))}
+                  ATTENTION
+                </h2>
+              </div>
+              <div className="w-full h-full grid grid-flow-rows grid-cols-2 place-content-center gap-4">
+                {expiredMiddleTasks().map((e, i) => (
+                  <motion.div
+                    key={i}
+                    layout
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    className="w-full"
+                  >
+                    <Task task={e} />
+                  </motion.div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
