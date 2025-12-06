@@ -46,7 +46,7 @@ import {
   IconClock,
   IconTools,
 } from "@tabler/icons-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import MenuSettings from "../menuSettings/MenuSettings";
 import { logout } from "@/firebase/auth";
@@ -340,97 +340,86 @@ export default function FireToolBar() {
           }}
           className="w-screen flex h-full items-center justify-center "
         >
-          <AnimatePresence mode="popLayout">
-            <div
-              className="w-full h-full flex items-center justify-between"
-              key="headerBar"
-            >
-              <div className="w-24 flex h-full items-center justify-center p-2">
-                <Dialog>
-                  <DialogTrigger aria-label="Abrir menú">
-                    <motion.div
-                      layout
-                      whileHover={{
-                        rotate: [0, 360],
-                      }}
-                      transition={{
-                        duration: 1.5,
-                        ease: "linear",
-                        repeat: Infinity,
-                        repeatType: "loop",
-                      }}
-                    >
-                      <IconSettings size={60} />
-                    </motion.div>
-                  </DialogTrigger>
-                  <DialogContent
-                    style={{ color: textTheme }}
-                    className="w-full bg-black border-white border-2 overflow-hidden"
+          <div
+            className="w-full h-full flex items-center justify-between"
+            key="headerBar"
+          >
+            <div className="w-24 flex h-full items-center justify-center p-2">
+              <Dialog>
+                <DialogTrigger aria-label="Abrir menú">
+                  <motion.div
+                    whileHover={{
+                      rotate: [0, 360],
+                    }}
+                    transition={{
+                      duration: 1.5,
+                      ease: "linear",
+                      repeat: Infinity,
+                      repeatType: "loop",
+                    }}
                   >
-                    <DialogHeader>
-                      <DialogTitle className="flex justify-center items-center font-bold">
-                        SETTINGS
-                      </DialogTitle>
-                      <DialogDescription></DialogDescription>
-                    </DialogHeader>
-                    <MenuSettings
-                      setBackground={setBackground}
-                      background={background}
-                      textTheme={textTheme}
-                      theme={theme}
-                      setTheme={setTheme}
-                      setTextTheme={setTextTheme}
-                      mobileBackground={mobileBackground}
-                      setMobileBackground={setMobileBackground}
-                      images={images}
-                      setImages={setImages}
-                    />
-                  </DialogContent>
-                </Dialog>
-              </div>
-              <motion.div
-                layout
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-                transition={{
-                  layout: { type: "spring", stiffness: 300, damping: 25 },
-                  duration: 0.4,
-                  ease: "easeInOut",
-                }}
-                className="w-full flex flex-col items-center justify-center "
-              >
-                <span
-                  style={{ textShadow: `0 0 20px ${textTheme}` }}
-                  className="text-5xl font-bold text-center"
+                    <IconSettings size={60} />
+                  </motion.div>
+                </DialogTrigger>
+                <DialogContent
+                  style={{ color: textTheme }}
+                  className="w-full bg-black border-white border-2 overflow-hidden"
                 >
-                  FAST TOOLS
-                </span>
-                {mode === "tools" && (
-                  <DroppableArea
-                    id="headerArea"
-                    items={headerArea}
-                    theme={theme}
+                  <DialogHeader>
+                    <DialogTitle className="flex justify-center items-center font-bold">
+                      SETTINGS
+                    </DialogTitle>
+                    <DialogDescription></DialogDescription>
+                  </DialogHeader>
+                  <MenuSettings
+                    setBackground={setBackground}
+                    background={background}
                     textTheme={textTheme}
+                    theme={theme}
+                    setTheme={setTheme}
+                    setTextTheme={setTextTheme}
+                    mobileBackground={mobileBackground}
+                    setMobileBackground={setMobileBackground}
+                    images={images}
+                    setImages={setImages}
                   />
-                )}
-              </motion.div>
-
-              <div
-                className=" flex items-center justify-center h-full hover:scale-125 duration-300 p-8"
-                onClick={() => {
-                  getOut();
-                }}
-              >
-                <IconDoor color={textTheme} size={40} />
-              </div>
+                </DialogContent>
+              </Dialog>
             </div>
-          </AnimatePresence>
+            <div
+              initial={{ opacity: 0, scale: 0.9 }}
+              className="w-full flex flex-col items-center justify-center "
+            >
+              <span
+                style={{ textShadow: `0 0 20px ${textTheme}` }}
+                className="text-5xl font-bold text-center"
+              >
+                FAST TOOLS
+              </span>
+              {mode === "tools" && (
+                <DroppableArea
+                  id="headerArea"
+                  items={headerArea}
+                  theme={theme}
+                  textTheme={textTheme}
+                />
+              )}
+            </div>
+
+            <div
+              className=" flex items-center justify-center h-full hover:scale-125 duration-300 p-8"
+              onClick={() => {
+                getOut();
+              }}
+            >
+              <IconDoor color={textTheme} size={40} />
+            </div>
+          </div>
         </div>
       )}
 
       {/* TOOLBAR AREA */}
-      <div className=" w-screen flex justify-between items-center gap-2 py-2 px-8">
+      <div className=" w-screen flex justify-between items-center gap-2 h-20 px-8">
         <motion.div
           animate={{
             x: [1, -1, 1, -1, 1, 0],
@@ -456,33 +445,31 @@ export default function FireToolBar() {
           <IconRocket size={40} />
         </motion.div>
 
-        <AnimatePresence mode="popLayout">
-          <motion.div layout className="flex-1">
-            {mode === "tools" ? (
-              <DroppableArea
-                id="toolbarArea"
-                items={toolbarArea}
-                theme={theme}
-                textTheme={textTheme}
-              />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center">
-                <div
-                  style={{
-                    color: textTheme,
-                    backgroundColor: theme,
-                    textShadow: `0 0 15px ${textTheme}`,
-                  }}
-                  onClick={() => console.log(task)}
-                  className=" w-56 rounded text-center font-bolt text-5xl py-2"
-                >
-                  {format(time.getHours())}:{format(time.getMinutes())}:
-                  {format(time.getSeconds())}
-                </div>
+        <div className="flex-1">
+          {mode === "tools" ? (
+            <DroppableArea
+              id="toolbarArea"
+              items={toolbarArea}
+              theme={theme}
+              textTheme={textTheme}
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center">
+              <div
+                style={{
+                  color: textTheme,
+                  backgroundColor: theme,
+                  textShadow: `0 0 15px ${textTheme}`,
+                }}
+                onClick={() => console.log(task)}
+                className=" w-56 rounded text-center font-bolt text-5xl py-2"
+              >
+                {format(time.getHours())}:{format(time.getMinutes())}:
+                {format(time.getSeconds())}
               </div>
-            )}
-          </motion.div>
-        </AnimatePresence>
+            </div>
+          )}
+        </div>
 
         <div
           className={cn(
