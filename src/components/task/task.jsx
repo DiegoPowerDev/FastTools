@@ -276,14 +276,20 @@ export default function Task({ task }) {
                   <span>{task.frequency != "none" && task.frequency}</span>
                   {task.state === "completed" ? (
                     <Button
-                      onClick={() => restoreTask(task.id)}
+                      onClick={() => {
+                        restoreTask(task.id);
+                        setOpen(false);
+                      }}
                       className="bg-black select-none border-2 flex items-center justify-center text-destructive-foreground shadow-sm  w-full text-sm p-2 rounded  font-bold duration-200 active:scale-105 active:border-2 active:border-white"
                     >
                       RESTORE <IconEraser />
                     </Button>
                   ) : (
                     <Button
-                      onClick={() => completeTask(task.id)}
+                      onClick={() => {
+                        completeTask(task.id);
+                        setOpen(false);
+                      }}
                       className="bg-black select-none border-2 flex items-center justify-center text-destructive-foreground shadow-sm  w-full text-sm p-2 rounded  font-bold duration-200 active:scale-105 active:border-2 active:border-white"
                     >
                       COMPLETE <IconEraser />
