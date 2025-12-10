@@ -184,7 +184,7 @@ export default function ImageColorPicker({ theme, textTheme }) {
   return (
     <div
       style={{ border: `2px solid ${theme}` }}
-      className={`bg-black/30 flex flex-col h-full border- rounded-xl overflow-hidden`}
+      className={`bg-black/50 flex flex-col h-full border- rounded-xl overflow-hidden`}
     >
       <div
         style={{

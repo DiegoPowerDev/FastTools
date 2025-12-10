@@ -39,9 +39,8 @@ export default function Task({ task }) {
   const [comment, setComment] = useState("");
   const [newImagePreview, setNewImagePreview] = useState(null);
   const [newImageFile, setNewImageFile] = useState(null);
-  const imageRef = useRef(null);
   const [movilSeccion, setMovilSeccion] = useState("description");
-
+  const containerRef = useRef(null);
   const startDate = task.startDate?.toDate?.() ?? task.startDate;
   const endDate = task.endDate?.toDate?.() ?? task.endDate;
 
@@ -75,6 +74,7 @@ export default function Task({ task }) {
   };
   useEffect(() => {
     const handlePaste = (e) => {
+      if (!containerRef.current?.contains(e.target)) return;
       const items = e.clipboardData.items;
       for (let item of items) {
         if (item.type.includes("image")) {
@@ -462,7 +462,7 @@ export default function Task({ task }) {
                 </div>
                 <Dialog open={openForm} onOpenChange={setOpenForm}>
                   <DialogContent
-                    ref={imageRef}
+                    ref={containerRef}
                     style={{
                       color: textTheme,
                       backgroundColor: theme,

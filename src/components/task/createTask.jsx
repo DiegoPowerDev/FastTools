@@ -31,7 +31,7 @@ export default function CreateTask({ open, setOpen, mode }) {
   const auth = getAuth();
   const uid = auth.currentUser?.uid;
   const fileRef = useRef(null);
-
+  const containerRef = useRef(null);
   async function uploadTaskImage(taskId, file) {
     const formData = new FormData();
     formData.append("file", file);
@@ -173,6 +173,7 @@ export default function CreateTask({ open, setOpen, mode }) {
   };
   useEffect(() => {
     const handlePaste = (e) => {
+      if (!containerRef.current?.contains(e.target)) return;
       const items = e.clipboardData.items;
       for (let item of items) {
         if (item.type.includes("image")) {
@@ -199,6 +200,7 @@ export default function CreateTask({ open, setOpen, mode }) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent
+        ref={containerRef}
         style={{ color: textTheme, backgroundColor: theme }}
         className="max-w-2xl  bg-black border-white border-2 overflow-y-auto flex flex-col gap-4 "
       >
@@ -281,8 +283,8 @@ export default function CreateTask({ open, setOpen, mode }) {
                     className="p-2 rounded w-full bg-transparent"
                   >
                     <SelectTrigger
-                      style={{ color: textTheme, border: `1px solid ${theme}` }}
-                      className=" w-[100px] md:w-[130px]"
+                      style={{ color: textTheme, border: `1px solid white` }}
+                      className="bg-black w-[100px] md:w-[130px]"
                     >
                       <SelectValue />
                     </SelectTrigger>
