@@ -21,7 +21,7 @@ export default function MenuSettings() {
     images,
     setImages,
     colors,
-    setBackgrounType,
+    setBackgroundType,
   } = useFireStore();
   const [video, setVideo] = useState(false);
   const [editable, setEditable] = useState(false);
@@ -133,7 +133,7 @@ export default function MenuSettings() {
               />
             </button>
           </div>
-          <div className="flex w-full h-8 gap-2 items-center">
+          <div className="hidden md:flex w-full h-8 gap-2 items-center">
             <Button
               style={{
                 backgroundColor: theme,
@@ -167,8 +167,9 @@ export default function MenuSettings() {
           {video ? (
             <>
               <BackgroundVideo
-                setBackgrounType={setBackgrounType}
+                setBackgroundType={setBackgroundType}
                 theme={theme}
+                editable={editable}
                 setBackground={setBackground}
                 textTheme={textTheme}
               />
@@ -186,7 +187,7 @@ export default function MenuSettings() {
                       image={images[e - 1]}
                       setImages={setImages}
                       modo={editable}
-                      setBackgrounType={setBackgrounType}
+                      setBackgroundType={setBackgroundType}
                       slot={e}
                       setBackground={setBackground}
                       setMobileBackground={setMobileBackground}
@@ -205,8 +206,9 @@ export default function MenuSettings() {
 function BackgroundVideo({
   theme,
   textTheme,
-  setBackgrounType,
+  setBackgroundType,
   setBackground,
+  editable, // Propiedad a usar
 }) {
   const auth = getAuth();
 
@@ -214,7 +216,15 @@ function BackgroundVideo({
   const [isLoading, setIsLoading] = useState(true);
   const uid = auth.currentUser?.uid;
   const [videoUrl, setVideoUrl] = useState(null);
+  const fileInputRef = useRef(null);
+
+  // --- Lógica de Carga Inicial ---
   async function load() {
+    if (!uid) {
+      setIsLoading(false);
+      return;
+    }
+
     try {
       const res = await fetch("/api/get-background-video", {
         method: "POST",
@@ -231,29 +241,15 @@ function BackgroundVideo({
       console.error("Error loading video:", error);
     } finally {
       setIsLoading(false);
-      console.log(isLoading);
     }
   }
   useEffect(() => {
     load();
-  }, []);
+  }, [uid]);
 
-  const fileInputRef = useRef(null);
-
-  const handleFileSelect = async (e) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    // Validate file type
-    if (!file.type.startsWith("video/")) {
-      alert("Please select a valid video file.");
-      return;
-    }
-
-    await uploadTemp(file);
-  };
-
+  // --- Lógica de Subida (Siempre usa uploadTemp si editable=true) ---
   const uploadTemp = async (file) => {
+    setIsLoading(true);
     const formData = new FormData();
     formData.append("file", file);
     formData.append("uid", uid);
@@ -265,12 +261,36 @@ function BackgroundVideo({
       });
 
       const data = await res.json();
-      setVideoUrl(data.secure_url);
+
+      // Asumiendo que tu handler de API devuelve la URL como 'url' y no 'secure_url'
+      if (data.url) {
+        setVideoUrl(data.url);
+      } else {
+        throw new Error(data.error || "Upload failed");
+      }
     } catch (error) {
       console.error("Error uploading video:", error);
-      toast.error("Error uploading video, try again later.");
+      toast.error("Error al subir el video, inténtalo de nuevo.");
+    } finally {
+      setIsLoading(false);
     }
   };
+
+  const handleFileSelect = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("video/")) {
+      alert("Please select a valid video file.");
+      return;
+    }
+
+    // 🚨 Acción si editable: Ejecutar la subida
+    await uploadTemp(file);
+    e.target.value = null; // Limpiar input
+  };
+
+  // --- Estado de Carga ---
   if (isLoading) {
     return (
       <div
@@ -284,15 +304,18 @@ function BackgroundVideo({
       </div>
     );
   }
+
+  // --- Renderizado Principal ---
   return (
-    <div className="h-40 bg-black  overflow-hidden shadow-2xl flex items-center justify-center">
-      {!videoUrl ? (
+    <div className="h-40 bg-black overflow-hidden shadow-2xl flex items-center justify-center">
+      {/* 1. Opción de Subida (Solo si editable es true Y no hay video) */}
+      {editable || !videoUrl ? (
         <div className="text-center p-8">
           <input
             ref={fileInputRef}
             type="file"
             accept="video/*"
-            onChange={handleFileSelect}
+            onChange={handleFileSelect} // Llama a la subida
             className="hidden"
             id="video-upload"
           />
@@ -305,19 +328,35 @@ function BackgroundVideo({
             Click to upload a video
           </label>
         </div>
-      ) : (
+      ) : videoUrl ? (
+        // 2. Muestra el Video
         <div
+          // 🚨 Acción si NO editable: Establecer el fondo al hacer clic
           onClick={() => {
-            setBackgrounType("video");
-            setBackground(videoUrl);
+            if (!editable) {
+              setBackgroundType("video");
+              setBackground(videoUrl);
+            }
           }}
-          className="w-full h-full flex flex-col items-center justify-center"
+          // Clase condicional para indicar si es clickeable
+          className={`w-full h-full flex flex-col items-center justify-center ${
+            !editable ? "cursor-pointer hover:opacity-80" : ""
+          }`}
         >
           <video
             ref={videoRef}
             src={videoUrl}
+            autoPlay
+            loop
+            muted
+            playsInline
             className="max-h-32 md:max-h-[400px] max-w-full rounded"
           />
+        </div>
+      ) : (
+        // Si no es editable y no hay video, no mostramos el input de subida.
+        <div className="text-center p-8" style={{ color: textTheme }}>
+          No hay video disponible.
         </div>
       )}
     </div>
@@ -329,7 +368,7 @@ function BackgroundImage({
   modo,
   textTheme,
   setBackground,
-  setBackgrounType,
+  setBackgroundType,
   setMobileBackground,
   setImages,
   slot,
@@ -395,7 +434,7 @@ function BackgroundImage({
         onClick={
           !modo
             ? () => {
-                setBackgrounType("image");
+                setBackgroundType("image");
                 setBackground(localImage);
                 toast((t) => (
                   <span className="flex items-center justify-center gap-4">

@@ -206,7 +206,7 @@ export const fireStore = createStore((set, get) => ({
     get().saveToFirestore();
   },
   backgroundType: "image",
-  setBackgrounType: (backgroundType) => {
+  setBackgroundType: (backgroundType) => {
     set({ backgroundType });
     get().saveToFirestore();
   },

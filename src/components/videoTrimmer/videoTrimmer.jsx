@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { Button } from "../ui/button";
 import toast from "react-hot-toast";
+import { cn } from "@/lib/utils";
 
 export default function VideoTrimmer({ theme, textTheme }) {
   const auth = getAuth();
@@ -204,7 +205,6 @@ export default function VideoTrimmer({ theme, textTheme }) {
     setIsExporting(true);
 
     try {
-      // 1. **MODIFICACIÓN AQUÍ:** Agregamos 'fl_attachment' a las transformaciones de Cloudinary
       const cloudinaryTransformations = `so_${cutStart.toFixed(
         2
       )},eo_${cutEnd.toFixed(2)},f_${format},fl_attachment`;
@@ -213,10 +213,8 @@ export default function VideoTrimmer({ theme, textTheme }) {
 
       const link = document.createElement("a");
       link.href = url;
-      // La propiedad 'download' le dice al navegador que lo descargue y le da un nombre
       link.download = `video_trimmed_${Date.now()}.${format}`;
 
-      // El siguiente código es correcto para disparar la descarga.
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -354,7 +352,7 @@ export default function VideoTrimmer({ theme, textTheme }) {
         </div>
 
         {videoUrl && (
-          <div className="flex-1 p-6 shadow-2xl flex flex-col gap-6 justify-center">
+          <div className="flex-1 p-4 shadow-2xl flex flex-col gap-2 ">
             <div className="flex flex-col">
               <div className="flex justify-center items-center gap-4 mt-2">
                 <button
@@ -390,7 +388,10 @@ export default function VideoTrimmer({ theme, textTheme }) {
                 ref={timelineRef}
                 style={{ border: `1px solid ${textTheme}` }}
                 onClick={handleTimelineClick}
-                className="relative h-12 rounded-lg cursor-pointer overflow-hidden"
+                className={cn(
+                  orientation === "horizontal" ? "h-8" : "h-12",
+                  "relative  rounded-lg cursor-pointer overflow-hidden"
+                )}
               >
                 {/* Área no seleccionada (oscura) */}
                 <div className="absolute inset-0" />
@@ -455,7 +456,10 @@ export default function VideoTrimmer({ theme, textTheme }) {
             </div>
             <div
               style={{ backgroundColor: theme }}
-              className="flex flex-col gap-4 items-center justify-center p-6 rounded-lg"
+              className={cn(
+                orientation === "horizontal" ? "" : "flex-col",
+                "flex  gap-4 items-center justify-between p-2 rounded-lg"
+              )}
             >
               <h3 className="font-semibold text-lg">EXPORT VIDEO</h3>
               <div className="flex gap-4 items-center">
