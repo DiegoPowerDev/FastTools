@@ -30,7 +30,8 @@ import { useClock } from "@/hooks/useClock";
 import { X } from "lucide-react";
 
 export default function Task({ task }) {
-  const { theme, textTheme, deleteTask, addNote } = useFireStore();
+  const { theme, textTheme, deleteTask, addNote, completeTask, restoreTask } =
+    useFireStore();
   const time = useClock();
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState("");
@@ -53,13 +54,13 @@ export default function Task({ task }) {
   }
 
   const colorCondition = () => {
-    if (time < middleTime()) {
+    if (task.state === "completed" || time < middleTime()) {
       return "#b2dddd";
     }
-    if (time >= endDate) {
+    if (task.state != "completed" && time >= endDate) {
       return "#E31B1C";
     }
-    if (middleTime() < time) {
+    if (task.state != "completed" && middleTime() < time) {
       return "#CEC102";
     }
   };
@@ -273,8 +274,23 @@ export default function Task({ task }) {
                 <div className="w-full flex uppercase gap-2 items-center justify-center">
                   <span className="text-xl font-bold">Frequency:</span>
                   <span>{task.frequency != "none" && task.frequency}</span>
+                  {task.state === "completed" ? (
+                    <Button
+                      onClick={() => restoreTask(task.id)}
+                      className="bg-black select-none border-2 flex items-center justify-center text-destructive-foreground shadow-sm  w-full text-sm p-2 rounded  font-bold duration-200 active:scale-105 active:border-2 active:border-white"
+                    >
+                      RESTORE <IconEraser />
+                    </Button>
+                  ) : (
+                    <Button
+                      onClick={() => completeTask(task.id)}
+                      className="bg-black select-none border-2 flex items-center justify-center text-destructive-foreground shadow-sm  w-full text-sm p-2 rounded  font-bold duration-200 active:scale-105 active:border-2 active:border-white"
+                    >
+                      COMPLETE <IconEraser />
+                    </Button>
+                  )}
                 </div>
-                <span></span>
+                <div></div>
                 <AlertDialog>
                   <AlertDialogTrigger className="flex gap-2 w-full justify-center">
                     <div className=" border-2 flex items-center justify-center bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90 w-full text-sm p-2 rounded  font-bold duration-200 active:scale-105 active:border-2 active:border-white">

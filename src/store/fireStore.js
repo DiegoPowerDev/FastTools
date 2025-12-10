@@ -570,6 +570,18 @@ export const fireStore = createStore((set, get) => ({
     set({ task: [...get().task, newTask], lastTaskId: newId });
     get().saveToFirestore();
   },
+  completeTask: (taskId) =>
+    set((state) => ({
+      task: state.task.map((t) =>
+        t.id === taskId ? { ...t, state: "completed" } : t
+      ),
+    })),
+  restoreTask: (taskId) =>
+    set((state) => ({
+      task: state.task.map((t) =>
+        t.id === taskId ? { ...t, state: "attention" } : t
+      ),
+    })),
   deleteTask: async (taskId) => {
     const auth = getAuth();
     const uid = auth.currentUser?.uid;
@@ -646,6 +658,7 @@ export const fireStore = createStore((set, get) => ({
         ...task,
         startDate: newStart,
         endDate: newEnd,
+        state: "attention",
       };
     });
 

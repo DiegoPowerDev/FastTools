@@ -8,6 +8,7 @@ import CreateTask from "../task/createTask";
 import { Button } from "../ui/button";
 import { cn } from "@/lib/utils";
 import { useClock } from "@/hooks/useClock";
+import { set } from "date-fns/set";
 
 export default function ScheduleTable() {
   const { task, updateExpiredTasks } = useFireStore();
@@ -15,6 +16,7 @@ export default function ScheduleTable() {
   const [open, setOpen] = useState(false);
   const { theme, textTheme } = useFireStore();
   const [mode, setMode] = useState("daily");
+  const [section, setSection] = useState("attention");
   useEffect(() => {
     updateExpiredTasks();
     const interval = setInterval(() => {
@@ -40,6 +42,10 @@ export default function ScheduleTable() {
       return task.filter((e) => e.frequency === "monthly");
     }
   };
+
+  const completedTaskList = () => {
+    return task.filter((e) => e.state === "completed");
+  };
   const expiredMiddleTasks = () => {
     const now = time; // tu variable de tiempo actual
 
@@ -60,6 +66,7 @@ export default function ScheduleTable() {
           };
         })
         .filter((t) => t && t.isMiddleExpired)
+        .filter((t) => t.state != "completed")
         // ⬆ Solo las que TRASPASARON middleTime
         .sort((a, b) => {
           // Primero las que excedieron endTime
@@ -177,26 +184,55 @@ export default function ScheduleTable() {
           <div className="w-full h-full flex justify-center">
             <div className="hidden w-2/3 h-full md:flex flex-col  items-center ">
               <div className="w-full h-16 flex items-center justify-center gap-2 p-4">
-                <h2
-                  style={{ backgroundColor: theme, color: textTheme }}
-                  className=" px-4 py-2 text-2xl font-bold rounded-xl flex items-center justify-center"
+                <Button
+                  onClick={() => setSection("attention")}
+                  style={{
+                    backgroundColor: section != "attention" ? theme : "black",
+                    color: section !== "attention" ? textTheme : "white",
+                    border: section == "attention" && "1px solid white",
+                  }}
+                  className=" px-4 py-2 text-2xl font-bold rounded flex items-center justify-center"
                 >
                   ATTENTION
-                </h2>
+                </Button>
+                <Button
+                  onClick={() => setSection("completed")}
+                  style={{
+                    backgroundColor: section != "completed" ? theme : "black",
+                    color: section !== "completed" ? textTheme : "white",
+                    border: section == "completed" && "1px solid white",
+                  }}
+                  className=" px-4 py-2 text-2xl font-bold rounded flex items-center justify-center"
+                >
+                  COMPLETED
+                </Button>
               </div>
               <div className="w-full h-full grid grid-flow-rows grid-cols-2 place-content-center gap-4">
-                {expiredMiddleTasks().map((e, i) => (
-                  <motion.div
-                    key={i}
-                    layout
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    className="w-full"
-                  >
-                    <Task task={e} />
-                  </motion.div>
-                ))}
+                {section === "attention"
+                  ? expiredMiddleTasks().map((e, i) => (
+                      <motion.div
+                        key={i}
+                        layout
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="w-full"
+                      >
+                        <Task task={e} />
+                      </motion.div>
+                    ))
+                  : completedTaskList().map((e, i) => (
+                      <motion.div
+                        key={i}
+                        layout
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="w-full"
+                      >
+                        <Task task={e} />
+                      </motion.div>
+                    ))}
               </div>
             </div>
           </div>
