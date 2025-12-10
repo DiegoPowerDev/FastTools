@@ -64,7 +64,7 @@ export async function DELETE(req, { params }) {
       { status: 200 }
     );
   } catch (error) {
-    console.error("Error deleting task folder:", error);
+    console.error("Error deleting task folder:");
     return Response.json(
       { error: "Failed to delete task folder" },
       { status: 500 }

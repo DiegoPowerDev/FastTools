@@ -26,7 +26,7 @@ export default function CreateTask({ open, setOpen, mode }) {
   const [name, setName] = useState("");
   const [endDate, setEndDate] = useState("");
   const [newImage, setNewImage] = useState(null);
-  const [every, setEvery] = useState("");
+  const [every, setEvery] = useState(0);
   const { newTask, lastTaskId, theme, textTheme } = useFireStore();
   const auth = getAuth();
   const uid = auth.currentUser?.uid;
@@ -286,7 +286,7 @@ export default function CreateTask({ open, setOpen, mode }) {
                       style={{ color: textTheme, border: `1px solid white` }}
                       className="bg-black w-[100px] md:w-[130px]"
                     >
-                      <SelectValue />
+                      Sunday
                     </SelectTrigger>
                     <SelectContent
                       style={{ color: textTheme, backgroundColor: "black" }}
