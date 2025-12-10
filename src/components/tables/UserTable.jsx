@@ -24,7 +24,7 @@ const componentMap = {
     ssr: false,
     loading: () => <ComponentSkeleton height="350px" />,
   }),
-  picker: dynamic(() => import("@/components/colorPicker/colorPicker"), {
+  colorpicker: dynamic(() => import("@/components/colorPicker/colorPicker"), {
     ssr: false,
     loading: () => <ComponentSkeleton height="350px" />,
   }),
@@ -66,7 +66,6 @@ const componentMap = {
 };
 export default function UserTable() {
   const {
-    tabs,
     colors,
     links,
     api,
@@ -125,7 +124,8 @@ export default function UserTable() {
                 ? "h-[500px]"
                 : "h-[350px]"
             } ${
-              component.label === "recorder" || component.label === "picker"
+              component.label === "recorder" ||
+              component.label === "colorpicker"
                 ? "hidden md:block w-full"
                 : ""
             }`}

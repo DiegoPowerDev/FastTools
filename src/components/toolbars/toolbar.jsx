@@ -1,4 +1,10 @@
 "use client";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 import {
   Dialog,
@@ -31,15 +37,10 @@ import {
   IconLayoutNavbar,
   IconCalculator,
   IconVideoPlus,
-  IconNote,
   IconPhotoEdit,
-  IconLink,
-  IconBrush,
   IconApi,
   IconHash,
-  IconCrop,
   IconQrcode,
-  IconColorPicker,
   IconRocket,
   IconCloud,
   IconSettings,
@@ -47,21 +48,28 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 import MenuSettingsBasic from "../menuSettings/MenuSettingsBasic";
+import {
+  ImageUpscale,
+  Link,
+  NotebookText,
+  Palette,
+  Pipette,
+} from "lucide-react";
 
 // === Icon Map ===
 const iconMap = {
   header: IconLayoutNavbar,
   calculator: IconCalculator,
   recorder: IconVideoPlus,
-  notes: IconNote,
+  notes: NotebookText,
   conversor: IconPhotoEdit,
-  links: IconLink,
-  colors: IconBrush,
+  links: Link,
+  colors: Palette,
   apiTester: IconApi,
   jwt: IconHash,
-  editor: IconCrop,
+  editor: ImageUpscale,
   qr: IconQrcode,
-  picker: IconColorPicker,
+  colorpicker: Pipette,
 };
 
 // === Sortable Button ===
@@ -74,7 +82,7 @@ function SortableButton({ id, label, theme, textTheme }) {
     transition,
     isDragging,
   } = useSortable({ id });
-
+  const [open, setOpen] = useState(false);
   const Icon = iconMap[label];
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -86,18 +94,37 @@ function SortableButton({ id, label, theme, textTheme }) {
   };
 
   return (
-    <div
-      ref={setNodeRef}
-      style={style}
-      {...listeners}
-      {...attributes}
-      aria-label={label}
-      className={`relative h-14 w-14 p-2 border-2 border-black rounded flex justify-center items-center cursor-grab active:cursor-grabbing touch-none ${
-        label === "recorder" || label === "picker" ? "sm:block hidden" : ""
-      }`}
-    >
-      <Icon size={40} />
-    </div>
+    <TooltipProvider delayDuration={1}>
+      <Tooltip open={open} onOpenChange={(v) => setOpen(v)}>
+        <TooltipTrigger asChild>
+          <div
+            onPointerEnter={() => setOpen(true)}
+            onPointerLeave={() => {
+              setTimeout(() => setOpen(false), 0);
+            }}
+          >
+            <div
+              ref={setNodeRef}
+              style={style}
+              {...listeners}
+              {...attributes}
+              aria-label={label}
+              className={`relative h-14 w-14 p-2 border-2 border-black rounded flex justify-center items-center cursor-grab active:cursor-grabbing touch-none ${
+                label === "recorder" || label === "colorpicker"
+                  ? "sm:block hidden"
+                  : ""
+              }`}
+            >
+              <Icon size={40} />
+            </div>{" "}
+          </div>
+        </TooltipTrigger>
+
+        <TooltipContent onPointerEnter={() => setOpen(false)}>
+          <p className="select-none uppercase">{label}</p>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
   );
 }
 

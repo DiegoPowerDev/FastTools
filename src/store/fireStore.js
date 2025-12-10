@@ -180,7 +180,7 @@ const initialState = {
   toolbarArea: [
     { id: 2, label: "calculator" },
     { id: 3, label: "recorder" },
-    { id: 4, label: "picker" },
+    { id: 4, label: "colorpicker" },
     { id: 5, label: "conversor" },
     { id: 7, label: "colors" },
     { id: 10, label: "editor" },
@@ -338,7 +338,7 @@ export const fireStore = createStore((set, get) => ({
     jwt: false,
     editor: false,
     qr: false,
-    picker: false,
+    colorpicker: false,
   },
   notes: [
     {
@@ -398,7 +398,7 @@ export const fireStore = createStore((set, get) => ({
   toolbarArea: [
     { id: 2, label: "calculator" },
     { id: 3, label: "recorder" },
-    { id: 4, label: "picker" },
+    { id: 4, label: "colorpicker" },
     { id: 5, label: "conversor" },
     { id: 7, label: "colors" },
     { id: 10, label: "editor" },

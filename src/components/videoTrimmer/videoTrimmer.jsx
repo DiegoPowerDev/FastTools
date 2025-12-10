@@ -220,8 +220,6 @@ export default function VideoTrimmer({ theme, textTheme }) {
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
       }
-
-      toast.success("Video deleted");
     } catch (error) {
       console.error("Error deleting video:", error);
       toast.error("Server Error.");
@@ -347,7 +345,7 @@ export default function VideoTrimmer({ theme, textTheme }) {
         }`}
       >
         {/* Video Preview */}
-        <div className="flex-1 bg-black h-full overflow-hidden shadow-2xl flex items-center justify-center">
+        <div className="flex-1 bg-black/50 h-full overflow-hidden shadow-2xl flex items-center justify-center">
           {!videoUrl ? (
             <div className="text-center p-8">
               <input
@@ -493,7 +491,9 @@ export default function VideoTrimmer({ theme, textTheme }) {
                 "flex gap-4 items-center justify-between p-2 rounded-lg"
               )}
             >
-              <h3 className="font-semibold text-lg">EXPORT VIDEO</h3>
+              <h3 className="hidden md:flex font-semibold text-lg">
+                EXPORT VIDEO
+              </h3>
               <div className="flex gap-4 items-center">
                 <Select value={formatExport} onValueChange={setFormatExport}>
                   <SelectTrigger

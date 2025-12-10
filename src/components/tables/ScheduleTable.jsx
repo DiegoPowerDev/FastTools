@@ -181,7 +181,7 @@ export default function ScheduleTable() {
               </AnimatePresence>
             </div>
           </div>
-          <div className="w-full h-full flex justify-center">
+          <div className="hidden w-full h-full md:flex justify-center">
             <div className="hidden w-2/3 h-full md:flex flex-col  items-center ">
               <div className="w-full h-16 flex items-center justify-center gap-2 p-4">
                 <Button

@@ -1,5 +1,11 @@
 "use client";
 import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import {
   Dialog,
   DialogContent,
   DialogDescription,
@@ -71,7 +77,7 @@ const iconMap = {
   jwt: IconHash,
   editor: ImageUpscale,
   qr: IconQrcode,
-  picker: Pipette,
+  colorpicker: Pipette,
   videoTrimmer: Film,
 };
 
@@ -85,7 +91,7 @@ function SortableButton({ id, label, theme, textTheme }) {
     transition,
     isDragging,
   } = useSortable({ id });
-
+  const [open, setOpen] = useState(false);
   const Icon = iconMap[label];
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -98,18 +104,37 @@ function SortableButton({ id, label, theme, textTheme }) {
   };
 
   return (
-    <div
-      ref={setNodeRef}
-      style={style}
-      aria-label={label}
-      {...listeners}
-      {...attributes}
-      className={`relative h-14 w-14 p-2  rounded flex justify-center items-center cursor-grab active:cursor-grabbing touch-none ${
-        label === "recorder" || label === "picker" ? "sm:block hidden" : ""
-      }`}
-    >
-      <Icon size={40} />
-    </div>
+    <TooltipProvider delayDuration={1}>
+      <Tooltip open={open} onOpenChange={(v) => setOpen(v)}>
+        <TooltipTrigger asChild>
+          <div
+            onPointerEnter={() => setOpen(true)}
+            onPointerLeave={() => {
+              setTimeout(() => setOpen(false), 0);
+            }}
+          >
+            <div
+              ref={setNodeRef}
+              style={style}
+              aria-label={label}
+              {...listeners}
+              {...attributes}
+              className={`relative h-14 w-14 p-2  rounded flex justify-center items-center cursor-grab active:cursor-grabbing touch-none ${
+                label === "recorder" || label === "colorpicker"
+                  ? "sm:block hidden"
+                  : ""
+              }`}
+            >
+              <Icon size={40} />
+            </div>
+          </div>
+        </TooltipTrigger>
+
+        <TooltipContent onPointerEnter={() => setOpen(false)}>
+          <p className="select-none uppercase">{label}</p>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
   );
 }
 
@@ -423,8 +448,12 @@ export default function FireToolBar() {
       )}
 
       {/* TOOLBAR AREA */}
-      <div className=" w-screen flex justify-between items-center gap-2 h-20 px-8">
-        <div className={cn("flex justify-center cursor-pointer gap-4")}>
+      <div className=" w-screen flex justify-between items-center gap-2 min-h-20 px-8">
+        <div
+          className={cn(
+            "flex flex-col md:flex-row justify-end cursor-pointer gap-4"
+          )}
+        >
           <motion.div
             animate={{
               x: [1, -1, 1, -1, 1, 0],

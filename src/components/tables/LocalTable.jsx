@@ -3,7 +3,6 @@ import { AnimatePresence, motion } from "framer-motion";
 import dynamic from "next/dynamic";
 
 import { usePageStore } from "@/store/PageStore";
-import React from "react";
 function ComponentSkeleton({ height }) {
   return (
     <div
@@ -25,7 +24,7 @@ const componentMap = {
     ssr: false,
     loading: () => <ComponentSkeleton height="350px" />,
   }),
-  picker: dynamic(() => import("@/components/colorPicker/colorPicker"), {
+  colorpicker: dynamic(() => import("@/components/colorPicker/colorPicker"), {
     ssr: false,
     loading: () => <ComponentSkeleton height="350px" />,
   }),

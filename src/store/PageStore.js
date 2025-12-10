@@ -159,7 +159,7 @@ export const pageStore = createStore(
         { id: 32, title: "", content: "", color: "#000000" },
       ],
       toolbarArea: [
-        { id: 4, label: "picker" },
+        { id: 4, label: "colorpicker" },
         { id: 5, label: "conversor" },
       ],
       headerArea: [
