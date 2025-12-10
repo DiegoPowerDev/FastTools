@@ -15,7 +15,7 @@ import {
   Pause,
   SkipForward,
   SkipBack,
-  BrushCleaningIcon,
+  Trash2,
 } from "lucide-react";
 import { Button } from "../ui/button";
 import toast from "react-hot-toast";
@@ -35,11 +35,13 @@ export default function VideoTrimmer({ theme, textTheme }) {
   const [isExporting, setIsExporting] = useState(false);
   const [formatExport, setFormatExport] = useState("mp4");
   const [isLoading, setIsLoading] = useState(true);
+  const [isUploading, setIsUploading] = useState(false);
   const [isDragging, setIsDragging] = useState(null);
 
   const videoRef = useRef(null);
   const timelineRef = useRef(null);
   const fileInputRef = useRef(null);
+
   async function load() {
     try {
       const res = await fetch("/api/get-temp-video", {
@@ -55,11 +57,12 @@ export default function VideoTrimmer({ theme, textTheme }) {
       }
     } catch (error) {
       console.error("Error loading video:", error);
+      toast.error("Error loading video");
     } finally {
       setIsLoading(false);
-      console.log(isLoading);
     }
   }
+
   useEffect(() => {
     load();
   }, []);
@@ -152,7 +155,7 @@ export default function VideoTrimmer({ theme, textTheme }) {
 
     // Validate file type
     if (!file.type.startsWith("video/")) {
-      alert("Please select a valid video file.");
+      toast.error("Please select a valid video file.");
       return;
     }
 
@@ -160,6 +163,7 @@ export default function VideoTrimmer({ theme, textTheme }) {
   };
 
   const uploadTemp = async (file) => {
+    setIsUploading(true);
     const formData = new FormData();
     formData.append("file", file);
     formData.append("uid", uid);
@@ -170,11 +174,31 @@ export default function VideoTrimmer({ theme, textTheme }) {
         body: formData,
       });
 
+      if (!res.ok) {
+        throw new Error("Upload failed");
+      }
+
       const data = await res.json();
-      setVideoUrl(data.secure_url);
+
+      console.log("Upload response:", data); // Debug log
+
+      // Asegúrate de que la URL existe en la respuesta
+      if (data.secure_url || data.url) {
+        const url = data.secure_url || data.url;
+        setVideoUrl(url);
+        toast.success("Video uploaded successfully!");
+
+        // Reset states
+        setCutStart(0);
+        setCurrentTime(0);
+      } else {
+        throw new Error("No URL returned from server");
+      }
     } catch (error) {
       console.error("Error uploading video:", error);
       toast.error("Error uploading video, try again later.");
+    } finally {
+      setIsUploading(false);
     }
   };
 
@@ -191,13 +215,16 @@ export default function VideoTrimmer({ theme, textTheme }) {
       setCutEnd(0);
       setDuration(0);
       setCurrentTime(0);
+      setOrientation("horizontal");
 
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
       }
+
+      toast.success("Video deleted");
     } catch (error) {
       console.error("Error deleting video:", error);
-      alert("Server Error.");
+      toast.error("Server Error.");
     }
   };
 
@@ -218,9 +245,11 @@ export default function VideoTrimmer({ theme, textTheme }) {
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
+
+      toast.success("Video exported successfully!");
     } catch (error) {
       console.error("Error exporting video:", error);
-      alert("Error al exportar el video.");
+      toast.error("Error exporting video.");
     } finally {
       setIsExporting(false);
     }
@@ -275,11 +304,11 @@ export default function VideoTrimmer({ theme, textTheme }) {
     return (
       <div
         style={{ backgroundColor: theme, color: textTheme }}
-        className="w-full h-screen flex items-center justify-center "
+        className="w-full h-screen flex items-center justify-center"
       >
         <div
           style={{ border: `2px solid ${textTheme}` }}
-          className="animate-spin rounded-full h-6 w-6"
+          className="animate-spin rounded-full h-6 w-6 border-t-transparent"
         ></div>
       </div>
     );
@@ -292,29 +321,27 @@ export default function VideoTrimmer({ theme, textTheme }) {
   return (
     <div
       style={{ border: `2px solid ${theme}` }}
-      className={`flex flex-col w-full h-full rounded-xl overflow-hidden`}
+      className="flex flex-col w-full h-full rounded-xl overflow-hidden"
     >
       <div
-        style={{
-          backgroundColor: theme,
-        }}
-        className={`relative  h-14 items-center flex justify-between w-full px-4`}
+        style={{ backgroundColor: theme }}
+        className="relative h-14 items-center flex justify-between w-full px-4"
       >
-        <div className=" col-end-6 text-xl w-full font-bold uppercase flex justify-center items-center">
+        <div className="col-end-6 text-xl w-full font-bold uppercase flex justify-center items-center">
           VIDEO TRIMMER
         </div>
-        <button
-          onClick={deleteTemp}
-          className="active:scale-110 duration-200 border-2 border-black bg-white text-black font-bold flex justify-center items-center gap-4 p-2 rounded md:m-4 hover:opacity-80 cursor-pointer transition-opacity"
-        >
-          <BrushCleaningIcon size={30} />
-        </button>
+        {videoUrl && (
+          <button
+            onClick={deleteTemp}
+            className="active:scale-110 duration-200 border-2 border-black bg-white text-black font-bold flex justify-center items-center gap-4 p-2 rounded md:m-4 hover:opacity-80 cursor-pointer transition-opacity"
+          >
+            <Trash2 size={24} />
+          </button>
+        )}
       </div>
 
       <div
-        style={{
-          "--theme": textTheme,
-        }}
+        style={{ "--theme": textTheme }}
         className={`container bg-black/50 mx-auto h-full flex flex-col ${
           orientation === "vertical" ? "lg:flex-row" : "lg:flex-col"
         }`}
@@ -330,14 +357,18 @@ export default function VideoTrimmer({ theme, textTheme }) {
                 onChange={handleFileSelect}
                 className="hidden"
                 id="video-upload"
+                disabled={isUploading}
               />
               <label
                 style={{ backgroundColor: theme, color: textTheme }}
                 htmlFor="video-upload"
-                className="px-8 py-4 rounded-lg font-semibold hover:opacity-70 select-none active:scale-110 duration-300 flex items-center gap-3 mx-auto cursor-pointer"
+                className={cn(
+                  "px-8 py-4 rounded-lg font-semibold hover:opacity-70 select-none active:scale-110 duration-300 flex items-center gap-3 mx-auto cursor-pointer",
+                  isUploading && "opacity-50 cursor-not-allowed"
+                )}
               >
                 <Upload size={24} />
-                Click to upload a video
+                {isUploading ? "Uploading..." : "Click to upload a video"}
               </label>
             </div>
           ) : (
@@ -346,6 +377,7 @@ export default function VideoTrimmer({ theme, textTheme }) {
                 ref={videoRef}
                 src={videoUrl}
                 className="max-h-32 md:max-h-[400px] max-w-full rounded"
+                crossOrigin="anonymous"
               />
             </div>
           )}
@@ -354,8 +386,8 @@ export default function VideoTrimmer({ theme, textTheme }) {
         {videoUrl && (
           <div
             className={cn(
-              orientation != "horizontal" && "justify-center",
-              "flex-1 p-4 shadow-2xl flex flex-col gap-2 "
+              orientation !== "horizontal" && "justify-center",
+              "flex-1 p-4 shadow-2xl flex flex-col gap-2"
             )}
           >
             <div className="flex flex-col">
@@ -363,14 +395,14 @@ export default function VideoTrimmer({ theme, textTheme }) {
                 <button
                   onClick={seekToStart}
                   style={{ backgroundColor: theme, color: textTheme }}
-                  className="px-3 py-2 rounded-lg transition-colors active:scale-110 font-bold hover:opacity-70 "
+                  className="px-3 py-2 rounded-lg transition-colors active:scale-110 font-bold hover:opacity-70"
                 >
                   <SkipBack size={20} />
                 </button>
                 <button
                   style={{ backgroundColor: textTheme, color: theme }}
                   onClick={togglePlayPause}
-                  className="px-4 py-2  active:scale-110 rounded-lg transition-colors flex items-center gap-2"
+                  className="px-4 py-2 active:scale-110 rounded-lg transition-colors flex items-center gap-2"
                 >
                   {isPlaying ? <Pause size={20} /> : <Play size={20} />}
                 </button>
@@ -383,7 +415,7 @@ export default function VideoTrimmer({ theme, textTheme }) {
                 </button>
               </div>
               <div className="w-full max-w-2xl flex flex-col gap-2">
-                <div className=" font-bold flex justify-between text-sm">
+                <div className="font-bold flex justify-between text-sm">
                   <span>{formatTime(cutStart)}</span>
                   <span>{formatTime(currentTime)}</span>
                   <span>{formatTime(cutEnd)}</span>
@@ -395,13 +427,11 @@ export default function VideoTrimmer({ theme, textTheme }) {
                 onClick={handleTimelineClick}
                 className={cn(
                   orientation === "horizontal" ? "h-8" : "h-12",
-                  "relative  rounded-lg cursor-pointer overflow-hidden"
+                  "relative rounded-lg cursor-pointer overflow-hidden"
                 )}
               >
-                {/* Área no seleccionada (oscura) */}
-                <div className="absolute inset-0" />
+                <div className="absolute inset-0 bg-gray-800" />
 
-                {/* Área seleccionada (azul) */}
                 <div
                   className="absolute top-0 bottom-0"
                   style={{
@@ -411,9 +441,8 @@ export default function VideoTrimmer({ theme, textTheme }) {
                   }}
                 />
 
-                {/* Barra de progreso */}
                 <div
-                  className="absolute top-0 bottom-0 w-0.5  z-20"
+                  className="absolute top-0 bottom-0 w-0.5 z-20"
                   style={{
                     left: `${progressPercent}%`,
                     backgroundColor: textTheme,
@@ -421,17 +450,16 @@ export default function VideoTrimmer({ theme, textTheme }) {
                 >
                   <div
                     style={{ backgroundColor: textTheme }}
-                    className="pointer-events-none absolute -top-1 left-1/2 -translate-x-1/2 w-3 h-3 bg-yellow-400 rounded-full"
+                    className="pointer-events-none absolute -top-1 left-1/2 -translate-x-1/2 w-3 h-3 rounded-full"
                   />
                 </div>
 
-                {/* Handle de inicio */}
                 <div
                   onMouseDown={(e) => {
                     e.stopPropagation();
                     setIsDragging("start");
                   }}
-                  className="absolute top-0 bottom-0 w-4  cursor-ew-resize z-10 hover:opacity-70 transition-colors flex items-center justify-center"
+                  className="absolute top-0 bottom-0 w-4 cursor-ew-resize z-10 hover:opacity-70 transition-colors flex items-center justify-center"
                   style={{
                     left: `calc(${startPercent}% - 8px)`,
                     backgroundColor: textTheme,
@@ -440,13 +468,12 @@ export default function VideoTrimmer({ theme, textTheme }) {
                   <div className="w-0.5 h-6 bg-white rounded" />
                 </div>
 
-                {/* Handle de final */}
                 <div
                   onMouseDown={(e) => {
                     e.stopPropagation();
                     setIsDragging("end");
                   }}
-                  className="absolute top-0 bottom-0 w-4 cursor-ew-resize hover:opacity-70 z-10transition-colors flex items-center justify-center"
+                  className="absolute top-0 bottom-0 w-4 cursor-ew-resize hover:opacity-70 z-10 transition-colors flex items-center justify-center"
                   style={{
                     left: `calc(${endPercent}% - 8px)`,
                     backgroundColor: textTheme,
@@ -463,7 +490,7 @@ export default function VideoTrimmer({ theme, textTheme }) {
               style={{ backgroundColor: theme }}
               className={cn(
                 orientation === "horizontal" ? "" : "flex-col",
-                "flex  gap-4 items-center justify-between p-2 rounded-lg"
+                "flex gap-4 items-center justify-between p-2 rounded-lg"
               )}
             >
               <h3 className="font-semibold text-lg">EXPORT VIDEO</h3>
@@ -489,7 +516,7 @@ export default function VideoTrimmer({ theme, textTheme }) {
                   disabled={isExporting}
                   className="px-6 py-2 bg-black text-white hover:opacity-70"
                 >
-                  <Download size={20} className={isExporting && "mr-2"} />
+                  <Download size={20} className={isExporting ? "mr-2" : ""} />
                   {isExporting ? "Loading..." : ""}
                 </Button>
               </div>

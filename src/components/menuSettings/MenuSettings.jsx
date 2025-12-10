@@ -202,13 +202,12 @@ export default function MenuSettings() {
     </div>
   );
 }
-
 function BackgroundVideo({
   theme,
   textTheme,
   setBackgroundType,
   setBackground,
-  editable, // Propiedad a usar
+  editable,
 }) {
   const auth = getAuth();
 
@@ -243,6 +242,7 @@ function BackgroundVideo({
       setIsLoading(false);
     }
   }
+
   useEffect(() => {
     load();
   }, [uid]);
@@ -260,17 +260,24 @@ function BackgroundVideo({
         body: formData,
       });
 
+      if (!res.ok) {
+        throw new Error("Upload failed");
+      }
+
       const data = await res.json();
 
-      // Asumiendo que tu handler de API devuelve la URL como 'url' y no 'secure_url'
-      if (data.url) {
-        setVideoUrl(data.url);
+      console.log("Upload response:", data); // Debug log
+
+      // Intentar ambos formatos de respuesta
+      if (data.url || data.secure_url) {
+        const url = data.url || data.secure_url;
+        setVideoUrl(url);
       } else {
-        throw new Error(data.error || "Upload failed");
+        throw new Error(data.error || "No URL returned from server");
       }
     } catch (error) {
       console.error("Error uploading video:", error);
-      toast.error("Error al subir el video, inténtalo de nuevo.");
+      toast.error("Error uploading video, try again.");
     } finally {
       setIsLoading(false);
     }
@@ -281,11 +288,11 @@ function BackgroundVideo({
     if (!file) return;
 
     if (!file.type.startsWith("video/")) {
-      alert("Please select a valid video file.");
+      toast.error("Please select a valid video file.");
       return;
     }
 
-    // 🚨 Acción si editable: Ejecutar la subida
+    // Ejecutar la subida
     await uploadTemp(file);
     e.target.value = null; // Limpiar input
   };
@@ -295,11 +302,11 @@ function BackgroundVideo({
     return (
       <div
         style={{ backgroundColor: theme, color: textTheme }}
-        className="w-full h-40 flex rounded-xl items-center justify-center "
+        className="w-full h-40 flex rounded-xl items-center justify-center"
       >
         <div
           style={{ border: `2px solid ${textTheme}` }}
-          className="animate-spin rounded-full h-6 w-6"
+          className="animate-spin rounded-full h-6 w-6 border-t-transparent"
         ></div>
       </div>
     );
@@ -307,15 +314,15 @@ function BackgroundVideo({
 
   // --- Renderizado Principal ---
   return (
-    <div className="h-40 bg-black overflow-hidden shadow-2xl flex items-center justify-center">
-      {/* 1. Opción de Subida (Solo si editable es true Y no hay video) */}
-      {editable || !videoUrl ? (
+    <div className="h-40 bg-black overflow-hidden shadow-2xl flex items-center justify-center rounded-xl">
+      {/* SI NO HAY VIDEO: Mostrar botón de upload */}
+      {!videoUrl ? (
         <div className="text-center p-8">
           <input
             ref={fileInputRef}
             type="file"
             accept="video/*"
-            onChange={handleFileSelect} // Llama a la subida
+            onChange={handleFileSelect}
             className="hidden"
             id="video-upload"
           />
@@ -328,19 +335,22 @@ function BackgroundVideo({
             Click to upload a video
           </label>
         </div>
-      ) : videoUrl ? (
-        // 2. Muestra el Video
+      ) : (
+        /* SI HAY VIDEO: Mostrarlo */
         <div
-          // 🚨 Acción si NO editable: Establecer el fondo al hacer clic
+          // Si NO es editable: permitir establecer como fondo
           onClick={() => {
             if (!editable) {
               setBackgroundType("video");
               setBackground(videoUrl);
+              toast.success("Background video set!");
             }
           }}
           // Clase condicional para indicar si es clickeable
           className={`w-full h-full flex flex-col items-center justify-center ${
-            !editable ? "cursor-pointer hover:opacity-80" : ""
+            !editable
+              ? "cursor-pointer hover:opacity-80 transition-opacity"
+              : ""
           }`}
         >
           <video
@@ -350,13 +360,30 @@ function BackgroundVideo({
             loop
             muted
             playsInline
-            className="max-h-32 md:max-h-[400px] max-w-full rounded"
+            crossOrigin="anonymous"
+            className="w-full h-full object-cover"
           />
-        </div>
-      ) : (
-        // Si no es editable y no hay video, no mostramos el input de subida.
-        <div className="text-center p-8" style={{ color: textTheme }}>
-          No hay video disponible.
+
+          {/* Botón para cambiar video (solo si es editable) */}
+          {editable && (
+            <div className="absolute bottom-2">
+              <input
+                type="file"
+                accept="video/*"
+                onChange={handleFileSelect}
+                className="hidden"
+                id="video-change"
+              />
+              <label
+                style={{ backgroundColor: theme, color: textTheme }}
+                htmlFor="video-change"
+                className="px-4 py-2 rounded-lg text-sm font-semibold hover:opacity-70 cursor-pointer flex items-center gap-2"
+              >
+                <Upload size={16} />
+                Change
+              </label>
+            </div>
+          )}
         </div>
       )}
     </div>

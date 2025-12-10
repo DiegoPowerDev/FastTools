@@ -31,21 +31,14 @@ import {
   IconLayoutNavbar,
   IconCalculator,
   IconVideoPlus,
-  IconNote,
   IconPhotoEdit,
-  IconLink,
-  IconBrush,
   IconApi,
   IconHash,
-  IconCrop,
   IconQrcode,
-  IconColorPicker,
   IconRocket,
   IconDoor,
   IconSettings,
-  IconClock,
   IconTools,
-  IconPhotoVideo,
 } from "@tabler/icons-react";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
@@ -55,22 +48,31 @@ import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { useClock } from "@/hooks/useClock";
 import { cn } from "@/lib/utils";
+import {
+  CalendarClock,
+  Film,
+  ImageUpscale,
+  Link,
+  NotebookText,
+  Palette,
+  Pipette,
+} from "lucide-react";
 
 // === Icon Map ===
 const iconMap = {
   header: IconLayoutNavbar,
   calculator: IconCalculator,
   recorder: IconVideoPlus,
-  notes: IconNote,
+  notes: NotebookText,
   conversor: IconPhotoEdit,
-  links: IconLink,
-  colors: IconBrush,
+  links: Link,
+  colors: Palette,
   apiTester: IconApi,
   jwt: IconHash,
-  editor: IconCrop,
+  editor: ImageUpscale,
   qr: IconQrcode,
-  picker: IconColorPicker,
-  videoTrimmer: IconPhotoVideo,
+  picker: Pipette,
+  videoTrimmer: Film,
 };
 
 // === Sortable Button ===
@@ -500,7 +502,7 @@ export default function FireToolBar() {
             }}
             className={`h-14 w-14 p-2 rounded flex-shrink-0}`}
           >
-            <IconClock color={textTheme} size={40} />
+            <CalendarClock color={textTheme} size={40} />
           </div>
         </div>
       </div>
