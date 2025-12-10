@@ -230,19 +230,36 @@ export default function VideoTrimmer({ theme, textTheme }) {
     setIsExporting(true);
 
     try {
-      const cloudinaryTransformations = `so_${cutStart.toFixed(
-        2
-      )},eo_${cutEnd.toFixed(2)},f_${format},fl_attachment`;
+      const fileName = `video_trimmed_${Date.now()}.${format}`;
 
-      const url = `https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/video/upload/${cloudinaryTransformations}/fasttools/${uid}/temp/video.${format}`;
+      // Usar la API de tu backend para descargar el video
+      const response = await fetch("/api/download-video", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          uid,
+          cutStart: cutStart.toFixed(2),
+          cutEnd: cutEnd.toFixed(2),
+          format,
+          fileName,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Download failed");
+      }
+
+      const blob = await response.blob();
+      const blobUrl = window.URL.createObjectURL(blob);
 
       const link = document.createElement("a");
-      link.href = url;
-      link.download = `video_trimmed_${Date.now()}.${format}`;
-
+      link.href = blobUrl;
+      link.download = fileName;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
+
+      setTimeout(() => window.URL.revokeObjectURL(blobUrl), 100);
 
       toast.success("Video exported successfully!");
     } catch (error) {
