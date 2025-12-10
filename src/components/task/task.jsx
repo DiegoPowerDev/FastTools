@@ -349,8 +349,12 @@ export default function Task({ task }) {
                         </div>
                       </DialogTrigger>
                       <DialogContent
-                        style={{ color: textTheme, backgroundColor: theme }}
-                        className="w-full md:w-1/2  border-white border-2 overflow-x-hidden overflow-y-auto flex flex-col"
+                        style={{
+                          color: textTheme,
+                          backgroundColor: theme,
+                          border: `1px solid ${textTheme}`,
+                        }}
+                        className="w-full md:w-1/2   border-2 overflow-x-hidden overflow-y-auto flex flex-col"
                       >
                         <DialogHeader className="pb-4">
                           <DialogTitle className="text-center font-bold uppercase">
