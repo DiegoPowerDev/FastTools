@@ -463,10 +463,10 @@ export default function FireToolBar() {
                 style={{
                   color: textTheme,
                   backgroundColor: theme,
-                  textShadow: `0 0 15px ${textTheme}`,
+                  boxShadow: `0 0 5px 1px ${textTheme}`,
                 }}
                 onClick={() => console.log(task)}
-                className=" w-56 rounded text-center font-bolt text-5xl py-2"
+                className=" w-56 rounded flex items-center justify-center font-bolt text-5xl h-14"
               >
                 {format(time.getHours())}:{format(time.getMinutes())}:
                 {format(time.getSeconds())}
