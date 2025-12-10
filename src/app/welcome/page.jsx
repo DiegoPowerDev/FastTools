@@ -83,7 +83,7 @@ export default function Page() {
               </div>
 
               <div
-                className={`w-full h-full ${
+                className={`w-full h-full flex items-center justify-center ${
                   mode === "tools" ? "block" : "hidden"
                 }`}
               >

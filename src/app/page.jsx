@@ -20,8 +20,9 @@ export default function Page() {
           <div className="w-screen h-screen fixed bg-black inset-0 flex justify-center items-center -z-10">
             <BackgroundImage />
           </div>
-
-          <LocalTable />
+          <div className={`w-full h-full flex items-center justify-center`}>
+            <LocalTable />
+          </div>
         </div>
 
         <Footer />

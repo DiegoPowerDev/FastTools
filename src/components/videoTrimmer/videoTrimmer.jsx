@@ -352,7 +352,12 @@ export default function VideoTrimmer({ theme, textTheme }) {
         </div>
 
         {videoUrl && (
-          <div className="flex-1 p-4 shadow-2xl flex flex-col gap-2 ">
+          <div
+            className={cn(
+              orientation != "horizontal" && "justify-center",
+              "flex-1 p-4 shadow-2xl flex flex-col gap-2 "
+            )}
+          >
             <div className="flex flex-col">
               <div className="flex justify-center items-center gap-4 mt-2">
                 <button
