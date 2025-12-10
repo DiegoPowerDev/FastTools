@@ -133,8 +133,11 @@ export default function Task({ task }) {
           )}
         >
           <DialogHeader className="pb-4">
-            <DialogTitle className="font-bold flex items-center justify-center uppercase w-full">
+            <DialogTitle className="font-bold flex flex-col items-center gap-2 justify-center uppercase w-full">
               <span className="text-center">{task.name}</span>
+              {task.state === "completed" && (
+                <span className="text-2xl">(COMPLETED)</span>
+              )}
             </DialogTitle>
             <DialogDescription></DialogDescription>
             <div className="flex w-full gap-2 md:hidden items-center justify-center">
