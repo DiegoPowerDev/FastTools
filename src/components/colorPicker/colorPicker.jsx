@@ -190,14 +190,16 @@ export default function ImageColorPicker({ theme, textTheme }) {
         style={{
           backgroundColor: theme,
         }}
-        className={`relative  h-14 items-center justify-center grid grid-cols-6 grid-rows-1 w-full`}
+        className={`relative  h-14 items-center justify-center flex px-2 w-full`}
       >
-        <div className="col-start-1 col-end-6 text-xl  w-full font-bold uppercase flex justify-center items-center">
+        <div className="w-12 p-2"></div>
+        <div className="text-xl  w-full font-bold uppercase flex justify-center items-center">
           COLOR PICKER
         </div>
         <button
+          aria-label="clean"
           onClick={() => reset()}
-          className="active:scale-110 duration-200 col-start-6 border-2 border-black bg-white text-black  font-bold col-end-7 flex justify-center items-center gap-4 p-2 rounded md:m-4 hover:opacity-80"
+          className="active:scale-110 duration-200 border-2 border-black bg-white text-black  font-bold flex justify-center items-center gap-4 p-2 rounded hover:opacity-80"
         >
           <BrushCleaningIcon size={30} />
         </button>

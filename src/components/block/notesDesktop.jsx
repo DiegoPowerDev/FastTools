@@ -268,9 +268,10 @@ export default function NotesMobile({
         style={{
           backgroundColor: theme,
         }}
-        className={`relative  h-14 items-center justify-center grid grid-cols-6 grid-rows-1 w-full`}
+        className={`relative flex h-14 items-center justify-center px-2  w-full`}
       >
-        <div className="col-start-1 col-end-6 text-xl  w-full font-bold uppercase flex justify-center items-center">
+        <div className="w-12 p-2"></div>
+        <div className=" text-xl  w-full font-bold uppercase flex justify-center items-center">
           Notes
         </div>
         <button
@@ -278,7 +279,7 @@ export default function NotesMobile({
             boxShadow: editable ? `0px 0px 5px 2px white` : "",
           }}
           onClick={() => setEditable(!editable)}
-          className={`col-start-6 col-end-7 bg-white text-black  flex justify-center w-12 h-5/6 rounded items-center absolute`}
+          className={` bg-white text-black flex justify-center w-12 h-12 p-2 rounded items-center`}
         >
           <IconPencil className={editable && styles.pulse} size={40} />
         </button>

@@ -33,12 +33,10 @@ import styles from "../style.module.css";
 import { useRef, useEffect, useState } from "react";
 import {
   IconBrush,
-  IconColorSwatch,
   IconDeviceFloppy,
   IconEye,
   IconEyeClosed,
   IconPencil,
-  IconTextColor,
 } from "@tabler/icons-react";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
@@ -384,10 +382,10 @@ export default function ColorsDesktop({
         style={{
           backgroundColor: theme,
         }}
-        className={`relative  h-14 items-center flex justify-between w-full px-4`}
+        className={`relative flex h-14 items-center justify-center px-2  w-full`}
       >
         <div
-          className=" h-full cursor-pointer flex items-center justify-center"
+          className="w-12 p-2 h-full cursor-pointer flex items-center justify-center"
           onClick={() => setDisplayColors()}
         >
           {!displayColors ? <IconEyeClosed size={40} /> : <IconEye size={40} />}
@@ -400,7 +398,7 @@ export default function ColorsDesktop({
             boxShadow: editable ? `0px 0px 5px 2px white` : "",
           }}
           onClick={() => setEditable(!editable)}
-          className={` bg-white text-black flex justify-center w-12 h-12 rounded items-center`}
+          className={` bg-white text-black flex justify-center w-12 h-12 p-2 rounded items-center`}
         >
           <IconPencil className={editable && styles.pulse} size={40} />
         </button>

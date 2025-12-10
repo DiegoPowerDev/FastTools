@@ -4,6 +4,7 @@ import QRCode from "qrcode";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
+import { BrushCleaningIcon } from "lucide-react";
 
 export default function QRGenerator({ theme, textTheme }) {
   const canvasRef = useRef(null);
@@ -219,16 +220,18 @@ export default function QRGenerator({ theme, textTheme }) {
         style={{
           backgroundColor: theme,
         }}
-        className={`relative  h-14 items-center justify-center grid grid-cols-7 grid-rows-1 w-full`}
+        className={`relative flex h-14 items-center justify-center px-2  w-full`}
       >
-        <div className="col-start-1 col-end-6 text-xl  w-full font-bold uppercase flex justify-center items-center">
+        <div className="w-12 p-2"></div>
+        <div className="text-xl  w-full font-bold uppercase flex justify-center items-center">
           QR GENERATOR
         </div>
         <button
+          aria-label="clean"
           onClick={() => reset()}
-          className="md:col-start-6 border-2 border-black bg-white text-black font-bold md:col-end-7 col-span-2 flex justify-center items-center gap-4 p-2 rounded  md:m-4 hover:opacity-80"
+          className="w-12 h-12 border-2 border-black bg-white text-black font-bold   flex justify-center items-center p-2 rounded hover:opacity-80"
         >
-          CLEAR
+          <BrushCleaningIcon size={30} />
         </button>
       </div>
       <div className="grid grid-cols-2 grid-rows-[6fr_1fr] md:grid-rows-[3fr_1fr] w-full h-full items-center justify-center gap-2">
