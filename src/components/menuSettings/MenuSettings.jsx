@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import styles from "../style.module.css";
 import { Button } from "../ui/button";
 import { IconPencil } from "@tabler/icons-react";
@@ -8,6 +8,7 @@ import toast from "react-hot-toast";
 import ColorGrill from "./colorGrill";
 import { cn } from "@/lib/utils";
 import ColorGrillMobile from "./colorGrillMobile";
+import { Upload } from "lucide-react";
 
 export default function MenuSettings() {
   const {
@@ -20,8 +21,9 @@ export default function MenuSettings() {
     images,
     setImages,
     colors,
+    setBackgrounType,
   } = useFireStore();
-
+  const [video, setVideo] = useState(false);
   const [editable, setEditable] = useState(false);
   const [mode, setMode] = useState("Text");
   const [isDesktop, setIsDesktop] = useState(false);
@@ -116,9 +118,9 @@ export default function MenuSettings() {
           )}
         </div>
 
-        <div className="w-full h-full flex flex-col items-center justify-center gap-4">
+        <div className="w-full h-full flex flex-col items-center justify-center gap-2">
           <div
-            className=" w-full h-full flex justify-between items-center gap-4"
+            className=" w-full h-8 flex justify-between items-center gap-4"
             style={{ backgroundColor: theme, color: textTheme }}
           >
             <div></div>
@@ -131,28 +133,193 @@ export default function MenuSettings() {
               />
             </button>
           </div>
-          <div className="w-full h-full grid md:grid-cols-4 md:grid-rows-3 grid-cols-2 place-content-center md:gap-2">
-            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((e, i) => (
-              <div
-                key={i}
-                className="w-full h-full flex items-center justify-center cursor-pointer"
-              >
-                <div className="w-full h-full flex items-center justify-center">
-                  <BackgroundImage
-                    textTheme={textTheme}
-                    image={images[e - 1]}
-                    setImages={setImages}
-                    modo={editable}
-                    slot={e}
-                    setBackground={setBackground}
-                    setMobileBackground={setMobileBackground}
-                  />
-                </div>
-              </div>
-            ))}
+          <div className="flex w-full h-8 gap-2 items-center">
+            <Button
+              style={{
+                backgroundColor: theme,
+                color: textTheme,
+                outline: !video && "2px solid white",
+              }}
+              className={cn(
+                video && "opacity-50",
+                "hover:animate-in font-bold "
+              )}
+              onClick={() => {
+                setVideo(false);
+              }}
+            >
+              IMAGE
+            </Button>
+            <Button
+              style={{
+                backgroundColor: theme,
+                color: textTheme,
+                outline: video && "2px solid white",
+              }}
+              className={cn(!video && "opacity-50", "font-bold")}
+              onClick={() => {
+                setVideo(true);
+              }}
+            >
+              VIDEO
+            </Button>
           </div>
+          {video ? (
+            <>
+              <BackgroundVideo
+                setBackgrounType={setBackgrounType}
+                theme={theme}
+                setBackground={setBackground}
+                textTheme={textTheme}
+              />
+            </>
+          ) : (
+            <div className="w-full h-full grid md:grid-cols-4 md:grid-rows-3 grid-cols-2 place-content-center md:gap-2">
+              {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((e, i) => (
+                <div
+                  key={i}
+                  className="w-full h-full flex items-center justify-center cursor-pointer"
+                >
+                  <div className="w-full h-full flex items-center justify-center">
+                    <BackgroundImage
+                      textTheme={textTheme}
+                      image={images[e - 1]}
+                      setImages={setImages}
+                      modo={editable}
+                      setBackgrounType={setBackgrounType}
+                      slot={e}
+                      setBackground={setBackground}
+                      setMobileBackground={setMobileBackground}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
+    </div>
+  );
+}
+
+function BackgroundVideo({
+  theme,
+  textTheme,
+  setBackgrounType,
+  setBackground,
+}) {
+  const auth = getAuth();
+
+  const videoRef = useRef(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const uid = auth.currentUser?.uid;
+  const [videoUrl, setVideoUrl] = useState(null);
+  async function load() {
+    try {
+      const res = await fetch("/api/get-background-video", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ uid }),
+      });
+
+      const data = await res.json();
+
+      if (data.exists) {
+        setVideoUrl(data.url);
+      }
+    } catch (error) {
+      console.error("Error loading video:", error);
+    } finally {
+      setIsLoading(false);
+      console.log(isLoading);
+    }
+  }
+  useEffect(() => {
+    load();
+  }, []);
+
+  const fileInputRef = useRef(null);
+
+  const handleFileSelect = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith("video/")) {
+      alert("Please select a valid video file.");
+      return;
+    }
+
+    await uploadTemp(file);
+  };
+
+  const uploadTemp = async (file) => {
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("uid", uid);
+
+    try {
+      const res = await fetch("/api/upload-background-video", {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await res.json();
+      setVideoUrl(data.secure_url);
+    } catch (error) {
+      console.error("Error uploading video:", error);
+      toast.error("Error uploading video, try again later.");
+    }
+  };
+  if (isLoading) {
+    return (
+      <div
+        style={{ backgroundColor: theme, color: textTheme }}
+        className="w-full h-40 flex rounded-xl items-center justify-center "
+      >
+        <div
+          style={{ border: `2px solid ${textTheme}` }}
+          className="animate-spin rounded-full h-6 w-6"
+        ></div>
+      </div>
+    );
+  }
+  return (
+    <div className="h-40 bg-black  overflow-hidden shadow-2xl flex items-center justify-center">
+      {!videoUrl ? (
+        <div className="text-center p-8">
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="video/*"
+            onChange={handleFileSelect}
+            className="hidden"
+            id="video-upload"
+          />
+          <label
+            style={{ backgroundColor: theme, color: textTheme }}
+            htmlFor="video-upload"
+            className="px-8 py-4 rounded-lg font-semibold hover:opacity-70 select-none active:scale-110 duration-300 flex items-center gap-3 mx-auto cursor-pointer"
+          >
+            <Upload size={24} />
+            Click to upload a video
+          </label>
+        </div>
+      ) : (
+        <div
+          onClick={() => {
+            setBackgrounType("video");
+            setBackground(videoUrl);
+          }}
+          className="w-full h-full flex flex-col items-center justify-center"
+        >
+          <video
+            ref={videoRef}
+            src={videoUrl}
+            className="max-h-32 md:max-h-[400px] max-w-full rounded"
+          />
+        </div>
+      )}
     </div>
   );
 }
@@ -162,13 +329,13 @@ function BackgroundImage({
   modo,
   textTheme,
   setBackground,
+  setBackgrounType,
   setMobileBackground,
   setImages,
   slot,
 }) {
   const auth = getAuth();
   const uid = auth.currentUser?.uid;
-
   const [localImage, setLocalImage] = useState(image);
   const [uploading, setUploading] = useState(false);
 
@@ -228,6 +395,7 @@ function BackgroundImage({
         onClick={
           !modo
             ? () => {
+                setBackgrounType("image");
                 setBackground(localImage);
                 toast((t) => (
                   <span className="flex items-center justify-center gap-4">

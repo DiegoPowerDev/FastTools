@@ -82,10 +82,18 @@ export default function Page() {
                 <UserBackgroundImage />
               </div>
 
-              <div className={`${mode === "tools" ? "block" : "hidden"}`}>
+              <div
+                className={`w-full h-full ${
+                  mode === "tools" ? "block" : "hidden"
+                }`}
+              >
                 <UserTable />
               </div>
-              <div className={`${mode === "schedule" ? "block" : "hidden"}`}>
+              <div
+                className={`w-full h-full ${
+                  mode === "schedule" ? "block" : "hidden"
+                }`}
+              >
                 <ScheduleTable />
               </div>
             </div>

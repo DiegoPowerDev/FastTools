@@ -18,14 +18,17 @@ export async function POST(req) {
 
     const buffer = Buffer.from(await file.arrayBuffer());
 
-    // Eliminar el archivo previo (si existe)
-    await cloudinary.api.delete_resources_by_prefix(`fasttools/${uid}/temp`);
+    // 🚨 CAMBIO CLAVE AQUÍ 🚨
+    const publicIdToDelete = `fasttools/${uid}/video`;
 
-    // Subir el nuevo video
+    await cloudinary.uploader.destroy(publicIdToDelete, {
+      resource_type: "video",
+    });
+
     const upload = await new Promise((resolve, reject) => {
       const stream = cloudinary.uploader.upload_stream(
         {
-          folder: `fasttools/${uid}/temp`,
+          folder: `fasttools/${uid}`,
           public_id: "video",
           resource_type: "video",
         },
@@ -43,6 +46,7 @@ export async function POST(req) {
       url: upload.secure_url,
     });
   } catch (error) {
+    console.error("Cloudinary operation error:", error);
     return Response.json({ error: String(error) }, { status: 500 });
   }
 }

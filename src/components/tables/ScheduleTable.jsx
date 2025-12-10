@@ -16,11 +16,12 @@ export default function ScheduleTable() {
   const { theme, textTheme } = useFireStore();
   const [mode, setMode] = useState("daily");
   useEffect(() => {
+    updateExpiredTasks();
     const interval = setInterval(() => {
       updateExpiredTasks();
     }, 60 * 1000);
     return () => clearInterval(interval);
-  }, []);
+  }, [updateExpiredTasks]);
 
   const taskList = () => {
     if (mode === "all") {

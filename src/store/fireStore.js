@@ -18,6 +18,7 @@ function arrayMove(arr, from, to) {
 }
 const initialState = {
   uid: null,
+  backgroundType: "image",
   background: "/background.webp",
   mobileBackground: "/background.webp",
   theme: "#b91c1c",
@@ -202,6 +203,11 @@ export const fireStore = createStore((set, get) => ({
   mode: "tools",
   setMode: (mode) => {
     set({ mode });
+    get().saveToFirestore();
+  },
+  backgroundType: "image",
+  setBackgrounType: (backgroundType) => {
+    set({ backgroundType });
     get().saveToFirestore();
   },
   background: "/background.webp",
@@ -585,20 +591,24 @@ export const fireStore = createStore((set, get) => ({
   updateExpiredTasks: () => {
     const tasks = get().task;
     const now = new Date();
+    let hasChanges = false;
 
     const updated = tasks.map((task) => {
-      if (!task.endDate || task.frequency === "special") return task;
+      if (task.frequency === "special") return task;
 
       const end = task.endDate.toDate?.() ?? new Date(task.endDate);
 
+      // Si aún no ha vencido, no hacer nada
       if (now < end) return task;
 
+      hasChanges = true;
+      let newStart = null;
       let newEnd = null;
 
       switch (task.frequency) {
         case "daily": {
+          // Siguiente día desde HOY (no desde el endDate antiguo)
           newStart = new Date();
-          newStart.setDate(newStart.getDate() + 1);
           newStart.setHours(0, 0, 0, 0);
           newEnd = new Date(newStart);
           newEnd.setHours(23, 59, 59, 999);
@@ -606,6 +616,7 @@ export const fireStore = createStore((set, get) => ({
         }
 
         case "weekly": {
+          // Siguiente semana desde el último endDate
           newStart = new Date(end);
           newStart.setDate(newStart.getDate() + 1);
           newStart.setHours(0, 0, 0, 0);
@@ -616,25 +627,32 @@ export const fireStore = createStore((set, get) => ({
         }
 
         case "monthly": {
-          const d = new Date();
-          newStart = new Date(d.getFullYear(), d.getMonth() + 1, 1);
+          // Siguiente mes desde HOY
+          const today = new Date();
+          // Primer día del próximo mes
+          newStart = new Date(today.getFullYear(), today.getMonth() + 1, 1);
           newStart.setHours(0, 0, 0, 0);
-
-          // Último día del próximo mes → 23:59:59.999
-          newEnd = new Date(d.getFullYear(), d.getMonth() + 2, 0);
+          // Último día del próximo mes
+          newEnd = new Date(today.getFullYear(), today.getMonth() + 2, 0);
           newEnd.setHours(23, 59, 59, 999);
           break;
         }
+
+        default:
+          return task;
       }
 
       return {
         ...task,
+        startDate: newStart,
         endDate: newEnd,
       };
     });
 
-    set({ task: updated });
-    get().saveToFirestore();
+    if (hasChanges) {
+      set({ task: updated });
+      get().saveToFirestore();
+    }
   },
   addNote: async (taskId, note) => {
     const uid = get().uid;

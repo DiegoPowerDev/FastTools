@@ -118,7 +118,7 @@ export default function UserTable() {
               duration: 0.4,
               ease: "easeInOut",
             }}
-            className={`rounded-xl overflow-hidden ${
+            className={`rounded-xl w-full overflow-hidden ${
               component.label === "apiTester" ||
               component.label === "jwt" ||
               component.label === "videoTrimmer"
@@ -126,7 +126,7 @@ export default function UserTable() {
                 : "h-[350px]"
             } ${
               component.label === "recorder" || component.label === "picker"
-                ? "hidden md:block"
+                ? "hidden md:block w-full"
                 : ""
             }`}
           >

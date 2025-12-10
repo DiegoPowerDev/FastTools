@@ -7,10 +7,18 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useState, useEffect, useRef } from "react";
-import { CldUploadWidget } from "next-cloudinary";
 import { getAuth } from "firebase/auth";
-import { Upload, Download, Trash2, Play, Pause, Scissors } from "lucide-react";
+import {
+  Upload,
+  Download,
+  Play,
+  Pause,
+  SkipForward,
+  SkipBack,
+  BrushCleaningIcon,
+} from "lucide-react";
 import { Button } from "../ui/button";
+import toast from "react-hot-toast";
 
 export default function VideoTrimmer({ theme, textTheme }) {
   const auth = getAuth();
@@ -24,41 +32,36 @@ export default function VideoTrimmer({ theme, textTheme }) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [isExporting, setIsExporting] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState(0);
-  const [formatExport, setFormatExport] = useState("");
+  const [formatExport, setFormatExport] = useState("mp4");
   const [isLoading, setIsLoading] = useState(true);
+  const [isDragging, setIsDragging] = useState(null);
 
   const videoRef = useRef(null);
+  const timelineRef = useRef(null);
+  const fileInputRef = useRef(null);
+  async function load() {
+    try {
+      const res = await fetch("/api/get-temp-video", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ uid }),
+      });
 
-  // Load temp video if exists
-  useEffect(() => {
-    async function load() {
-      if (!uid) {
-        setIsLoading(false);
-        return;
+      const data = await res.json();
+
+      if (data.exists) {
+        setVideoUrl(data.url);
       }
-
-      try {
-        const res = await fetch("/api/get-temp-video", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ uid }),
-        });
-
-        const data = await res.json();
-
-        if (data.exists) {
-          setVideoUrl(data.url);
-        }
-      } catch (error) {
-        console.error("Error loading video:", error);
-      } finally {
-        setIsLoading(false);
-      }
+    } catch (error) {
+      console.error("Error loading video:", error);
+    } finally {
+      setIsLoading(false);
+      console.log(isLoading);
     }
-
+  }
+  useEffect(() => {
     load();
-  }, [uid]);
+  }, []);
 
   // Detect orientation and setup video
   useEffect(() => {
@@ -104,6 +107,57 @@ export default function VideoTrimmer({ theme, textTheme }) {
     };
   }, [videoUrl, cutEnd]);
 
+  useEffect(() => {
+    if (!isDragging) return;
+
+    const handleMouseMove = (e) => {
+      if (!timelineRef.current || !duration) return;
+
+      const rect = timelineRef.current.getBoundingClientRect();
+      const x = Math.max(0, Math.min(e.clientX - rect.left, rect.width));
+      const percentage = x / rect.width;
+      const newTime = percentage * duration;
+
+      if (isDragging === "start") {
+        if (newTime < cutEnd - 0.5) {
+          setCutStart(newTime);
+          if (videoRef.current) {
+            videoRef.current.currentTime = newTime;
+          }
+        }
+      } else if (isDragging === "end") {
+        if (newTime > cutStart + 0.5) {
+          setCutEnd(newTime);
+        }
+      }
+    };
+
+    const handleMouseUp = () => {
+      setIsDragging(null);
+    };
+
+    document.addEventListener("mousemove", handleMouseMove);
+    document.addEventListener("mouseup", handleMouseUp);
+
+    return () => {
+      document.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("mouseup", handleMouseUp);
+    };
+  }, [isDragging, cutStart, cutEnd, duration]);
+
+  const handleFileSelect = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith("video/")) {
+      alert("Please select a valid video file.");
+      return;
+    }
+
+    await uploadTemp(file);
+  };
+
   const uploadTemp = async (file) => {
     const formData = new FormData();
     formData.append("file", file);
@@ -117,16 +171,13 @@ export default function VideoTrimmer({ theme, textTheme }) {
 
       const data = await res.json();
       setVideoUrl(data.secure_url);
-      setUploadProgress(0);
     } catch (error) {
       console.error("Error uploading video:", error);
-      alert("Error al subir el video. Intenta de nuevo.");
+      toast.error("Error uploading video, try again later.");
     }
   };
 
   const deleteTemp = async () => {
-    if (!confirm("¿Estás seguro de que quieres eliminar este video?")) return;
-
     try {
       await fetch("/api/delete-temp-video", {
         method: "POST",
@@ -139,9 +190,13 @@ export default function VideoTrimmer({ theme, textTheme }) {
       setCutEnd(0);
       setDuration(0);
       setCurrentTime(0);
+
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
     } catch (error) {
       console.error("Error deleting video:", error);
-      alert("Error al eliminar el video.");
+      alert("Server Error.");
     }
   };
 
@@ -149,16 +204,19 @@ export default function VideoTrimmer({ theme, textTheme }) {
     setIsExporting(true);
 
     try {
-      const url = `https://res.cloudinary.com/${
-        process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME
-      }/video/upload/so_${cutStart.toFixed(2)},eo_${cutEnd.toFixed(
+      // 1. **MODIFICACIÓN AQUÍ:** Agregamos 'fl_attachment' a las transformaciones de Cloudinary
+      const cloudinaryTransformations = `so_${cutStart.toFixed(
         2
-      )}/f_${format}/fasttools/${uid}/temp/video.${format}`;
+      )},eo_${cutEnd.toFixed(2)},f_${format},fl_attachment`;
 
-      // Create a download link
+      const url = `https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/video/upload/${cloudinaryTransformations}/fasttools/${uid}/temp/video.${format}`;
+
       const link = document.createElement("a");
       link.href = url;
+      // La propiedad 'download' le dice al navegador que lo descargue y le da un nombre
       link.download = `video_trimmed_${Date.now()}.${format}`;
+
+      // El siguiente código es correcto para disparar la descarga.
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -176,7 +234,6 @@ export default function VideoTrimmer({ theme, textTheme }) {
     if (isPlaying) {
       videoRef.current.pause();
     } else {
-      // Start from cutStart if before it
       if (videoRef.current.currentTime < cutStart) {
         videoRef.current.currentTime = cutStart;
       }
@@ -203,220 +260,235 @@ export default function VideoTrimmer({ theme, textTheme }) {
     return `${mins}:${secs.toString().padStart(2, "0")}`;
   };
 
-  const handleStartChange = (value) => {
-    const newStart = Number(value);
-    if (newStart < cutEnd) {
-      setCutStart(newStart);
-      if (videoRef.current && videoRef.current.currentTime < newStart) {
-        videoRef.current.currentTime = newStart;
-      }
-    }
-  };
+  const handleTimelineClick = (e) => {
+    if (!timelineRef.current || !videoRef.current || !duration) return;
 
-  const handleEndChange = (value) => {
-    const newEnd = Number(value);
-    if (newEnd > cutStart) {
-      setCutEnd(newEnd);
+    const rect = timelineRef.current.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const percentage = x / rect.width;
+    const newTime = percentage * duration;
+
+    if (newTime >= cutStart && newTime <= cutEnd) {
+      videoRef.current.currentTime = newTime;
     }
   };
 
   if (isLoading) {
     return (
-      <div className="w-full h-screen flex items-center justify-center bg-gray-900">
-        <div className="text-white text-xl">Cargando...</div>
+      <div
+        style={{ backgroundColor: theme, color: textTheme }}
+        className="w-full h-screen flex items-center justify-center "
+      >
+        <div
+          style={{ border: `2px solid ${textTheme}` }}
+          className="animate-spin rounded-full h-6 w-6"
+        ></div>
       </div>
     );
   }
 
+  const startPercent = (cutStart / duration) * 100;
+  const endPercent = (cutEnd / duration) * 100;
+  const progressPercent = (currentTime / duration) * 100;
+
   return (
     <div
       style={{ border: `2px solid ${theme}` }}
-      className="bg-black/30 flex flex-col h-full rounded-xl overflow-hidden"
+      className={`flex flex-col w-full h-full rounded-xl overflow-hidden`}
     >
       <div
-        style={{ backgroundColor: theme }}
-        className="relative h-14 items-center justify-center grid grid-cols-6 grid-rows-1 w-full"
+        style={{
+          backgroundColor: theme,
+        }}
+        className={`relative  h-14 items-center flex justify-between w-full px-4`}
       >
-        <div className="col-start-1 col-end-6 text-xl w-full font-bold uppercase flex justify-center items-center">
+        <div className=" col-end-6 text-xl w-full font-bold uppercase flex justify-center items-center">
           VIDEO TRIMMER
         </div>
         <button
           onClick={deleteTemp}
-          className="active:scale-110 duration-200 md:col-start-6 border-2 border-black bg-white text-black font-bold md:col-end-7 flex justify-center items-center gap-4 p-2 rounded md:m-4 hover:opacity-80 cursor-pointer transition-opacity"
+          className="active:scale-110 duration-200 border-2 border-black bg-white text-black font-bold flex justify-center items-center gap-4 p-2 rounded md:m-4 hover:opacity-80 cursor-pointer transition-opacity"
         >
-          CLEAR
+          <BrushCleaningIcon size={30} />
         </button>
       </div>
+
       <div
-        className={`container mx-auto p-4 flex flex-col ${
+        style={{
+          "--theme": textTheme,
+        }}
+        className={`container bg-black/50 mx-auto h-full flex flex-col ${
           orientation === "vertical" ? "lg:flex-row" : "lg:flex-col"
-        } gap-6`}
+        }`}
       >
         {/* Video Preview */}
-        <div className="flex-1 bg-black rounded-lg overflow-hidden shadow-2xl flex items-center justify-center">
+        <div className="flex-1 bg-black h-full overflow-hidden shadow-2xl flex items-center justify-center">
           {!videoUrl ? (
-            <CldUploadWidget
-              uploadPreset="unsigned"
-              onUpload={(res) => {
-                if (res.event === "success") {
-                  uploadTemp(res.info.secure_url);
-                }
-              }}
-              options={{
-                resourceType: "video",
-                folder: `fasttools/${uid}/temp`,
-                maxFileSize: 100000000, // 100MB
-                sources: ["local", "url", "camera"],
-              }}
-            >
-              {({ open }) => (
-                <div className="text-center p-8">
-                  <button
-                    className="px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition-colors flex items-center gap-3 mx-auto"
-                    onClick={() => open()}
-                  >
-                    <Upload size={24} />
-                    Subir Video
-                  </button>
-                  <p className="mt-4 text-gray-400 text-sm">
-                    Soporta MP4, MOV, AVI y más
-                  </p>
-                </div>
-              )}
-            </CldUploadWidget>
+            <div className="text-center p-8">
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="video/*"
+                onChange={handleFileSelect}
+                className="hidden"
+                id="video-upload"
+              />
+              <label
+                style={{ backgroundColor: theme, color: textTheme }}
+                htmlFor="video-upload"
+                className="px-8 py-4 rounded-lg font-semibold hover:opacity-70 select-none active:scale-110 duration-300 flex items-center gap-3 mx-auto cursor-pointer"
+              >
+                <Upload size={24} />
+                Click to upload a video
+              </label>
+            </div>
           ) : (
-            <div className="relative w-full h-full flex items-center justify-center">
+            <div className="w-full h-full flex flex-col items-center justify-center">
               <video
                 ref={videoRef}
                 src={videoUrl}
-                className="max-h-32 md:max-h-64 max-w-full rounded"
+                className="max-h-32 md:max-h-[400px] max-w-full rounded"
               />
             </div>
           )}
         </div>
 
-        {/* Controls Panel */}
         {videoUrl && (
-          <div className="flex-1 bg-gray-800 rounded-lg p-6 shadow-2xl flex flex-col gap-6">
-            {/* Playback Controls */}
-            <div className="flex flex-col gap-3">
-              <div className="flex items-center gap-4">
-                <button
-                  onClick={togglePlayPause}
-                  className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors flex items-center gap-2"
-                >
-                  {isPlaying ? <Pause size={20} /> : <Play size={20} />}
-                  {isPlaying ? "Pausar" : "Reproducir"}
-                </button>
-
+          <div className="flex-1 p-6 shadow-2xl flex flex-col gap-6 justify-center">
+            <div className="flex flex-col">
+              <div className="flex justify-center items-center gap-4 mt-2">
                 <button
                   onClick={seekToStart}
-                  className="px-3 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors text-sm"
+                  style={{ backgroundColor: theme, color: textTheme }}
+                  className="px-3 py-2 rounded-lg transition-colors active:scale-110 font-bold hover:opacity-70 "
                 >
-                  Ir al inicio
+                  <SkipBack size={20} />
                 </button>
-
                 <button
-                  onClick={seekToEnd}
-                  className="px-3 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors text-sm"
+                  style={{ backgroundColor: textTheme, color: theme }}
+                  onClick={togglePlayPause}
+                  className="px-4 py-2  active:scale-110 rounded-lg transition-colors flex items-center gap-2"
                 >
-                  Ir al final
+                  {isPlaying ? <Pause size={20} /> : <Play size={20} />}
+                </button>
+                <button
+                  style={{ backgroundColor: theme, color: textTheme }}
+                  onClick={seekToEnd}
+                  className="px-3 py-2 rounded-lg hover:opacity-70 active:scale-110 transition-colors text-sm"
+                >
+                  <SkipForward size={20} />
                 </button>
               </div>
+              <div className="w-full max-w-2xl flex flex-col gap-2">
+                <div className=" font-bold flex justify-between text-sm">
+                  <span>{formatTime(cutStart)}</span>
+                  <span>{formatTime(currentTime)}</span>
+                  <span>{formatTime(cutEnd)}</span>
+                </div>
+              </div>
+              <div
+                ref={timelineRef}
+                style={{ border: `1px solid ${textTheme}` }}
+                onClick={handleTimelineClick}
+                className="relative h-12 rounded-lg cursor-pointer overflow-hidden"
+              >
+                {/* Área no seleccionada (oscura) */}
+                <div className="absolute inset-0" />
 
-              <div className="w-full flex justify-between">
-                <div className="text-sm text-gray-400">
-                  Tiempo actual: {formatTime(currentTime)}
+                {/* Área seleccionada (azul) */}
+                <div
+                  className="absolute top-0 bottom-0"
+                  style={{
+                    backgroundColor: theme,
+                    left: `${startPercent}%`,
+                    right: `${100 - endPercent}%`,
+                  }}
+                />
+
+                {/* Barra de progreso */}
+                <div
+                  className="absolute top-0 bottom-0 w-0.5  z-20"
+                  style={{
+                    left: `${progressPercent}%`,
+                    backgroundColor: textTheme,
+                  }}
+                >
+                  <div
+                    style={{ backgroundColor: textTheme }}
+                    className="pointer-events-none absolute -top-1 left-1/2 -translate-x-1/2 w-3 h-3 bg-yellow-400 rounded-full"
+                  />
                 </div>
-                <div className="text-sm text-gray-400">
-                  Duración: {formatTime(cutEnd - cutStart)}
+
+                {/* Handle de inicio */}
+                <div
+                  onMouseDown={(e) => {
+                    e.stopPropagation();
+                    setIsDragging("start");
+                  }}
+                  className="absolute top-0 bottom-0 w-4  cursor-ew-resize z-10 hover:opacity-70 transition-colors flex items-center justify-center"
+                  style={{
+                    left: `calc(${startPercent}% - 8px)`,
+                    backgroundColor: textTheme,
+                  }}
+                >
+                  <div className="w-0.5 h-6 bg-white rounded" />
                 </div>
+
+                {/* Handle de final */}
+                <div
+                  onMouseDown={(e) => {
+                    e.stopPropagation();
+                    setIsDragging("end");
+                  }}
+                  className="absolute top-0 bottom-0 w-4 cursor-ew-resize hover:opacity-70 z-10transition-colors flex items-center justify-center"
+                  style={{
+                    left: `calc(${endPercent}% - 8px)`,
+                    backgroundColor: textTheme,
+                  }}
+                >
+                  <div className="w-0.5 h-6 bg-white rounded" />
+                </div>
+              </div>
+              <div className="text-sm font-bold">
+                DURATION: {formatTime(cutEnd - cutStart)}
               </div>
             </div>
-
-            {/* Trim Controls */}
-            <div className="flex flex-col gap-6 bg-gray-700 p-4 rounded-lg">
-              <div className="flex flex-col gap-2">
-                <div className="flex justify-between items-center">
-                  <label className="font-semibold">Inicio</label>
-                  <span className="text-blue-400">{formatTime(cutStart)}</span>
-                </div>
-                <input
-                  type="range"
-                  min="0"
-                  max={duration}
-                  step="0.1"
-                  value={cutStart}
-                  onChange={(e) => handleStartChange(e.target.value)}
-                  className="w-full h-2 bg-gray-600 rounded-lg appearance-none cursor-pointer accent-blue-600"
-                />
-              </div>
-
-              <div className="flex flex-col gap-2">
-                <div className="flex justify-between items-center">
-                  <label className="font-semibold">Final</label>
-                  <span className="text-blue-400">{formatTime(cutEnd)}</span>
-                </div>
-                <input
-                  type="range"
-                  min="0"
-                  max={duration || 100}
-                  step="0.1"
-                  value={cutEnd || 0}
-                  onChange={(e) => handleEndChange(e.target.value)}
-                  className="w-full h-2 bg-gray-600 rounded-lg appearance-none cursor-pointer accent-blue-600"
-                />
-              </div>
-            </div>
-
-            {/* Export Options */}
-            <div className="flex gap-2 items-center justify-center">
-              <div className="flex flex-col gap-3">
-                <h3 className="font-semibold text-lg">Exportar como:</h3>
-                <Select style={{ color: textTheme }}>
+            <div
+              style={{ backgroundColor: theme }}
+              className="flex flex-col gap-4 items-center justify-center p-6 rounded-lg"
+            >
+              <h3 className="font-semibold text-lg">EXPORT VIDEO</h3>
+              <div className="flex gap-4 items-center">
+                <Select value={formatExport} onValueChange={setFormatExport}>
                   <SelectTrigger
                     style={{ color: textTheme, border: `1px solid ${theme}` }}
-                    className="w-[100px] md:w-[140px]"
+                    className="w-[140px] bg-black"
                   >
-                    <SelectValue placeholder="Format" />
+                    <SelectValue />
                   </SelectTrigger>
                   <SelectContent
                     style={{ color: textTheme, backgroundColor: "black" }}
                   >
-                    <SelectItem
-                      className="flex gap-2 w-full"
-                      onClick={() => setFormatExport("mp4")}
-                      value="MP4"
-                    >
-                      <Download size={20} /> MP4
-                    </SelectItem>
-                    <SelectItem
-                      className="flex gap-2 w-full"
-                      onClick={() => setFormatExport("webm")}
-                      value="WEBM"
-                    >
-                      <Download size={20} /> WEBM
-                    </SelectItem>
-                    <SelectItem
-                      className="flex gap-2 w-full"
-                      onClick={() => setFormatExport("gif")}
-                      value="GIF"
-                    >
-                      <Download size={20} /> GIF
-                    </SelectItem>
+                    <SelectItem value="mp4">MP4</SelectItem>
+                    <SelectItem value="webm">WEBM</SelectItem>
+                    <SelectItem value="gif">GIF</SelectItem>
                   </SelectContent>
                 </Select>
-                {isExporting && (
-                  <p className="text-center text-sm text-gray-400">
-                    Preparando descarga...
-                  </p>
-                )}
-              </div>
-              <div className="flex items-center justify-center">
-                <Button onClick={() => exportVideo(formatExport)}>
-                  download
+
+                <Button
+                  onClick={() => exportVideo(formatExport)}
+                  disabled={isExporting}
+                  className="px-6 py-2 bg-black text-white hover:opacity-70"
+                >
+                  <Download size={20} className={isExporting && "mr-2"} />
+                  {isExporting ? "Loading..." : ""}
                 </Button>
               </div>
+              {isExporting && (
+                <p className="text-center text-sm text-gray-400">
+                  Preparing the download...
+                </p>
+              )}
             </div>
           </div>
         )}

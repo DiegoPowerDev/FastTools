@@ -4,7 +4,7 @@ import ReactCrop from "react-image-crop";
 import "react-image-crop/dist/ReactCrop.css";
 import { useDropzone } from "react-dropzone";
 import { Button } from "@/components/ui/button";
-import { ImageUpscale } from "lucide-react";
+import { BrushCleaningIcon, ImageUpscale } from "lucide-react";
 import { IconDeviceFloppy } from "@tabler/icons-react";
 import toast from "react-hot-toast";
 
@@ -206,7 +206,7 @@ export default function ImageCropper({ theme, textTheme }) {
           onClick={() => reset()}
           className="active:scale-110 duration-200  md:col-start-6 border-2 bg-white text-black border-black font-bold md:col-end-7 flex justify-center items-center gap-4 p-2 rounded md:m-4 hover:opacity-80"
         >
-          CLEAR
+          <BrushCleaningIcon size={30} />
         </button>
       </div>
       <label htmlFor="ImageToCrop">

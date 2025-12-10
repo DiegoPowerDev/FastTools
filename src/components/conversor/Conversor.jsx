@@ -9,7 +9,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
-import { ImageUp } from "lucide-react";
+import { BrushCleaningIcon, ImageUp } from "lucide-react";
 import toast from "react-hot-toast";
 import { IconDeviceFloppy } from "@tabler/icons-react";
 import { Button } from "../ui/button";
@@ -264,7 +264,7 @@ export default function Conversor({ theme, textTheme }) {
           onClick={reset}
           className="active:scale-110 duration-200 md:col-start-6 border-2 border-black bg-white text-black font-bold md:col-end-7 flex justify-center items-center gap-4 p-2 rounded md:m-4 hover:opacity-80 cursor-pointer transition-opacity"
         >
-          CLEAR
+          <BrushCleaningIcon size={30} />
         </button>
       </div>
 

@@ -14,6 +14,7 @@ import {
   SelectItem,
   SelectValue,
 } from "@/components/ui/select";
+import { BrushCleaningIcon } from "lucide-react";
 export default function ImageColorPicker({ theme, textTheme }) {
   const canvasRef = useRef(null);
   const zoomCanvasRef = useRef(null);
@@ -198,7 +199,7 @@ export default function ImageColorPicker({ theme, textTheme }) {
           onClick={() => reset()}
           className="active:scale-110 duration-200 col-start-6 border-2 border-black bg-white text-black  font-bold col-end-7 flex justify-center items-center gap-4 p-2 rounded md:m-4 hover:opacity-80"
         >
-          CLEAR
+          <BrushCleaningIcon size={30} />
         </button>
       </div>
       <div
