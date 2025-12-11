@@ -254,6 +254,7 @@ export default function VideoTrimmer({ theme, textTheme }) {
     try {
       const fileName = `video_trimmed_${Date.now()}.${format}`;
 
+      // 1. Obtener URL de descarga
       const response = await fetch("/api/get-download-url", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -271,21 +272,38 @@ export default function VideoTrimmer({ theme, textTheme }) {
       }
 
       const { downloadUrl } = await response.json();
-      console.log("Download URL:", downloadUrl);
-      // Método alternativo: iframe oculto
-      const iframe = document.createElement("iframe");
-      iframe.style.display = "none";
-      iframe.src = downloadUrl;
-      document.body.appendChild(iframe);
 
-      setTimeout(() => {
-        document.body.removeChild(iframe);
-      }, 2000);
+      console.log("Download URL:", downloadUrl); // Debug
 
-      toast.success("Download started! Check your downloads folder.");
+      // 2. Descargar el video
+      toast.loading("Downloading video...", { id: "download" });
+
+      const videoResponse = await fetch(downloadUrl);
+
+      if (!videoResponse.ok) {
+        throw new Error(`Download failed: ${videoResponse.status}`);
+      }
+
+      const blob = await videoResponse.blob();
+
+      // 3. Crear descarga
+      const blobUrl = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = blobUrl;
+      link.download = fileName;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      // 4. Limpiar
+      setTimeout(() => window.URL.revokeObjectURL(blobUrl), 100);
+
+      toast.success("Video downloaded successfully!", { id: "download" });
     } catch (error) {
       console.error("Error exporting video:", error);
-      toast.error("Error exporting video. Please try again.");
+      toast.error(error.message || "Error downloading video", {
+        id: "download",
+      });
     } finally {
       setIsExporting(false);
     }

@@ -15,12 +15,12 @@ export async function POST(req) {
       return Response.json({ error: "Missing parameters" }, { status: 400 });
     }
 
-    // Construir las transformaciones
-    const transformations = [
-      `so_${parseFloat(cutStart).toFixed(2)}`, // Start offset
-      `eo_${parseFloat(cutEnd).toFixed(2)}`, // End offset
-      `f_${format}`, // Format
-    ].join(",");
+    // Construir las transformaciones como objeto (no string)
+    const transformation = {
+      start_offset: parseFloat(cutStart).toFixed(2),
+      end_offset: parseFloat(cutEnd).toFixed(2),
+      format: format,
+    };
 
     // Public ID del video
     const publicId = `fasttools/${uid}/temp/video`;
