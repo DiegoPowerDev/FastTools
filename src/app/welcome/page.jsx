@@ -90,8 +90,8 @@ export default function Page() {
                 <UserTable />
               </div>
               <div
-                className={`w-full h-full ${
-                  mode === "schedule" ? "block" : "hidden"
+                className={`w-full  ${
+                  mode === "schedule" ? "flex flex-col flex-1" : "hidden"
                 }`}
               >
                 <ScheduleTable />

@@ -80,9 +80,9 @@ export default function ScheduleTable() {
 
   return (
     <>
-      <div className="w-full h-full flex justify-center items-center md:p-4">
-        <div className="w-full h-full flex md:grid md:grid-cols-2 gap-4 p-2 md:px-12 justify-center">
-          <div className="w-full h-full flex flex-col  items-center ">
+      <div className="w-full flex-1 flex justify-center md:px-4">
+        <div className="w-full h-full flex md:grid md:grid-cols-2 gap-4 md:px-12 justify-center">
+          <div className="w-full h-full flex flex-col">
             <div className="w-full h-full md:h-16 p-4 grid grid-cols-2 md:flex items-center justify-center gap-2 ">
               <Button
                 style={{
@@ -182,8 +182,8 @@ export default function ScheduleTable() {
             </div>
           </div>
           <div className="hidden w-full h-full md:flex justify-center">
-            <div className="hidden w-2/3 h-full md:flex flex-col  items-center ">
-              <div className="w-full h-16 flex items-center justify-center gap-2 p-4">
+            <div className="hidden w-2/3 h-full md:flex flex-col   ">
+              <div className="w-full h-16 flex justify-center gap-2 p-4">
                 <Button
                   onClick={() => setSection("attention")}
                   style={{
@@ -207,32 +207,34 @@ export default function ScheduleTable() {
                   COMPLETED
                 </Button>
               </div>
-              <div className="w-full h-full grid grid-flow-rows grid-cols-2 justify-center gap-4">
-                {section === "attention"
-                  ? expiredMiddleTasks().map((e, i) => (
-                      <motion.div
-                        key={i}
-                        layout
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        className="w-full"
-                      >
-                        <Task task={e} />
-                      </motion.div>
-                    ))
-                  : completedTaskList().map((e, i) => (
-                      <motion.div
-                        key={i}
-                        layout
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        className="w-full"
-                      >
-                        <Task task={e} />
-                      </motion.div>
-                    ))}
+              <div className=" w-full flex justify-center">
+                <div className="w-full h-full grid grid-flow-rows grid-cols-2 justify-center gap-4">
+                  {section === "attention"
+                    ? expiredMiddleTasks().map((e, i) => (
+                        <motion.div
+                          key={i}
+                          layout
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          exit={{ opacity: 0 }}
+                          className="w-full"
+                        >
+                          <Task task={e} />
+                        </motion.div>
+                      ))
+                    : completedTaskList().map((e, i) => (
+                        <motion.div
+                          key={i}
+                          layout
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          exit={{ opacity: 0 }}
+                          className="w-full"
+                        >
+                          <Task task={e} />
+                        </motion.div>
+                      ))}
+                </div>
               </div>
             </div>
           </div>
