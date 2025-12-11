@@ -46,18 +46,18 @@ export default function UserBackgroundImage() {
 
         <video
           src={optimizedUrl}
-          className={`fixed inset-0 w-full h-full object-cover transition-opacity duration-500 ${
+          className={`fixed inset-0 w-full h-full object-cover saturate-200 transition-opacity duration-500 ${
             isVideoLoaded ? "opacity-100" : "opacity-0"
           }`}
           autoPlay
           loop
           muted
           playsInline
-          preload="metadata" // Solo carga metadatos inicialmente
+          preload="metadata"
           onLoadedData={() => setIsVideoLoaded(true)}
           onError={(e) => {
             console.error("Video load error:", e);
-            setIsVideoLoaded(true); // Mostrar aunque haya error
+            setIsVideoLoaded(true);
           }}
         >
           Tu navegador no soporta la reproducción de video.

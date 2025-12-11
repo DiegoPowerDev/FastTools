@@ -35,7 +35,7 @@ export function TimePicker({ setNewDate }) {
     <div className="flex gap-4">
       <div className="flex flex-col gap-3">
         <label htmlFor="date-picker" className="px-1">
-          Date
+          DATE
         </label>
         <Popover open={open} onOpenChange={setOpen}>
           <PopoverTrigger asChild>
@@ -65,7 +65,7 @@ export function TimePicker({ setNewDate }) {
       </div>
       <div className="flex flex-col gap-3">
         <label htmlFor="time-picker" className="px-1">
-          Time
+          TIME
         </label>
         <Input
           type="time"

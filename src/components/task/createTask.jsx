@@ -205,7 +205,7 @@ export default function CreateTask({ open, setOpen, mode }) {
         className="max-w-2xl  bg-black border-white border-2 overflow-y-auto flex flex-col gap-4 "
       >
         <DialogHeader className="flex flex-col items-center">
-          <DialogTitle>Create new task</DialogTitle>
+          <DialogTitle>CREATE NEW TASK</DialogTitle>
           <DialogDescription></DialogDescription>
         </DialogHeader>
         <form onSubmit={onSubmit}>
@@ -221,7 +221,7 @@ export default function CreateTask({ open, setOpen, mode }) {
                 <img className="max-w-xl max-h-48" src={newImage} />
               ) : (
                 <div className="flex items-center justify-center font-bold max-w-xl h-48">
-                  Paste an Image
+                  PASTE AN IMAGE
                 </div>
               )}
             </label>
@@ -237,7 +237,7 @@ export default function CreateTask({ open, setOpen, mode }) {
           <div className="flex w-full gap-4">
             <div className="flex flex-col gap-2 w-full">
               <div className="flex flex-col w-full">
-                <label className="font-bold">Name</label>
+                <label className="font-bold">NAME</label>
                 <Input
                   placeholder="Name"
                   value={name}
@@ -246,7 +246,7 @@ export default function CreateTask({ open, setOpen, mode }) {
                 />
               </div>
               <div className="flex flex-col w-full">
-                <label className="font-bold">Task Description</label>
+                <label className="font-bold">TASK DESCRIPTION</label>
                 <Textarea
                   placeholder="Description"
                   rows={4}
@@ -265,12 +265,12 @@ export default function CreateTask({ open, setOpen, mode }) {
               )}
               {mode === "daily" && (
                 <div className="flex flex-col">
-                  <div>All Day</div>
+                  <div>ALL DAY</div>
                 </div>
               )}
               {mode === "monthly" && (
                 <div className="flex flex-col">
-                  <div>Last day of the month</div>
+                  <div>LAST DAY OF MONTH</div>
                 </div>
               )}
               {mode === "weekly" && (
