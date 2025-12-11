@@ -276,7 +276,7 @@ export default function VideoTrimmer({ theme, textTheme }) {
       console.log("Download URL:", downloadUrl); // Debug
 
       // 2. Descargar el video
-      toast.loading("Downloading video...", { id: "download" });
+      toast.loading("Preparing the download...", { id: "download" });
 
       const videoResponse = await fetch(downloadUrl);
 
