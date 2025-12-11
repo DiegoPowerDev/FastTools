@@ -263,10 +263,18 @@ function BackgroundVideo({
         throw new Error("Failed to get upload signature");
       }
 
-      const { signature, timestamp, cloudName, apiKey, folder, publicId } =
-        await sigResponse.json();
+      const {
+        signature,
+        timestamp,
+        cloudName,
+        apiKey,
+        folder,
+        publicId,
+        eager,
+        eager_async,
+      } = await sigResponse.json();
 
-      // 2. Subir directamente a Cloudinary
+      // 2. Subir directamente a Cloudinary CON optimizaciones
       const formData = new FormData();
       formData.append("file", file);
       formData.append("signature", signature);
@@ -274,6 +282,8 @@ function BackgroundVideo({
       formData.append("api_key", apiKey);
       formData.append("folder", folder);
       formData.append("public_id", publicId);
+      formData.append("eager", eager); // 🚀 Transformaciones
+      formData.append("eager_async", eager_async); // 🚀 Async processing
 
       const uploadResponse = await fetch(
         `https://api.cloudinary.com/v1_1/${cloudName}/video/upload`,
@@ -292,11 +302,10 @@ function BackgroundVideo({
 
       console.log("Upload response:", data);
 
-      // Intentar ambos formatos de respuesta
       if (data.secure_url || data.url) {
         const url = data.secure_url || data.url;
         setVideoUrl(url);
-        toast.success("Background video uploaded successfully!");
+        toast.success("Background video uploaded and optimized!");
       } else {
         throw new Error("No URL returned from Cloudinary");
       }

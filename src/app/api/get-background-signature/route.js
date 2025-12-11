@@ -15,7 +15,7 @@ export async function POST(req) {
       return Response.json({ error: "Missing uid" }, { status: 400 });
     }
 
-    // Eliminar video previo (nota: no es /temp, es directo)
+    // Eliminar video previo
     const publicIdToDelete = `fasttools/${uid}/video`;
 
     try {
@@ -30,16 +30,22 @@ export async function POST(req) {
       );
     }
 
-    // Generar timestamp y firma
+    // Generar timestamp y firma CON TRANSFORMACIONES
     const timestamp = Math.round(new Date().getTime() / 1000);
     const folder = `fasttools/${uid}`;
     const publicId = "video";
+
+    // 🚀 PARÁMETROS DE OPTIMIZACIÓN
+    const eager = "q_auto:eco,w_1920,c_scale,f_auto"; // Optimización automática
+    const eager_async = true; // Procesar en segundo plano
 
     const signature = cloudinary.utils.api_sign_request(
       {
         timestamp,
         folder,
         public_id: publicId,
+        eager,
+        eager_async,
       },
       process.env.CLOUDINARY_API_SECRET
     );
@@ -51,6 +57,8 @@ export async function POST(req) {
       apiKey: process.env.CLOUDINARY_API_KEY,
       folder,
       publicId,
+      eager,
+      eager_async,
     });
   } catch (error) {
     console.error("Signature generation error:", error);
