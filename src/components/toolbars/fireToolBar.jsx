@@ -455,15 +455,6 @@ export default function FireToolBar() {
           )}
         >
           <motion.div
-            animate={{
-              x: [1, -1, 1, -1, 1, 0],
-              y: [0, -1, 1, -1, 1, 0],
-            }}
-            transition={{
-              duration: 0.1,
-              repeat: Infinity,
-              ease: "easeInOut",
-            }}
             style={{
               boxShadow: `0 0 15px 5px ${textTheme}`,
               backgroundColor: theme,

@@ -34,7 +34,7 @@ export default function UserBackgroundImage() {
   };
 
   // 1. Video de Fondo Optimizado
-  if (backgroundType === "video" && background) {
+  if (backgroundType === "video" && background && !isMobile) {
     const optimizedUrl = getOptimizedVideoUrl(background);
 
     return (
@@ -67,7 +67,7 @@ export default function UserBackgroundImage() {
   }
 
   // 2. Imagen de Fondo
-  if (backgroundType === "image") {
+  if (backgroundType === "image" || isMobile) {
     return (
       <picture className="fixed inset-0 -z-10 pointer-events-none select-none">
         <source media="(max-width: 767px)" srcSet={mobileBackground} />
