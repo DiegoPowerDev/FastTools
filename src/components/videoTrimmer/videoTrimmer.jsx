@@ -271,21 +271,40 @@ export default function VideoTrimmer({ theme, textTheme }) {
         throw new Error("Failed to generate download URL");
       }
 
-      const { downloadUrl, fileName: serverFileName } = await response.json();
+      const { downloadUrl } = await response.json();
 
-      // 2. Descargar directamente desde Cloudinary usando la URL firmada
+      // 2. Descargar usando fetch para forzar la descarga
+      toast.loading("Preparing download...", { id: "download" });
+
+      const videoResponse = await fetch(downloadUrl);
+
+      if (!videoResponse.ok) {
+        throw new Error("Failed to fetch video");
+      }
+
+      const blob = await videoResponse.blob();
+      const blobUrl = window.URL.createObjectURL(blob);
+
+      // 3. Crear link de descarga
       const link = document.createElement("a");
-      link.href = downloadUrl;
-      link.download = serverFileName;
-      link.target = "_blank"; // Abre en nueva pestaña como fallback
+      link.href = blobUrl;
+      link.download = fileName;
+      link.style.display = "none";
       document.body.appendChild(link);
       link.click();
-      document.body.removeChild(link);
 
-      toast.success("Video export started! Check your downloads.");
+      // 4. Cleanup
+      setTimeout(() => {
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(blobUrl);
+      }, 100);
+
+      toast.success("Video downloaded successfully!", { id: "download" });
     } catch (error) {
       console.error("Error exporting video:", error);
-      toast.error("Error exporting video. Please try again.");
+      toast.error("Error exporting video. Please try again.", {
+        id: "download",
+      });
     } finally {
       setIsExporting(false);
     }
