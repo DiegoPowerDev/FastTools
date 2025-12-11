@@ -164,39 +164,61 @@ export default function VideoTrimmer({ theme, textTheme }) {
 
   const uploadTemp = async (file) => {
     setIsUploading(true);
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("uid", uid);
 
     try {
-      const res = await fetch("/api/upload-temp-video", {
+      // 1. Obtener firma del servidor
+      const sigResponse = await fetch("/api/get-upload-signature", {
         method: "POST",
-        body: formData,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ uid }),
       });
 
-      if (!res.ok) {
-        throw new Error("Upload failed");
+      if (!sigResponse.ok) {
+        throw new Error("Failed to get upload signature");
       }
 
-      const data = await res.json();
+      const { signature, timestamp, cloudName, apiKey, folder, publicId } =
+        await sigResponse.json();
 
-      console.log("Upload response:", data); // Debug log
+      // 2. Subir directamente a Cloudinary
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("signature", signature);
+      formData.append("timestamp", timestamp);
+      formData.append("api_key", apiKey);
+      formData.append("folder", folder);
+      formData.append("public_id", publicId);
 
-      // Asegúrate de que la URL existe en la respuesta
-      if (data.secure_url || data.url) {
-        const url = data.secure_url || data.url;
-        setVideoUrl(url);
+      const uploadResponse = await fetch(
+        `https://api.cloudinary.com/v1_1/${cloudName}/video/upload`,
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
+
+      if (!uploadResponse.ok) {
+        const errorData = await uploadResponse.json();
+        throw new Error(errorData.error?.message || "Upload failed");
+      }
+
+      const data = await uploadResponse.json();
+
+      console.log("Upload response:", data);
+
+      if (data.secure_url) {
+        setVideoUrl(data.secure_url);
         toast.success("Video uploaded successfully!");
 
         // Reset states
         setCutStart(0);
         setCurrentTime(0);
       } else {
-        throw new Error("No URL returned from server");
+        throw new Error("No URL returned from Cloudinary");
       }
     } catch (error) {
       console.error("Error uploading video:", error);
-      toast.error("Error uploading video, try again later.");
+      toast.error(error.message || "Error uploading video, try again later.");
     } finally {
       setIsUploading(false);
     }
