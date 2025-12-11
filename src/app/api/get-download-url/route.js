@@ -29,7 +29,7 @@ export async function POST(req) {
     const downloadUrl = cloudinary.url(publicId, {
       resource_type: "video",
       type: "upload",
-      transformation: transformations,
+      transformation: transformation,
       flags: "attachment", // Fuerza la descarga
       sign_url: true, // Firma la URL
       secure: true, // Usa HTTPS
