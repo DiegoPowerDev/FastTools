@@ -207,7 +207,7 @@ export default function ScheduleTable() {
                   COMPLETED
                 </Button>
               </div>
-              <div className="w-full h-full grid grid-flow-rows grid-cols-2 place-content-center gap-4">
+              <div className="w-full h-full grid grid-flow-rows grid-cols-2 justify-center gap-4">
                 {section === "attention"
                   ? expiredMiddleTasks().map((e, i) => (
                       <motion.div

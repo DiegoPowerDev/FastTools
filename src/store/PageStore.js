@@ -12,7 +12,8 @@ export const pageStore = createStore(
       images: [],
       theme: "#b91c1c",
       textTheme: "#fafafa",
-
+      backgroundType: "image",
+      lastTaskId: 0,
       displayColors: true,
       displayLinks: true,
       colors: [
