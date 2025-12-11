@@ -10,7 +10,7 @@ export default function UserBackgroundImage() {
     return (
       <div className="fixed inset-0 -z-10 pointer-events-none select-none overflow-hidden">
         <video
-          src={background}
+          src="https://res.cloudinary.com/dqaetlpog/video/upload/v1765462341/StarCraft_II_2025-12-11_00-10-18_f1uek2.mp4"
           className="fixed inset-0 w-full h-full object-cover"
           autoPlay // Inicia la reproducción automáticamente
           loop // Reproduce el video en bucle
