@@ -254,8 +254,8 @@ export default function VideoTrimmer({ theme, textTheme }) {
     try {
       const fileName = `video_trimmed_${Date.now()}.${format}`;
 
-      // Usar la API de tu backend para descargar el video
-      const response = await fetch("/api/download-video", {
+      // 1. Obtener URL de descarga firmada desde el servidor
+      const response = await fetch("/api/get-download-url", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -268,25 +268,24 @@ export default function VideoTrimmer({ theme, textTheme }) {
       });
 
       if (!response.ok) {
-        throw new Error("Download failed");
+        throw new Error("Failed to generate download URL");
       }
 
-      const blob = await response.blob();
-      const blobUrl = window.URL.createObjectURL(blob);
+      const { downloadUrl, fileName: serverFileName } = await response.json();
 
+      // 2. Descargar directamente desde Cloudinary usando la URL firmada
       const link = document.createElement("a");
-      link.href = blobUrl;
-      link.download = fileName;
+      link.href = downloadUrl;
+      link.download = serverFileName;
+      link.target = "_blank"; // Abre en nueva pestaña como fallback
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
 
-      setTimeout(() => window.URL.revokeObjectURL(blobUrl), 100);
-
-      toast.success("Video exported successfully!");
+      toast.success("Video export started! Check your downloads.");
     } catch (error) {
       console.error("Error exporting video:", error);
-      toast.error("Error exporting video.");
+      toast.error("Error exporting video. Please try again.");
     } finally {
       setIsExporting(false);
     }
