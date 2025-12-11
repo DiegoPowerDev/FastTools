@@ -249,38 +249,27 @@ function BackgroundVideo({
 
   // --- Lógica de Subida (Siempre usa uploadTemp si editable=true) ---
   const uploadTemp = async (file) => {
-    setIsLoading(true);
+    const sigRes = await fetch("/api/sign-cloudinary", { method: "POST" });
+    const { timestamp, signature } = await sigRes.json();
+
     const formData = new FormData();
     formData.append("file", file);
-    formData.append("uid", uid);
+    formData.append("timestamp", timestamp);
+    formData.append("signature", signature);
+    formData.append("api_key", process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY);
+    formData.append("folder", `fasttools/${uid}`);
+    formData.append("resource_type", "video");
 
-    try {
-      const res = await fetch("/api/upload-background-video", {
+    const cloudinaryRes = await fetch(
+      `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/video/upload`,
+      {
         method: "POST",
         body: formData,
-      });
-
-      if (!res.ok) {
-        throw new Error("Upload failed");
       }
+    );
 
-      const data = await res.json();
-
-      console.log("Upload response:", data); // Debug log
-
-      // Intentar ambos formatos de respuesta
-      if (data.url || data.secure_url) {
-        const url = data.url || data.secure_url;
-        setVideoUrl(url);
-      } else {
-        throw new Error(data.error || "No URL returned from server");
-      }
-    } catch (error) {
-      console.error("Error uploading video:", error);
-      toast.error("Error uploading video, try again.");
-    } finally {
-      setIsLoading(false);
-    }
+    const data = await cloudinaryRes.json();
+    return data.secure_url;
   };
 
   const handleFileSelect = async (e) => {

@@ -43,6 +43,7 @@ export async function POST(req) {
       url: upload.secure_url,
     });
   } catch (error) {
+    console.log(error);
     return Response.json({ error: String(error) }, { status: 500 });
   }
 }
