@@ -449,11 +449,7 @@ export default function FireToolBar() {
 
       {/* TOOLBAR AREA */}
       <div className=" w-screen flex justify-between items-center gap-2 min-h-20 px-8">
-        <div
-          className={cn(
-            "flex flex-col md:flex-row justify-end cursor-pointer gap-4"
-          )}
-        >
+        <div className={cn("flex flex-col md:flex-row justify-end  gap-4")}>
           <motion.div
             style={{
               boxShadow: `0 0 15px 5px ${textTheme}`,
@@ -463,7 +459,7 @@ export default function FireToolBar() {
             onClick={() => {
               setTabs("header");
             }}
-            className={`h-14 w-14 p-2 rounded flex-shrink-0 ${
+            className={`h-14 cursor-pointer w-14 p-2 rounded flex-shrink-0 ${
               tabs.header ? "opacity-70" : ""
             }`}
           >
