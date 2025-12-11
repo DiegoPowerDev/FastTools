@@ -254,7 +254,6 @@ export default function VideoTrimmer({ theme, textTheme }) {
     try {
       const fileName = `video_trimmed_${Date.now()}.${format}`;
 
-      // 1. Obtener URL de descarga firmada desde el servidor
       const response = await fetch("/api/get-download-url", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -272,39 +271,21 @@ export default function VideoTrimmer({ theme, textTheme }) {
       }
 
       const { downloadUrl } = await response.json();
+      console.log("Download URL:", downloadUrl);
+      // Método alternativo: iframe oculto
+      const iframe = document.createElement("iframe");
+      iframe.style.display = "none";
+      iframe.src = downloadUrl;
+      document.body.appendChild(iframe);
 
-      // 2. Descargar usando fetch para forzar la descarga
-      toast.loading("Preparing download...", { id: "download" });
-
-      const videoResponse = await fetch(downloadUrl);
-
-      if (!videoResponse.ok) {
-        throw new Error("Failed to fetch video");
-      }
-
-      const blob = await videoResponse.blob();
-      const blobUrl = window.URL.createObjectURL(blob);
-
-      // 3. Crear link de descarga
-      const link = document.createElement("a");
-      link.href = blobUrl;
-      link.download = fileName;
-      link.style.display = "none";
-      document.body.appendChild(link);
-      link.click();
-
-      // 4. Cleanup
       setTimeout(() => {
-        document.body.removeChild(link);
-        window.URL.revokeObjectURL(blobUrl);
-      }, 100);
+        document.body.removeChild(iframe);
+      }, 2000);
 
-      toast.success("Video downloaded successfully!", { id: "download" });
+      toast.success("Download started! Check your downloads folder.");
     } catch (error) {
       console.error("Error exporting video:", error);
-      toast.error("Error exporting video. Please try again.", {
-        id: "download",
-      });
+      toast.error("Error exporting video. Please try again.");
     } finally {
       setIsExporting(false);
     }
