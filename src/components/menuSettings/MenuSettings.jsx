@@ -249,27 +249,63 @@ function BackgroundVideo({
 
   // --- Lógica de Subida (Siempre usa uploadTemp si editable=true) ---
   const uploadTemp = async (file) => {
-    const sigRes = await fetch("/api/sign-cloudinary", { method: "POST" });
-    const { timestamp, signature } = await sigRes.json();
+    setIsLoading(true);
 
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("timestamp", timestamp);
-    formData.append("signature", signature);
-    formData.append("api_key", process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY);
-    formData.append("folder", `fasttools/${uid}`);
-    formData.append("resource_type", "video");
-
-    const cloudinaryRes = await fetch(
-      `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/video/upload`,
-      {
+    try {
+      // 1. Obtener firma del servidor
+      const sigResponse = await fetch("/api/get-background-signature", {
         method: "POST",
-        body: formData,
-      }
-    );
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ uid }),
+      });
 
-    const data = await cloudinaryRes.json();
-    return data.secure_url;
+      if (!sigResponse.ok) {
+        throw new Error("Failed to get upload signature");
+      }
+
+      const { signature, timestamp, cloudName, apiKey, folder, publicId } =
+        await sigResponse.json();
+
+      // 2. Subir directamente a Cloudinary
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("signature", signature);
+      formData.append("timestamp", timestamp);
+      formData.append("api_key", apiKey);
+      formData.append("folder", folder);
+      formData.append("public_id", publicId);
+
+      const uploadResponse = await fetch(
+        `https://api.cloudinary.com/v1_1/${cloudName}/video/upload`,
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
+
+      if (!uploadResponse.ok) {
+        const errorData = await uploadResponse.json();
+        throw new Error(errorData.error?.message || "Upload failed");
+      }
+
+      const data = await uploadResponse.json();
+
+      console.log("Upload response:", data);
+
+      // Intentar ambos formatos de respuesta
+      if (data.secure_url || data.url) {
+        const url = data.secure_url || data.url;
+        setVideoUrl(url);
+        toast.success("Background video uploaded successfully!");
+      } else {
+        throw new Error("No URL returned from Cloudinary");
+      }
+    } catch (error) {
+      console.error("Error uploading video:", error);
+      toast.error(error.message || "Error uploading video, try again.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleFileSelect = async (e) => {

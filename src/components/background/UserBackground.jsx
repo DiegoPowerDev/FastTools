@@ -10,7 +10,7 @@ export default function UserBackgroundImage() {
     return (
       <div className="fixed inset-0 -z-10 pointer-events-none select-none overflow-hidden">
         <video
-          src="https://res.cloudinary.com/dqaetlpog/video/upload/v1765463185/video_trimmed_1765463156348_zefrxw.webm"
+          src={background}
           className="fixed inset-0 w-full h-full object-cover"
           autoPlay // Inicia la reproducción automáticamente
           loop // Reproduce el video en bucle
