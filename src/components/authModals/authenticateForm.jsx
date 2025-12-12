@@ -10,7 +10,7 @@ import {
   loginWithGoogle,
 } from "@/firebase/auth";
 import toast from "react-hot-toast";
-import { IconBrandGoogle } from "@tabler/icons-react";
+import { IconBrandGithubFilled } from "@tabler/icons-react";
 import { usePageStore } from "@/store/PageStore";
 import { Input } from "../ui/input";
 
@@ -21,7 +21,6 @@ export default function AuthenticateForm() {
   const [pendingCred, setPendingCred] = useState(null);
   const [emailToLink, setEmailToLink] = useState("");
   const [passwordToLink, setPasswordToLink] = useState("");
-
   const handleGoogleLogin = () => {
     loginWithGoogle((res) => {
       if (res.success) {
@@ -86,7 +85,7 @@ export default function AuthenticateForm() {
           className="font-bold p-2 rounded flex items-center gap-2"
           onClick={() => setModo("google")}
         >
-          Others
+          OTHER
         </Button>
       </div>
       <div className="flex-1 flex flex-col items-center justify-center ">
@@ -98,7 +97,7 @@ export default function AuthenticateForm() {
           <div className="w-full h-full flex flex-col gap-4 items-center justify-center">
             <button
               onClick={handleGoogleLogin}
-              className="flex w-full items-center gap-2 border p-2 rounded hover:bg-gray-100"
+              className="flex w-full items-center font-bold gap-2 border text-white p-2 rounded hover:bg-white hover:text-black"
             >
               <img src="/google.svg" className="w-5" />
               Login with Google
@@ -143,9 +142,9 @@ export default function AuthenticateForm() {
             ) : (
               <button
                 onClick={handleGithubLogin}
-                className="flex w-full items-center gap-2 border p-2 rounded hover:bg-gray-100"
+                className="flex w-full items-center gap-2 font-bold text-white border p-2 shadow-white rounded hover:outline-2 hover:outline hover:outline-white hover:bg-white hover:text-black"
               >
-                <img src="/github.svg" className="w-5" />
+                <IconBrandGithubFilled />
                 Login with Github
               </button>
             )}

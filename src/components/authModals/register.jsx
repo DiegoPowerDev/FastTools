@@ -8,6 +8,7 @@ import { register } from "../../firebase/auth";
 import Image from "next/image";
 import toast from "react-hot-toast";
 import { usePageStore } from "@/store/PageStore";
+import { NotebookPen, NotepadText } from "lucide-react";
 
 export default function Register({ theme, textTheme }) {
   const { setAuthenticate } = usePageStore();
@@ -78,9 +79,9 @@ export default function Register({ theme, textTheme }) {
               color: textTheme,
               backgroundColor: theme,
             }}
-            className="w-3/4 hover:opacity-60"
+            className="w-3/4 hover:opacity-60 gap-2"
           >
-            REGISTER
+            REGISTER <NotebookPen />
           </Button>
         </div>
       </form>

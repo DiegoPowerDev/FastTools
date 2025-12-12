@@ -8,6 +8,7 @@ import {
   GithubAuthProvider,
   sendEmailVerification,
   linkWithCredential,
+  sendPasswordResetEmail,
 } from "firebase/auth";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { auth, db } from "@/firebase/config";
@@ -141,6 +142,15 @@ export const linkGithubAccount = async (
     await linkWithCredential(user, pendingCred);
 
     callback({ success: true, user });
+  } catch (error) {
+    callback({ success: false, error });
+  }
+};
+
+export const resetPassword = async (email, callback) => {
+  try {
+    await sendPasswordResetEmail(auth, email);
+    callback({ success: true });
   } catch (error) {
     callback({ success: false, error });
   }

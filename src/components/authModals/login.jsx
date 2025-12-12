@@ -77,6 +77,15 @@ export default function Login({ theme, textTheme }) {
             LOGIN <DoorOpen />
           </Button>
         </div>
+        <div
+          className="cursor-pointer"
+          onClick={() => {
+            setAuthenticate(false);
+            router.replace("/forgotpassword");
+          }}
+        >
+          Forgot your password?
+        </div>
         {verify && (
           <div className="w-full flex justify-center items-center">
             <Button
