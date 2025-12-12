@@ -166,6 +166,7 @@ export default function CreateTask({ open, setOpen, mode }) {
 
     newTask(form);
     setOpen(false);
+    toast.success("Task created");
     setName("");
     setDescrition("");
     setEndDate("");

@@ -2,18 +2,18 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useFireStore } from "@/store/fireStore";
 
 import Task from "../task/task";
-import { IconPlus } from "@tabler/icons-react";
+import { IconCheck, IconPlus } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
 import CreateTask from "../task/createTask";
 import { Button } from "../ui/button";
 import { cn } from "@/lib/utils";
 import { useClock } from "@/hooks/useClock";
-import { set } from "date-fns/set";
 
 export default function ScheduleTable() {
   const { task, updateExpiredTasks } = useFireStore();
   const time = useClock();
   const [open, setOpen] = useState(false);
+  const [completed, setCompleted] = useState(false);
   const { theme, textTheme } = useFireStore();
   const [mode, setMode] = useState("daily");
   const [section, setSection] = useState("attention");
@@ -27,19 +27,38 @@ export default function ScheduleTable() {
 
   const taskList = () => {
     if (mode === "all") {
+      if (completed) {
+        return task.filter((e) => e.state != "completed");
+      }
       return task;
     }
     if (mode === "daily") {
-      return task.filter((e) => e.frequency === "daily");
+      const taskList = task.filter((e) => e.frequency === "daily");
+      if (completed) {
+        return taskList.filter((e) => e.state != "completed");
+      }
+      return taskList;
     }
     if (mode === "special") {
-      return task.filter((e) => e.frequency === "special");
+      const taskList = task.filter((e) => e.frequency === "special");
+      if (completed) {
+        return taskList.filter((e) => e.state != "completed");
+      }
+      return taskList;
     }
     if (mode === "weekly") {
-      return task.filter((e) => e.frequency === "weekly");
+      const taskList = task.filter((e) => e.frequency === "weekly");
+      if (completed) {
+        return taskList.filter((e) => e.state != "completed");
+      }
+      return taskList;
     }
     if (mode === "monthly") {
-      return task.filter((e) => e.frequency === "monthly");
+      const taskList = task.filter((e) => e.frequency === "monthly");
+      if (completed) {
+        return taskList.filter((e) => e.state != "completed");
+      }
+      return taskList;
     }
   };
 
@@ -57,23 +76,24 @@ export default function ScheduleTable() {
 
           if (!start || !end) return null;
 
-          const middle = new Date((start.getTime() + end.getTime()) / 2);
+          // 🔥 calcular primer tercio del tiempo
+          const total = end.getTime() - start.getTime();
+          const firstThird = start.getTime() + total / 3;
 
           return {
             ...t,
-            isExpired: now > end,
-            isMiddleExpired: now > middle,
+            isExpired: now > end, // vencidas
+            isMiddleExpired: now.getTime() > firstThird, // pasaron el primer tercio
           };
         })
+        // ⬆ Solo las que ya pasaron el primer tercio
         .filter((t) => t && t.isMiddleExpired)
-        .filter((t) => t.state != "completed")
-        // ⬆ Solo las que TRASPASARON middleTime
+        .filter((t) => t.state !== "completed")
         .sort((a, b) => {
-          // Primero las que excedieron endTime
+          // Primero las que YA vencieron
           if (a.isExpired && !b.isExpired) return -1;
           if (!a.isExpired && b.isExpired) return 1;
-
-          return 0; // si ambas están en el mismo grupo, mantener orden
+          return 0;
         })
     );
   };
@@ -84,6 +104,16 @@ export default function ScheduleTable() {
         <div className="w-full h-full flex md:grid md:grid-cols-2 gap-4 md:px-12 justify-center">
           <div className="w-full h-full flex flex-col">
             <div className="w-full h-full md:h-16 p-4 grid grid-cols-2 md:flex items-center justify-center gap-2 ">
+              <Button
+                style={{
+                  backgroundColor: !completed ? "white" : "black",
+                  border: !completed && "1px solid white",
+                }}
+                onClick={() => setCompleted(!completed)}
+                className={cn("font-bold  rounded")}
+              >
+                <IconCheck stroke={4} color={textTheme} size={20} />
+              </Button>
               <Button
                 style={{
                   backgroundColor: mode != "all" ? theme : "black",

@@ -392,7 +392,7 @@ export default function FireToolBar() {
                 </DialogTrigger>
                 <DialogContent
                   style={{ color: textTheme }}
-                  className="w-full bg-black border-white border-2 overflow-hidden"
+                  className="w-full bg-black border-white border-2 p-2 md:p-4 overflow-hidden"
                 >
                   <DialogHeader>
                     <DialogTitle className="flex justify-center items-center font-bold">

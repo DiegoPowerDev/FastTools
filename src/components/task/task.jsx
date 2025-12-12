@@ -21,13 +21,14 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
-import { IconEraser, IconPlus } from "@tabler/icons-react";
+import { IconCheck, IconEraser, IconPlus } from "@tabler/icons-react";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
 import { useFireStore } from "@/store/fireStore";
 import { useClock } from "@/hooks/useClock";
-import { X } from "lucide-react";
+import { TimerOff, X } from "lucide-react";
+import toast from "react-hot-toast";
 
 export default function Task({ task }) {
   const { theme, textTheme, deleteTask, addNote, completeTask, restoreTask } =
@@ -43,25 +44,35 @@ export default function Task({ task }) {
   const containerRef = useRef(null);
   const startDate = task.startDate?.toDate?.() ?? task.startDate;
   const endDate = task.endDate?.toDate?.() ?? task.endDate;
-
-  function middleTime() {
-    if (!startDate || !endDate) return null;
-
-    const middleTimestamp = (startDate.getTime() + endDate.getTime()) / 2;
-
-    return new Date(middleTimestamp);
-  }
+  const total = endDate.getTime() - startDate.getTime();
+  const firstThird = startDate.getTime() + total * (1 / 3);
+  const secondThird = startDate.getTime() + total * (2 / 3);
 
   const colorCondition = () => {
-    if (task.state === "completed" || time < middleTime()) {
-      return "#b2dddd";
+    if (!startDate || !endDate) return null;
+
+    const now = time.getTime();
+
+    if (task.state === "completed") {
+      return "transparent";
     }
-    if (task.state != "completed" && time >= endDate) {
+
+    // 🔴 Último tercio → se pasó o está por acabarse
+    if (now >= secondThird) {
       return "#E31B1C";
     }
-    if (task.state != "completed" && middleTime() < time) {
-      return "#CEC102";
+
+    // 🟡 Segundo tercio
+    if (now >= firstThird && now < secondThird) {
+      return "#D8C901"; // color ejemplo — cámbialo si quieres
     }
+
+    // 🟢 Primer tercio
+    if (now < firstThird) {
+      return "#b2dddd";
+    }
+
+    return "#b2dddd";
   };
 
   const handleFileInput = (e) => {
@@ -104,14 +115,27 @@ export default function Task({ task }) {
       <div
         onClick={() => setOpen(true)}
         style={{
-          boxShadow: `0 0 5px 1px ${colorCondition()}`,
+          boxShadow: `0 0 5px 4px ${colorCondition()}`,
           background: theme,
 
           color: textTheme,
         }}
-        className="w-full h-16 rounded-xl p-4 cursor-pointer select-none"
+        className={cn(
+          "w-full h-16 rounded-xl p-2 cursor-pointer select-none",
+          task.state === "completed" && "opacity-50"
+        )}
       >
-        <div className="w-full h-full flex justify-center items-center p-2">
+        <div className="relative w-full h-full flex flex-col justify-center items-center">
+          {task.state === "completed" && (
+            <span className="absolute  -top-1 -left-1 ">
+              <IconCheck color="#b2dddd" size={20} />
+            </span>
+          )}
+          {time > endDate && task.state !== "completed" && (
+            <span className="absolute  -top-1 -left-1 ">
+              <TimerOff size={20} />
+            </span>
+          )}
           <div
             style={{ color: textTheme }}
             className="font-bold uppercase text-sm text-wrap text-center truncate"
@@ -135,9 +159,6 @@ export default function Task({ task }) {
           <DialogHeader className="pb-4">
             <DialogTitle className="font-bold flex flex-col items-center gap-2 justify-center uppercase w-full">
               <span className="text-center">{task.name}</span>
-              {task.state === "completed" && (
-                <span className="text-2xl">(COMPLETED)</span>
-              )}
             </DialogTitle>
             <DialogDescription></DialogDescription>
             <div className="flex w-full gap-2 md:hidden items-center justify-center">
@@ -274,14 +295,21 @@ export default function Task({ task }) {
                     </div>
                   )}
                 </div>
-                <div className="w-full flex uppercase gap-2 items-center justify-center">
-                  <span className="text-xl font-bold">Frequency:</span>
-                  <span>{task.frequency != "none" && task.frequency}</span>
+                <div className="w-full h-full flex flex-col uppercase gap-4 items-center justify-center">
+                  <div className="flex h-full w-full items-center justify-center  gap-2">
+                    <span className="h-full text-xl flex items-center font-bold">
+                      Frequency:
+                    </span>
+                    <span className="h-full text-xl flex items-center">
+                      {task.frequency != "none" && task.frequency}
+                    </span>
+                  </div>
                   {task.state === "completed" ? (
                     <Button
                       onClick={() => {
                         restoreTask(task.id);
                         setOpen(false);
+                        toast.success("Task restored");
                       }}
                       className="bg-black select-none border-2 flex items-center justify-center text-destructive-foreground shadow-sm  w-full text-sm p-2 rounded  font-bold duration-200 active:scale-105 active:border-2 active:border-white"
                     >
@@ -292,6 +320,7 @@ export default function Task({ task }) {
                       onClick={() => {
                         completeTask(task.id);
                         setOpen(false);
+                        toast.success("Task completed");
                       }}
                       className="bg-black select-none border-2 flex items-center justify-center text-destructive-foreground shadow-sm  w-full text-sm p-2 rounded  font-bold duration-200 active:scale-105 active:border-2 active:border-white"
                     >
@@ -329,6 +358,7 @@ export default function Task({ task }) {
                         onClick={async () => {
                           setOpen(false);
                           await deleteTask(task.id);
+                          toast.success("Task deleted");
                         }}
                       >
                         DELETE
@@ -536,8 +566,8 @@ export default function Task({ task }) {
                             title,
                             image: newImageFile,
                           });
-
                           setOpenForm(false);
+                          toast.success("Note added");
                         }}
                       >
                         CREATE NOTE

@@ -34,7 +34,7 @@ export default function ColorGrillMobile({ colors, theme, setTheme, mode }) {
                   outline: theme === `#${e.color}` ? `2px solid white` : "",
                   borderRadius: "5px",
                 }}
-                className="w-8 h-8"
+                className="w-4 h-4"
               ></div>
             </TooltipTrigger>
             {e.nombre && (
