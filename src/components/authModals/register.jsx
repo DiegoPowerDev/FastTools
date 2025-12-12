@@ -7,11 +7,19 @@ import { Button } from "../ui/button";
 import { register } from "../../firebase/auth";
 import Image from "next/image";
 import toast from "react-hot-toast";
+import { usePageStore } from "@/store/PageStore";
 
-export default function Register({ theme, textTheme, setAuthenticate }) {
+export default function Register({ theme, textTheme }) {
+  const { setAuthenticate } = usePageStore();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+
+  const reset = () => {
+    setEmail("");
+    setPassword("");
+    setConfirmPassword("");
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -23,7 +31,9 @@ export default function Register({ theme, textTheme, setAuthenticate }) {
         return toast.error("The email is already in use");
       }
     });
+    toast.success("We send an email to verify your account.");
     setAuthenticate(false);
+    reset();
   };
 
   return (

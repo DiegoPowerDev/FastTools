@@ -10,7 +10,7 @@ export default function FirebaseAuthWatcher() {
 
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, (user) => {
-      if (user) {
+      if (user && user.emailVerified) {
         router.replace("/welcome");
       }
     });

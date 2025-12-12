@@ -3,7 +3,6 @@ import { useEffect } from "react";
 import { useFireStore } from "@/store/fireStore";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { useRouter } from "next/navigation";
-import useUserStore from "@/store/userStore";
 import UserFooter from "@/components/footer/UserFooter";
 import UserTable from "@/components/tables/UserTable";
 import FireToolBar from "@/components/toolbars/fireToolBar";
@@ -13,7 +12,6 @@ import UserToasterClient from "@/components/toast/UserToasterClient";
 import ScheduleTable from "@/components/tables/ScheduleTable";
 
 export default function Page() {
-  const { setUser } = useUserStore();
   const { loadUserData, uid, setAllImages, mode } = useFireStore();
 
   const router = useRouter();
@@ -36,13 +34,12 @@ export default function Page() {
     const auth = getAuth();
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
       if (firebaseUser) {
-        setUser(firebaseUser);
         const unsubFirestore = loadUserData(); // loadUserData ya obtiene el uid internamente
         loadImages(firebaseUser.uid);
         window.__UNSUB_FIRESTORE__ = unsubFirestore;
       } else {
         console.log("No hay usuario autenticado");
-        setUser(null);
+
         if (window.__UNSUB_FIRESTORE__) {
           window.__UNSUB_FIRESTORE__();
           delete window.__UNSUB_FIRESTORE__;
@@ -58,7 +55,7 @@ export default function Page() {
         delete window.__UNSUB_FIRESTORE__;
       }
     };
-  }, [router, setUser, loadUserData]);
+  }, [router, loadUserData]);
 
   return (
     <>

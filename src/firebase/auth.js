@@ -5,11 +5,15 @@ import {
   onAuthStateChanged,
   GoogleAuthProvider,
   signInWithPopup,
+  GithubAuthProvider,
+  sendEmailVerification,
+  linkWithCredential,
 } from "firebase/auth";
 import { doc, getDoc, setDoc } from "firebase/firestore";
-import { db } from "./config";
-import { auth } from "@/firebase/config";
+import { auth, db } from "@/firebase/config";
+
 const googleProvider = new GoogleAuthProvider();
+const githubProvider = new GithubAuthProvider();
 
 export const login = async (email, password, callback) => {
   try {
@@ -18,6 +22,12 @@ export const login = async (email, password, callback) => {
       email,
       password
     );
+    if (!userCredential.user.emailVerified) {
+      return callback({
+        success: false,
+        error: { code: "email-not-verified", message: "Email not verified" },
+      });
+    }
 
     callback({ success: true, user: userCredential.user });
   } catch (error) {
@@ -27,7 +37,12 @@ export const login = async (email, password, callback) => {
 
 export const register = async (email, password, callback) => {
   try {
-    await createUserWithEmailAndPassword(auth, email, password);
+    const userCredential = await createUserWithEmailAndPassword(
+      auth,
+      email,
+      password
+    );
+    await sendEmailVerification(userCredential.user);
     return;
   } catch (error) {
     callback(error);
@@ -70,4 +85,63 @@ export const logout = async () => {
 
 export const onAuthChange = (callback) => {
   return onAuthStateChanged(auth, callback);
+};
+export const resendEmailVerification = async (callback) => {
+  try {
+    if (!auth.currentUser) {
+      return callback({ success: false, error: "No user logged in" });
+    }
+
+    await sendEmailVerification(auth.currentUser);
+
+    callback({ success: true });
+  } catch (error) {
+    callback({ success: false, error });
+  }
+};
+
+export const loginWithGithub = async (callback) => {
+  try {
+    const result = await signInWithPopup(auth, githubProvider);
+    const user = result.user;
+
+    callback({ success: true, user });
+  } catch (error) {
+    if (error.code === "auth/account-exists-with-different-credential") {
+      const pendingCred = GithubAuthProvider.credentialFromError(error);
+      const email = error.customData.email;
+
+      return callback({
+        success: false,
+        error: "need-link",
+        email,
+        pendingCred,
+      });
+    }
+
+    callback({ success: false, error });
+  }
+};
+export const linkGithubAccount = async (
+  email,
+  password,
+  pendingCred,
+  callback
+) => {
+  try {
+    // Login normal con email/password
+    const userCredential = await signInWithEmailAndPassword(
+      auth,
+      email,
+      password
+    );
+    const user = userCredential.user;
+
+    // Vincular credencial pendiente de GitHub
+    await linkWithCredential(user, pendingCred);
+
+    callback({ success: true, user });
+  } catch (error) {
+    callback({ success: false, error });
+  }
 };
