@@ -25,9 +25,8 @@ import {
   IconAlarmAverage,
   IconCheck,
   IconEraser,
-  IconExclamationCircle,
+  IconPencil,
   IconPlus,
-  IconTimeDurationOff,
 } from "@tabler/icons-react";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
@@ -36,13 +35,22 @@ import { useFireStore } from "@/store/fireStore";
 import { useClock } from "@/hooks/useClock";
 import { TimerOff, X } from "lucide-react";
 import toast from "react-hot-toast";
+import { TimePicker } from "../ui/timePicker";
 
 export default function Task({ task }) {
-  const { theme, textTheme, deleteTask, addNote, completeTask, restoreTask } =
-    useFireStore();
+  const {
+    theme,
+    textTheme,
+    deleteTask,
+    addNote,
+    completeTask,
+    restoreTask,
+    updateEndDateTask,
+  } = useFireStore();
   const time = useClock();
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState("");
+  const [newEndDate, setNewEndDate] = useState("");
   const [openForm, setOpenForm] = useState(false);
   const [comment, setComment] = useState("");
   const [newImagePreview, setNewImagePreview] = useState(null);
@@ -54,6 +62,15 @@ export default function Task({ task }) {
   const total = endDate.getTime() - startDate.getTime();
   const firstThird = startDate.getTime() + total * (1 / 3);
   const secondThird = startDate.getTime() + total * (2 / 3);
+
+  const updateEndDate = (taskid) => {
+    if (!newEndDate || newEndDate <= new Date()) {
+      toast.error("End date must be greater than the current time");
+      return;
+    }
+    updateEndDateTask(taskid, newEndDate);
+    toast.success("Date Updated");
+  };
 
   const colorCondition = () => {
     if (!startDate || !endDate) return null;
@@ -294,25 +311,62 @@ export default function Task({ task }) {
                     </div>
                   </div>
 
-                  {endDate && (
-                    <div
-                      className={cn(
-                        task.image ? "w-full" : "w-1/3",
-                        "h-full flex flex-col"
-                      )}
-                    >
+                  <div
+                    className={cn(
+                      task.image ? "w-full" : "w-1/3",
+                      "h-full flex flex-col"
+                    )}
+                  >
+                    <div className="flex justify-center gap-2 items-center">
                       <div className="font-bold text-center">END</div>
-                      <div
-                        style={{
-                          border: `2px solid ${textTheme}`,
-                          backgroundColor: theme,
-                        }}
-                        className="rounded w-full text-center p-1"
-                      >
-                        {endDate.toLocaleString("en-GB")}
-                      </div>
+                      {task.state != "completed" && (
+                        <Dialog>
+                          <DialogTrigger>
+                            <IconPencil className="hover:scale-125 duration-300" />
+                          </DialogTrigger>
+
+                          <DialogContent
+                            style={{
+                              color: textTheme,
+                              backgroundColor: theme,
+                              border: `2px solid ${colorCondition()}`,
+                            }}
+                            className="w-full"
+                          >
+                            <DialogDescription></DialogDescription>
+                            <DialogTitle className="text-center">
+                              Edit End Date
+                            </DialogTitle>
+                            <div className="w-full h-full flex flex-col gap-4 items-center justify-center p-4">
+                              <div className="w-full flex justify-center">
+                                <TimePicker setNewDate={setNewEndDate} />
+                              </div>
+
+                              <div className="w-full flex justify-center">
+                                <DialogClose asChild>
+                                  <Button
+                                    onClick={() => updateEndDate(task.id)}
+                                    className="w-full md:w-1/2 px-8 p-2"
+                                  >
+                                    SAVE
+                                  </Button>
+                                </DialogClose>
+                              </div>
+                            </div>
+                          </DialogContent>
+                        </Dialog>
+                      )}
                     </div>
-                  )}
+                    <div
+                      style={{
+                        border: `2px solid ${textTheme}`,
+                        backgroundColor: theme,
+                      }}
+                      className="rounded w-full text-center p-1"
+                    >
+                      {endDate.toLocaleString("en-GB")}
+                    </div>
+                  </div>
                 </div>
                 <div className="w-full h-full flex flex-col uppercase gap-4 items-center justify-center">
                   <div className="flex h-full w-full items-center justify-center  gap-2">
