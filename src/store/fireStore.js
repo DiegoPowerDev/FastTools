@@ -25,9 +25,11 @@ const initialState = {
   textTheme: "#fafafa",
   displayColors: true,
   displayLinks: true,
-  mode: "tools",
+  period: "dayli",
+  completed: true,
   images: [],
   task: [],
+  mode: "",
   lastTaskId: 0,
   colors: [
     { id: 1, nombre: "theme", color: "b91c1c" },
@@ -218,6 +220,14 @@ export const fireStore = createStore((set, get) => ({
   displayColors: true,
   displayLinks: true,
   task: [],
+  completed: true,
+  period: "dayli",
+  setCompleted: (completed) => {
+    set({ completed });
+  },
+  setPeriod: (period) => {
+    set({ period });
+  },
   lastTaskId: 0,
   colors: [
     { id: 1, nombre: "theme", color: "b91c1c" },

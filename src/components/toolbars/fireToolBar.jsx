@@ -45,6 +45,10 @@ import {
   IconDoor,
   IconSettings,
   IconTools,
+  IconCheck,
+  IconCarambola,
+  IconCalendarMonth,
+  IconListCheck,
 } from "@tabler/icons-react";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
@@ -62,7 +66,9 @@ import {
   NotebookText,
   Palette,
   Pipette,
+  Sun,
 } from "lucide-react";
+import { Button } from "../ui/button";
 
 // === Icon Map ===
 const iconMap = {
@@ -218,6 +224,10 @@ export default function FireToolBar() {
     setImages,
     setMode,
     mode,
+    completed,
+    setCompleted,
+    period,
+    setPeriod,
     task,
   } = useFireStore();
   const time = useClock();
@@ -448,9 +458,14 @@ export default function FireToolBar() {
       )}
 
       {/* TOOLBAR AREA */}
-      <div className=" w-screen flex justify-between items-center gap-2 min-h-20 px-8">
-        <div className={cn("flex flex-col md:flex-row justify-end  gap-4")}>
-          <motion.div
+      <div
+        className={cn(
+          mode === "tools" ? "flex-row" : "flex-col",
+          `w-screen flex  md:flex-row justify-between items-center gap-2 min-h-20 px-8`
+        )}
+      >
+        <div className={cn("flex  justify-end  gap-4")}>
+          <div
             style={{
               boxShadow: `0 0 15px 5px ${textTheme}`,
               backgroundColor: theme,
@@ -459,43 +474,111 @@ export default function FireToolBar() {
             onClick={() => {
               setTabs("header");
             }}
-            className={`h-14 cursor-pointer w-14 p-2 rounded flex-shrink-0 ${
-              tabs.header ? "opacity-70" : ""
-            }`}
+            className={`h-14 cursor-pointer w-14 p-2 rounded flex-shrink-0   }`}
           >
             <IconRocket size={40} />
-          </motion.div>
-          <div className={`h-14 w-14 p-2 }`}></div>
+          </div>
+          {mode != "tools" && (
+            <div>
+              <Button
+                style={{
+                  backgroundColor: theme,
+                  color: textTheme,
+                  boxShadow: !completed && `0 0 15px 5px ${textTheme}`,
+                }}
+                onClick={() => setCompleted(!completed)}
+                className={`h-14 cursor-pointer w-14 font-bold rounded flex-shrink-0`}
+              >
+                <IconCheck stroke={4} size={40} />
+              </Button>
+            </div>
+          )}
         </div>
-        <div className="flex-1">
-          {mode === "tools" ? (
-            <DroppableArea
-              id="toolbarArea"
-              items={toolbarArea}
-              theme={theme}
-              textTheme={textTheme}
-            />
-          ) : (
-            <div className="w-full h-full hidden md:flex items-center justify-center">
-              <div
+
+        {mode === "tools" ? (
+          <DroppableArea
+            id="toolbarArea"
+            items={toolbarArea}
+            theme={theme}
+            textTheme={textTheme}
+          />
+        ) : (
+          <div className="w-full h-full flex flex-col md:grid md:grid-cols-3 gap-2 items-center">
+            <div className="flex  flex-row text-xs md:text-md items-center justify-center md:gap-2">
+              <button
+                style={{
+                  backgroundColor: period != "all" ? theme : "black",
+                  color: period !== "all" ? textTheme : "white",
+                }}
+                onClick={() => setPeriod("all")}
+                className={cn("font-bold w-20 md:w-40 h-12 p-2 rounded ")}
+              >
+                ALL
+              </button>
+              <button
+                style={{
+                  backgroundColor: period != "daily" ? theme : "black",
+                  color: period !== "daily" ? textTheme : "white",
+                }}
+                onClick={() => setPeriod("daily")}
+                className={cn("font-bold w-20 md:w-40 h-12 p-2 rounded")}
+              >
+                DAY
+              </button>
+              <button
+                onClick={() => setPeriod("weekly")}
+                style={{
+                  backgroundColor: period != "weekly" ? theme : "black",
+                  color: period !== "weekly" ? textTheme : "white",
+                }}
+                className={cn("font-bold w-20 md:w-40 h-12 p-2 rounded")}
+              >
+                WEEK
+              </button>
+              <button
+                onClick={() => setPeriod("monthly")}
+                style={{
+                  backgroundColor: period != "monthly" ? theme : "black",
+                  color: period !== "monthly" ? textTheme : "white",
+                }}
+                className={cn("font-bold w-20 md:w-40 h-12 p-2 rounded")}
+              >
+                MONTH
+              </button>
+              <button
+                onClick={() => setPeriod("special")}
+                style={{
+                  backgroundColor: period != "special" ? theme : "black",
+                  color: period != "special" ? textTheme : "white",
+                }}
+                className={cn(
+                  "font-bold w-20 md:w-40 h-12 p-2 rounded flex items-center justify-center"
+                )}
+              >
+                <IconCarambola stroke={4} size={20} />
+              </button>
+            </div>
+            <div className="hidden md:flex items-center justify-center">
+              <span
                 style={{
                   color: textTheme,
                   backgroundColor: theme,
                   boxShadow: `0 0 5px 1px ${textTheme}`,
                 }}
-                onClick={() => console.log(task)}
-                className=" w-56 rounded flex items-center justify-center font-bolt text-5xl h-14"
+                className="p-2 rounded inline-flex items-center justify-center text-5xl font-bold"
               >
                 {format(time.getHours())}:{format(time.getMinutes())}:
                 {format(time.getSeconds())}
-              </div>
+              </span>
             </div>
-          )}
-        </div>
+            <div className="w-full"></div>
+          </div>
+        )}
 
         <div
           className={cn(
-            "flex flex-col md:flex-row justify-end cursor-pointer gap-4"
+            mode === "tools" && "flex-col md:flex-row",
+            "flex  justify-end cursor-pointer gap-2 md:gap-4"
           )}
         >
           <div

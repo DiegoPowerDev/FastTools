@@ -21,7 +21,14 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
-import { IconCheck, IconEraser, IconPlus } from "@tabler/icons-react";
+import {
+  IconAlarmAverage,
+  IconCheck,
+  IconEraser,
+  IconExclamationCircle,
+  IconPlus,
+  IconTimeDurationOff,
+} from "@tabler/icons-react";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
@@ -121,19 +128,31 @@ export default function Task({ task }) {
           color: textTheme,
         }}
         className={cn(
-          "w-full h-16 rounded-xl p-2 cursor-pointer select-none",
+          "w-full relative h-16 rounded-xl p-2 cursor-pointer select-none",
           task.state === "completed" && "opacity-50"
         )}
       >
-        <div className="relative w-full h-full flex flex-col justify-center items-center">
+        <div className=" w-full h-full flex flex-col justify-center items-center">
           {task.state === "completed" && (
-            <span className="absolute  -top-1 -left-1 ">
-              <IconCheck color="#b2dddd" size={20} />
+            <span
+              style={{
+                backgroundColor: theme,
+                boxShadow: `0 0 5px 4px ${colorCondition()}`,
+              }}
+              className="absolute -top-3 -left-3 rounded-xl "
+            >
+              <IconCheck size={25} />
             </span>
           )}
           {time > endDate && task.state !== "completed" && (
-            <span className="absolute  -top-1 -left-1 ">
-              <TimerOff size={20} />
+            <span
+              style={{
+                backgroundColor: theme,
+                boxShadow: `0 0 5px 4px ${colorCondition()}`,
+              }}
+              className="absolute -top-3 -left-4 rounded-xl "
+            >
+              <IconAlarmAverage size={30} />
             </span>
           )}
           <div

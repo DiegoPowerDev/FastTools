@@ -21,13 +21,13 @@ import { getAuth } from "firebase/auth";
 import toast from "react-hot-toast";
 import { useFireStore } from "@/store/fireStore";
 
-export default function CreateTask({ open, setOpen, mode }) {
+export default function CreateTask({ open, setOpen }) {
   const [descrition, setDescrition] = useState("");
   const [name, setName] = useState("");
   const [endDate, setEndDate] = useState("");
   const [newImage, setNewImage] = useState(null);
   const [every, setEvery] = useState(0);
-  const { newTask, lastTaskId, theme, textTheme } = useFireStore();
+  const { newTask, lastTaskId, theme, textTheme, period } = useFireStore();
   const auth = getAuth();
   const uid = auth.currentUser?.uid;
   const fileRef = useRef(null);
@@ -96,12 +96,12 @@ export default function CreateTask({ open, setOpen, mode }) {
     let finalEndDate = null;
     let finalFrequency = "none";
 
-    if (mode === "special" || mode === "all") {
+    if (period === "special" || period === "all") {
       finalFrequency = "special";
       finalEndDate = endDate;
       console.log(finalEndDate);
     }
-    if (mode === "daily") {
+    if (period === "daily") {
       const now = new Date();
 
       const end = new Date(
@@ -117,7 +117,7 @@ export default function CreateTask({ open, setOpen, mode }) {
       finalFrequency = "daily";
       finalEndDate = end;
     }
-    if (mode === "monthly") {
+    if (period === "monthly") {
       const now = new Date();
       const end = new Date(now.getFullYear(), now.getMonth() + 1, 0);
       end.setHours(23, 59, 59, 999);
@@ -126,7 +126,7 @@ export default function CreateTask({ open, setOpen, mode }) {
       finalEndDate = end;
     }
 
-    if (mode === "weekly") {
+    if (period === "weekly") {
       const now = new Date();
 
       const currentDay = now.getDay(); // 0–6
@@ -259,22 +259,22 @@ export default function CreateTask({ open, setOpen, mode }) {
               </div>
             </div>
             <div className="w-full flex flex-col pt-2 items-center justify-center gap-2 ">
-              {(mode === "special" || mode === "all") && (
+              {(period === "special" || period === "all") && (
                 <div className="flex flex-col">
                   <TimePicker setNewDate={setEndDate} />
                 </div>
               )}
-              {mode === "daily" && (
+              {period === "daily" && (
                 <div className="flex flex-col">
                   <div>ALL DAY</div>
                 </div>
               )}
-              {mode === "monthly" && (
+              {period === "monthly" && (
                 <div className="flex flex-col">
                   <div>LAST DAY OF MONTH</div>
                 </div>
               )}
-              {mode === "weekly" && (
+              {period === "weekly" && (
                 <div className="h-full flex gap-2 items-center justify-center">
                   <label>Every </label>
                   <Select
