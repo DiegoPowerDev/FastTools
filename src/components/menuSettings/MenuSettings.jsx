@@ -44,6 +44,19 @@ export default function MenuSettings() {
               style={{
                 backgroundColor: theme,
                 color: textTheme,
+                outline: mode != "Theme" && "2px solid white",
+              }}
+              className={cn(mode === "Theme" && "opacity-50", "font-bold")}
+              onClick={() => {
+                setMode("Text");
+              }}
+            >
+              TEXT
+            </Button>
+            <Button
+              style={{
+                backgroundColor: theme,
+                color: textTheme,
                 outline: mode === "Theme" && "2px solid white",
               }}
               className={cn(
@@ -55,19 +68,6 @@ export default function MenuSettings() {
               }}
             >
               THEME
-            </Button>
-            <Button
-              style={{
-                backgroundColor: theme,
-                color: textTheme,
-                outline: mode != "Theme" && "2px solid white",
-              }}
-              className={cn(mode === "Theme" && "opacity-50", "font-bold")}
-              onClick={() => {
-                setMode("Text");
-              }}
-            >
-              TEXT
             </Button>
           </div>
           {mode === "Theme" && (

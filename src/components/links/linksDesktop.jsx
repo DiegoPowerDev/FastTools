@@ -396,8 +396,8 @@ export default function Links({
         >
           {!displayLinks ? <IconEyeClosed size={40} /> : <IconEye size={40} />}
         </div>
-        <div className=" text-xl  w-full font-bold uppercase flex justify-center items-center">
-          Links
+        <div className=" text-xl  w-full font-bold flex justify-center items-center">
+          LINKS
         </div>
         <button
           style={{
@@ -416,8 +416,7 @@ export default function Links({
           "--theme": textTheme,
         }}
         className={cn(
-          `bg-black/50 w-full flex-1 flex items-center overflow-x-auto  overflow-y-hidden ${styles.scrollContainer}`,
-          !displayLinks && "px-12"
+          `bg-black/50 w-full flex-1 flex items-center overflow-x-auto  overflow-y-hidden ${styles.scrollContainer} p-2`
         )}
       >
         <div className="h-full">
