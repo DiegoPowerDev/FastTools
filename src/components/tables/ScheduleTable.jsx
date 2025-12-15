@@ -140,7 +140,7 @@ export default function ScheduleTable() {
             <div className="w-full grid grid-cols-3 auto-cols-fr grid-flow-row gap-4 p-4 ">
               <div></div>
 
-              <div className="w-full h-full flex flex-col justify-center gap-4">
+              <div className="w-full h-full flex flex-col gap-4">
                 {expiredMiddleTasks().map((e, i) => (
                   <motion.div
                     key={i}
