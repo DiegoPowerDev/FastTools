@@ -222,7 +222,7 @@ function LinkItemInner({ link, textTheme, displayLinks, editable }) {
       <div className="h-12 w-12 rounded-l-md flex items-center justify-center flex-shrink-0">
         {link.icono && (
           <img
-            className="flex items-center rounded-xl p-2 justify-center"
+            className="flex items-center rounded-xl p-2 justify-center pointer-events-none"
             src={link.icono}
             alt=""
           />
