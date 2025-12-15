@@ -102,7 +102,7 @@ function SortableButton({ id, label, theme, textTheme }) {
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
-    boxShadow: `0 0 15px 2px ${textTheme}`,
+    boxShadow: `0 0 15px 5px ${textTheme}`,
     color: textTheme,
     backgroundColor: theme,
     color: textTheme,
@@ -508,7 +508,8 @@ export default function FireToolBar() {
               <button
                 style={{
                   backgroundColor: period != "all" ? theme : "black",
-                  color: period !== "all" ? textTheme : "white",
+                  color: period === "all" ? textTheme : "white",
+                  boxShadow: period === "all" && `0 0 15px 5px ${textTheme}`,
                 }}
                 onClick={() => setPeriod("all")}
                 className={cn("font-bold w-20 md:w-40 h-12 p-2 rounded ")}
@@ -518,7 +519,8 @@ export default function FireToolBar() {
               <button
                 style={{
                   backgroundColor: period != "daily" ? theme : "black",
-                  color: period !== "daily" ? textTheme : "white",
+                  color: period === "daily" ? textTheme : "white",
+                  boxShadow: period === "daily" && `0 0 15px 5px ${textTheme}`,
                 }}
                 onClick={() => setPeriod("daily")}
                 className={cn("font-bold w-20 md:w-40 h-12 p-2 rounded")}
@@ -529,7 +531,8 @@ export default function FireToolBar() {
                 onClick={() => setPeriod("weekly")}
                 style={{
                   backgroundColor: period != "weekly" ? theme : "black",
-                  color: period !== "weekly" ? textTheme : "white",
+                  color: period === "weekly" ? textTheme : "white",
+                  boxShadow: period === "weekly" && `0 0 15px 5px ${textTheme}`,
                 }}
                 className={cn("font-bold w-20 md:w-40 h-12 p-2 rounded")}
               >
@@ -539,7 +542,9 @@ export default function FireToolBar() {
                 onClick={() => setPeriod("monthly")}
                 style={{
                   backgroundColor: period != "monthly" ? theme : "black",
-                  color: period !== "monthly" ? textTheme : "white",
+                  color: period === "monthly" ? textTheme : "white",
+                  boxShadow:
+                    period === "monthly" && `0 0 15px 5px ${textTheme}`,
                 }}
                 className={cn("font-bold w-20 md:w-40 h-12 p-2 rounded")}
               >
@@ -549,7 +554,9 @@ export default function FireToolBar() {
                 onClick={() => setPeriod("special")}
                 style={{
                   backgroundColor: period != "special" ? theme : "black",
-                  color: period != "special" ? textTheme : "white",
+                  color: period === "special" ? textTheme : "white",
+                  boxShadow:
+                    period === "special" && `0 0 15px 5px ${textTheme}`,
                 }}
                 className={cn(
                   "font-bold w-20 md:w-40 h-12 p-2 rounded flex items-center justify-center"
@@ -563,9 +570,9 @@ export default function FireToolBar() {
                 style={{
                   color: textTheme,
                   backgroundColor: theme,
-                  boxShadow: `0 0 5px 1px ${textTheme}`,
+                  boxShadow: `0 0 15px 5px ${textTheme}`,
                 }}
-                className="p-2 rounded inline-flex items-center justify-center text-5xl font-bold"
+                className="p-2 w-60 rounded inline-flex items-center justify-center text-5xl font-bold"
               >
                 {format(time.getHours())}:{format(time.getMinutes())}:
                 {format(time.getSeconds())}
@@ -584,7 +591,7 @@ export default function FireToolBar() {
           <div
             onClick={() => setMode("tools")}
             style={{
-              boxShadow: mode === "tools" && `0 0 5px 2px ${textTheme}`,
+              boxShadow: mode === "tools" && `0 0 15px 5px ${textTheme}`,
               backgroundColor: theme,
               color: textTheme,
             }}
@@ -595,7 +602,7 @@ export default function FireToolBar() {
           <div
             onClick={() => setMode("schedule")}
             style={{
-              boxShadow: mode === "schedule" && `0 0 5px 2px ${textTheme}`,
+              boxShadow: mode === "schedule" && `0 0 15px 5px ${textTheme}`,
               backgroundColor: theme,
               color: textTheme,
             }}
