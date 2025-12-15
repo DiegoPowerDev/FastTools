@@ -562,7 +562,11 @@ export default function FireToolBar() {
                   "font-bold w-20 md:w-40 h-12 p-2 rounded flex items-center justify-center"
                 )}
               >
-                <IconCarambola stroke={4} size={20} />
+                <IconCarambola
+                  fill={period === "special" ? textTheme : "white"}
+                  stroke={4}
+                  size={18}
+                />
               </button>
             </div>
             <div className="hidden md:flex items-center justify-center">
