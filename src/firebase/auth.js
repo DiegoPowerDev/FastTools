@@ -36,7 +36,7 @@ export const login = async (email, password, callback) => {
   }
 };
 
-export const register = async (email, password, callback) => {
+export const register = async (email, password) => {
   try {
     const userCredential = await createUserWithEmailAndPassword(
       auth,
@@ -44,9 +44,9 @@ export const register = async (email, password, callback) => {
       password
     );
     await sendEmailVerification(userCredential.user);
-    return;
+    return { success: true };
   } catch (error) {
-    callback(error);
+    return { success: false, error };
   }
 };
 

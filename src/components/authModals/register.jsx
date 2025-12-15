@@ -27,11 +27,12 @@ export default function Register({ theme, textTheme }) {
     if (password !== confirmPassword)
       return toast.error("The passwords do not match");
 
-    await register(email, password, (error) => {
-      if (error?.code === "auth/email-already-in-use") {
-        return toast.error("The email is already in use");
-      }
-    });
+    const result = await register(email, password);
+
+    if (result.error.code === "auth/email-already-in-use") {
+      return toast.error("The email is already in use");
+    }
+
     toast.success("We send an email to verify your account.");
     setAuthenticate(false);
     reset();

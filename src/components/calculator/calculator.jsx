@@ -1,6 +1,5 @@
 "use client";
 import React, { useState } from "react";
-import { Input } from "../ui/input";
 import { IconBackspace, IconEqual } from "@tabler/icons-react";
 
 const Calculator = ({ theme = "#3b82f6", textTheme = "#ffffff" }) => {
@@ -8,10 +7,8 @@ const Calculator = ({ theme = "#3b82f6", textTheme = "#ffffff" }) => {
   const [result, setResult] = useState("");
   const [error, setError] = useState(false);
 
-  // Función segura para evaluar expresiones matemáticas
   const safeEval = (expression) => {
     try {
-      // Limpieza: solo permitir números, operadores y puntos
       const sanitized = expression.replace(/[^0-9+\-*/.()]/g, "");
 
       if (!sanitized || sanitized.trim() === "") {
@@ -41,14 +38,40 @@ const Calculator = ({ theme = "#3b82f6", textTheme = "#ffffff" }) => {
   const handleInput = (value) => {
     setError(false);
 
-    // Prevenir operadores al inicio (excepto - y paréntesis)
-    if (input === "" && ["+", "*", "/", "."].includes(value)) {
+    const operators = ["+", "-", "*", "/"];
+    const lastChar = input.slice(-1);
+
+    // Si el input está vacío
+    if (input === "") {
+      // Solo permitir números, paréntesis de apertura o signo negativo
+      if (["+", "*", "/", "."].includes(value)) {
+        return;
+      }
+    }
+
+    // Si el último carácter es un operador y el nuevo valor también es un operador
+    if (operators.includes(lastChar) && operators.includes(value)) {
+      // Reemplazar el último operador con el nuevo
+      const newInput = input.slice(0, -1) + value;
+      setInput(newInput);
+
+      const evalResult = safeEval(newInput);
+      if (evalResult === "Error") {
+        setError(true);
+        setResult("");
+      } else {
+        setResult(evalResult.toString());
+      }
+      return;
+    }
+
+    // Prevenir punto decimal después de operador sin número
+    if (value === "." && operators.includes(lastChar)) {
       return;
     }
 
     // Prevenir múltiples puntos decimales en un número
     if (value === ".") {
-      // Obtener el último número (después del último operador o paréntesis)
       const lastNumber = input.split(/[\+\-\*\/\(\)]/).pop();
       if (lastNumber.includes(".")) {
         return;
@@ -64,10 +87,15 @@ const Calculator = ({ theme = "#3b82f6", textTheme = "#ffffff" }) => {
       }
     }
 
+    // Prevenir operador después de paréntesis de apertura (excepto -)
+    if (lastChar === "(" && ["+", "*", "/", "."].includes(value)) {
+      return;
+    }
+
     const newInput = input + value;
     setInput(newInput);
 
-    // Calcular en tiempo real solo si la expresión parece completa
+    // Calcular en tiempo real
     const evalResult = safeEval(newInput);
     if (evalResult === "Error") {
       setError(true);
@@ -96,6 +124,19 @@ const Calculator = ({ theme = "#3b82f6", textTheme = "#ffffff" }) => {
     setError(false);
   };
 
+  const handleEquals = () => {
+    if (input) {
+      const evalResult = safeEval(input);
+      if (evalResult === "Error") {
+        setError(true);
+        setResult("Error");
+      } else {
+        setResult(evalResult.toString());
+        setInput(evalResult.toString());
+      }
+    }
+  };
+
   // Formatear número para mejor legibilidad
   const formatDisplay = (value) => {
     if (!value) return "";
@@ -112,18 +153,7 @@ const Calculator = ({ theme = "#3b82f6", textTheme = "#ffffff" }) => {
 
     return value;
   };
-  const handleEquals = () => {
-    if (input) {
-      const evalResult = safeEval(input);
-      if (evalResult === "Error") {
-        setError(true);
-        setResult("Error");
-      } else {
-        setResult(evalResult.toString());
-        setInput(evalResult.toString());
-      }
-    }
-  };
+
   return (
     <div
       style={{ border: `2px solid ${theme}`, color: textTheme }}
@@ -244,7 +274,7 @@ const Calculator = ({ theme = "#3b82f6", textTheme = "#ffffff" }) => {
                 borderLeft: `1px solid ${textTheme}`,
               }}
               onClick={handleBackspace}
-              className="p-2 font-bold  active:scale-125 transition-all duration-150 bg-red-600 text-white s hadow-lg flex items-center justify-center"
+              className="p-2 font-bold  active:scale-125 transition-all duration-150 bg-red-600 text-white shadow-lg flex items-center justify-center"
             >
               <IconBackspace size={30} />
             </button>
