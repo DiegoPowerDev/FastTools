@@ -9,9 +9,11 @@ import Image from "next/image";
 import toast from "react-hot-toast";
 import { usePageStore } from "@/store/PageStore";
 import { NotebookPen, NotepadText } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 export default function Register({ theme, textTheme }) {
   const { setAuthenticate } = usePageStore();
+  const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -24,18 +26,23 @@ export default function Register({ theme, textTheme }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (password !== confirmPassword)
-      return toast.error("The passwords do not match");
-
-    const result = await register(email, password);
-
-    if (result.error.code === "auth/email-already-in-use") {
-      return toast.error("The email is already in use");
+    setLoading(true);
+    if (password !== confirmPassword) {
+      toast.error("The passwords do not match");
+      return setLoading(false);
     }
 
-    toast.success("We send an email to verify your account.");
+    const result = await register(email, password);
+    if (!result.success) {
+      if (result.error.code === "auth/email-already-in-use") {
+        setLoading(false);
+        return toast.error("The email is already in use");
+      }
+    }
+
     setAuthenticate(false);
     reset();
+    toast.success("We send an email to verify your account.");
   };
 
   return (
@@ -76,13 +83,20 @@ export default function Register({ theme, textTheme }) {
         </div>
         <div className="w-full flex justify-center items-center">
           <Button
+            disabled={loading}
             style={{
               color: textTheme,
               backgroundColor: theme,
             }}
-            className="w-3/4 hover:opacity-60 gap-2"
+            className={cn("w-3/4 hover:opacity-60 gap-2 disabled:opacity-50 ")}
           >
-            REGISTER <NotebookPen />
+            {loading ? (
+              <div className="w-4 h-4 border-t-2 border-white rounded-full animate-spin"></div>
+            ) : (
+              <span className="flex items-center justify-center gap-2">
+                REGISTER <NotebookPen />
+              </span>
+            )}
           </Button>
         </div>
       </form>

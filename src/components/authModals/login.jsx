@@ -11,30 +11,30 @@ import { DoorOpen, Mails } from "lucide-react";
 
 export default function Login({ theme, textTheme }) {
   const { setAuthenticate, handleLoginSuccess } = usePageStore();
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [verify, setVerify] = useState(false);
   const [password, setPassword] = useState("");
   const handleSubmit = (e) => {
     e.preventDefault();
+    setLoading(true);
     login(email, password, async (res, msg) => {
-      if (res.success) {
-        toast.success("Login successful");
-        router.replace("/welcome");
-        setAuthenticate(false);
-        if (msg === "LOGGED IN") {
-          await handleLoginSuccess();
-        }
-        return;
-      }
-      if (res.error.code === "auth/invalid-credential") {
+      if (res.error?.code === "auth/invalid-credential") {
         toast.error("Email or password invalid");
+        setLoading(false);
         return;
       }
-      if (res.error.code === "email-not-verified") {
+      if (res.error?.code === "email-not-verified") {
         toast.error("Please verify your email before logging in.");
         setVerify(true);
+        setLoading(false);
         return;
+      }
+      if (res.success) {
+        setAuthenticate(false);
+        toast.success("Login successful");
+        router.replace("/welcome");
       }
     });
   };
@@ -66,25 +66,34 @@ export default function Login({ theme, textTheme }) {
             value={password}
           />
         </div>
-        <div className="w-full flex justify-center items-center">
-          <Button
-            style={{
-              color: textTheme,
-              backgroundColor: theme,
+        <div className="flex flex-col gap-2 w-full justify-center items-center">
+          <div className="w-full flex justify-center items-center">
+            <Button
+              disabled={loading}
+              style={{
+                color: textTheme,
+                backgroundColor: theme,
+              }}
+              className="w-3/4 hover:opacity-60"
+            >
+              {loading ? (
+                <div className="w-4 h-4 border-t-2 border-white rounded-full animate-spin"></div>
+              ) : (
+                <span className="flex items-center justify-center gap-2">
+                  LOGIN <DoorOpen />
+                </span>
+              )}
+            </Button>
+          </div>
+          <div
+            className="cursor-pointer"
+            onClick={() => {
+              setAuthenticate(false);
+              router.replace("/forgotpassword");
             }}
-            className="w-3/4 hover:opacity-60"
           >
-            LOGIN <DoorOpen />
-          </Button>
-        </div>
-        <div
-          className="cursor-pointer"
-          onClick={() => {
-            setAuthenticate(false);
-            router.replace("/forgotpassword");
-          }}
-        >
-          Forgot your password?
+            Forgot your password?
+          </div>
         </div>
         {verify && (
           <div className="w-full flex justify-center items-center">
