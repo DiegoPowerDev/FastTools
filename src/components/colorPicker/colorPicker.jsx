@@ -4,7 +4,7 @@ import {
   IconClipboard,
   IconDeviceFloppy,
 } from "@tabler/icons-react";
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect, use } from "react";
 import { Button } from "../ui/button";
 import toast from "react-hot-toast";
 import {
@@ -181,6 +181,12 @@ export default function ImageColorPicker({ theme, textTheme }) {
     link.href = canvasRef.current.toDataURL(`image/${format}`);
     link.click();
   };
+
+  useEffect(() => {
+    if (color) {
+      copyToClipboard();
+    }
+  }, [color]);
   return (
     <div
       style={{ border: `2px solid ${theme}` }}
