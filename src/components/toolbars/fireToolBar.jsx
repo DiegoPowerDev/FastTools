@@ -483,7 +483,7 @@ export default function FireToolBar() {
               <Button
                 style={{
                   backgroundColor: theme,
-                  color: textTheme,
+                  color: !completed ? textTheme : "white",
                   boxShadow: !completed && `0 0 15px 5px ${textTheme}`,
                 }}
                 onClick={() => setCompleted(!completed)}
@@ -503,8 +503,8 @@ export default function FireToolBar() {
             textTheme={textTheme}
           />
         ) : (
-          <div className="w-full h-full flex flex-col md:grid md:grid-cols-3 gap-2 items-center">
-            <div className="flex  flex-row text-xs md:text-md items-center justify-center md:gap-2">
+          <div className=" w-full h-full flex flex-col md:grid md:grid-cols-3  items-center">
+            <div className="md:ml-4 grid grid-cols-5 text-xs md:text-md items-center justify-center md:gap-2">
               <button
                 style={{
                   backgroundColor: period != "all" ? theme : "black",
@@ -512,7 +512,9 @@ export default function FireToolBar() {
                   boxShadow: period === "all" && `0 0 15px 5px ${textTheme}`,
                 }}
                 onClick={() => setPeriod("all")}
-                className={cn("font-bold w-20 md:w-40 h-12 p-2 rounded ")}
+                className={cn(
+                  "font-bold  h-14 p-2 rounded flex items-center justify-center"
+                )}
               >
                 ALL
               </button>
@@ -523,7 +525,9 @@ export default function FireToolBar() {
                   boxShadow: period === "daily" && `0 0 15px 5px ${textTheme}`,
                 }}
                 onClick={() => setPeriod("daily")}
-                className={cn("font-bold w-20 md:w-40 h-12 p-2 rounded")}
+                className={cn(
+                  "font-bold  h-14 p-2 rounded flex items-center justify-center"
+                )}
               >
                 DAY
               </button>
@@ -534,7 +538,9 @@ export default function FireToolBar() {
                   color: period === "weekly" ? textTheme : "white",
                   boxShadow: period === "weekly" && `0 0 15px 5px ${textTheme}`,
                 }}
-                className={cn("font-bold w-20 md:w-40 h-12 p-2 rounded")}
+                className={cn(
+                  "font-bold  h-14 p-2 rounded flex items-center justify-center"
+                )}
               >
                 WEEK
               </button>
@@ -546,7 +552,9 @@ export default function FireToolBar() {
                   boxShadow:
                     period === "monthly" && `0 0 15px 5px ${textTheme}`,
                 }}
-                className={cn("font-bold w-20 md:w-40 h-12 p-2 rounded")}
+                className={cn(
+                  "font-bold  h-14 p-2 rounded flex items-center justify-center"
+                )}
               >
                 MONTH
               </button>
@@ -559,7 +567,7 @@ export default function FireToolBar() {
                     period === "special" && `0 0 15px 5px ${textTheme}`,
                 }}
                 className={cn(
-                  "font-bold w-20 md:w-40 h-12 p-2 rounded flex items-center justify-center"
+                  "font-bold  h-14 p-2 rounded flex items-center justify-center"
                 )}
               >
                 <IconCarambola
