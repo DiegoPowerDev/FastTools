@@ -30,14 +30,20 @@ import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 
 export default function NotesMobile({ notes, setNotes, theme, textTheme }) {
-  const [bgColor, setBgColor] = useState("#ffffff");
+  const [bgColor, setBgColor] = useState("#000000");
+  const [textColor, setTextColor] = useState("#fafafa");
   const scrollRef = useRef(null);
+
   const [editable, setEditable] = useState(false);
   const [editForm, setEditForm] = useState(false);
-  const [id, setId] = useState(0);
+  const [id, setId] = useState(null);
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
-
+  const manageFormat = (colorStr) => {
+    if (!colorStr) return "";
+    if (colorStr[0] === "#") return colorStr.slice(1);
+    return colorStr;
+  };
   const exportToTextFile = () => {
     const blob = new Blob([content], { type: "text/plain" });
     const link = document.createElement("a");
@@ -62,7 +68,7 @@ export default function NotesMobile({ notes, setNotes, theme, textTheme }) {
   }, []);
   useEffect(() => {
     if (!editForm) {
-      setId(0);
+      setId(null);
     }
   }, [editForm]);
   return (
@@ -104,11 +110,12 @@ export default function NotesMobile({ notes, setNotes, theme, textTheme }) {
               {(note.title != "" || editable) && (
                 <div
                   onClick={() => {
-                    setId(note.id - 1);
+                    setId(e);
                     setTitle(note.title);
                     setContent(note.content);
                     setEditForm(true);
-                    setBgColor(note.color);
+                    setBgColor(note.color1);
+                    setTextColor(note.color2);
                   }}
                 >
                   <NoteItem
@@ -142,11 +149,14 @@ export default function NotesMobile({ notes, setNotes, theme, textTheme }) {
                     TITLE
                   </label>
                   <Input
-                    style={{ color: textTheme }}
+                    style={{
+                      color: `#${manageFormat(textColor)}`,
+                      backgroundColor: `#${manageFormat(bgColor)}`,
+                    }}
                     disabled={!editable}
                     id="title"
                     type="text"
-                    placeholder={notes[id].title || ""}
+                    placeholder={id !== null ? notes[id]?.title : ""}
                     className="p-2 rounded placeholder:text-gray-500 placeholder:opacity-40"
                     value={title}
                     onChange={(e) => {
@@ -169,7 +179,7 @@ export default function NotesMobile({ notes, setNotes, theme, textTheme }) {
                   rows={10}
                   disabled={!editable}
                   id="content"
-                  placeholder={notes[id].content || ""}
+                  placeholder={id !== null ? notes[id]?.content : ""}
                   style={{
                     "--theme": textTheme,
                     color: textTheme,
@@ -185,17 +195,56 @@ export default function NotesMobile({ notes, setNotes, theme, textTheme }) {
             </div>
             {editable ? (
               <div className="w-full h-full flex flex-col justify-between items-center gap-4">
-                <div className="flex items-center gap-2">
-                  <label htmlFor="color" className="font-bold">
-                    Color:
-                  </label>
-                  <input
-                    type="color"
-                    id="color"
-                    value={bgColor}
-                    className="w-8 h-8 p-0 m-0"
-                    onChange={(e) => setBgColor(e.target.value)}
-                  />
+                <div className="flex flex-col  gap-2">
+                  <div className="flex justify-center items-center gap-4">
+                    <div>Background</div>
+                    <div className="w-full h-full flex items-center gap-2">
+                      <div
+                        className="w-8 h-8"
+                        style={{
+                          backgroundColor: `#${manageFormat(bgColor)}`,
+                          border: `1px solid ${theme}`,
+                        }}
+                      ></div>
+
+                      <Input
+                        id="color"
+                        maxLength={9}
+                        className="p-2 w-40 rounded placeholder:opacity-40"
+                        type="text"
+                        value={bgColor.toUpperCase()}
+                        onChange={(e) => {
+                          const colorV = e.target.value;
+                          setBgColor(colorV);
+                        }}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="flex justify-center items-center gap-4">
+                    <div>Text</div>
+                    <div className="w-full h-full flex items-center gap-2">
+                      <div
+                        className="w-8 h-8"
+                        style={{
+                          backgroundColor: `#${manageFormat(textColor)}`,
+                          border: `1px solid ${theme}`,
+                        }}
+                      ></div>
+
+                      <Input
+                        id="color"
+                        maxLength={9}
+                        className="p-2 w-40 rounded placeholder:opacity-40"
+                        type="text"
+                        value={textColor.toUpperCase()}
+                        onChange={(e) => {
+                          const colorV = e.target.value;
+                          setTextColor(colorV);
+                        }}
+                      />
+                    </div>
+                  </div>
                 </div>
                 <div className="flex w-full h-full items-center justify-center gap-4">
                   <AlertDialog>
@@ -224,8 +273,9 @@ export default function NotesMobile({ notes, setNotes, theme, textTheme }) {
                         <Button
                           variant="destructive"
                           onClick={() => {
-                            setNotes(id, "", "", "#000000");
+                            setNotes(id, "", "", "#000000", "#FAFAFA");
                             setEditForm(false);
+                            setId(null);
                           }}
                         >
                           DELETE
@@ -238,7 +288,7 @@ export default function NotesMobile({ notes, setNotes, theme, textTheme }) {
                     disabled={!editable}
                     style={{ backgroundColor: theme, color: textTheme }}
                     onClick={() => {
-                      setNotes(id, title, content, bgColor);
+                      setNotes(id, title, content, bgColor, textColor);
                       setEditForm(false);
                     }}
                     className="hover:opacity-60  w-8/12 p-2 rounded  font-bold duration-200 active:scale-105 active:border-2 active:border-white"
@@ -267,7 +317,7 @@ export default function NotesMobile({ notes, setNotes, theme, textTheme }) {
   );
 }
 
-function NoteItem({ note, theme, textTheme, editable }) {
+function NoteItem({ note, textTheme, editable }) {
   const [hover, setHover] = useState(false);
   const borderStyle =
     editable || (hover && note.title)
@@ -278,9 +328,9 @@ function NoteItem({ note, theme, textTheme, editable }) {
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
       style={{
-        color: textTheme,
-        border: borderStyle,
-        backgroundColor: note.color,
+        color: note.color2,
+        border: !editable ? borderStyle : `1px solid ${textTheme}`,
+        backgroundColor: (note.title || editable) && note.color1,
       }}
       className="w-full hover:opacity-70 p-2 h-12 flex items-center gap-4 rounded-xl duration-200"
     >
