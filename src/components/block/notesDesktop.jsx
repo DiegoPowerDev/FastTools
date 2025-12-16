@@ -160,15 +160,14 @@ function NotesGrid({
 
   // ✅ CAMBIO: Ahora recibimos el índice como parámetro
   const handleItemClick = (note, index) => {
-    if (!editable) {
-      return;
+    if (editable || note.title) {
+      setEditingIndex(index); // ✅ Guardamos el índice real del array
+      setTitle(note.title);
+      setContent(note.content);
+      setEditForm(true);
+      setBgColor(note.color1);
+      setTextColor(note.color2);
     }
-    setEditingIndex(index); // ✅ Guardamos el índice real del array
-    setTitle(note.title);
-    setContent(note.content);
-    setEditForm(true);
-    setBgColor(note.color1);
-    setTextColor(note.color2);
   };
   const visibleNotes = notes.slice(
     0,
@@ -226,8 +225,8 @@ export default function NotesDesktop({
   theme,
   textTheme,
 }) {
-  const [bgColor, setBgColor] = useState("#000000");
-  const [textColor, setTextColor] = useState("#fafafa");
+  const [bgColor, setBgColor] = useState("");
+  const [textColor, setTextColor] = useState("");
   const scrollRef = useRef(null);
   const [editable, setEditable] = useState(false);
   const [editForm, setEditForm] = useState(false);
@@ -266,6 +265,10 @@ export default function NotesDesktop({
   useEffect(() => {
     if (!editForm) {
       setEditingIndex(null);
+      setTitle("");
+      setContent("");
+      setBgColor("");
+      setTextColor("");
     }
   }, [editForm]);
 
@@ -366,7 +369,7 @@ export default function NotesDesktop({
               </label>
               <div className="w-full h-full flex">
                 <Textarea
-                  rows={10}
+                  rows={8}
                   disabled={!editable}
                   id="content"
                   placeholder={
@@ -388,10 +391,6 @@ export default function NotesDesktop({
             {editable ? (
               <div className="w-full h-full flex flex-col justify-between items-center gap-4">
                 <div className="flex items-center flex-col gap-2">
-                  <label htmlFor="color" className="font-bold">
-                    Colors:
-                  </label>
-
                   <div className="flex gap-2">
                     <div className="flex flex-col">
                       <div>Background</div>
@@ -472,13 +471,7 @@ export default function NotesDesktop({
                           variant="destructive"
                           onClick={() => {
                             if (editingIndex !== null) {
-                              setNotes(
-                                editingIndex,
-                                "",
-                                "",
-                                "#000000",
-                                "#FAFAFA"
-                              );
+                              setNotes(editingIndex, "", "", "", "#FAFAFA");
                               setEditForm(false);
                             }
                           }}
@@ -547,7 +540,7 @@ function NoteItem({ note, textTheme, editable }) {
       style={{
         color: `#${note.color2}`,
         border: !editable ? borderStyle : `1px solid ${textTheme}`,
-        backgroundColor: (note.title || editable) && `#${note.color1}`,
+        backgroundColor: note.title || editable ? `#${note.color1}` : "",
       }}
       className={cn(
         note.title && "cursor-pointer",
