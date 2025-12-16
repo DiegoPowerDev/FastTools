@@ -43,6 +43,7 @@ import { Textarea } from "../ui/textarea";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { cn } from "@/lib/utils";
+import { bg } from "date-fns/locale/bg";
 
 /* -----------------------
   SortableNoteItem (usado cuando editable === true)
@@ -137,6 +138,7 @@ function NotesGrid({
   setTitle,
   setContent,
   setBgColor,
+  setTextColor,
   theme,
   textTheme,
 }) {
@@ -158,11 +160,15 @@ function NotesGrid({
 
   // ✅ CAMBIO: Ahora recibimos el índice como parámetro
   const handleItemClick = (note, index) => {
+    if (!editable) {
+      return;
+    }
     setEditingIndex(index); // ✅ Guardamos el índice real del array
     setTitle(note.title);
     setContent(note.content);
     setEditForm(true);
-    setBgColor(note.color);
+    setBgColor(note.color1);
+    setTextColor(note.color2);
   };
   const visibleNotes = notes.slice(
     0,
@@ -213,22 +219,26 @@ function NotesGrid({
   );
 }
 
-export default function NotesMobile({
+export default function NotesDesktop({
   notes,
   setNotes,
   moveNotes,
   theme,
   textTheme,
 }) {
-  const [bgColor, setBgColor] = useState("#ffffff");
+  const [bgColor, setBgColor] = useState("#000000");
+  const [textColor, setTextColor] = useState("#fafafa");
   const scrollRef = useRef(null);
   const [editable, setEditable] = useState(false);
   const [editForm, setEditForm] = useState(false);
-  // ✅ CAMBIO: Ahora guardamos el índice del array, no el ID
   const [editingIndex, setEditingIndex] = useState(null);
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
-
+  const manageFormat = (colorStr) => {
+    if (!colorStr) return "";
+    if (colorStr[0] === "#") return colorStr.slice(1);
+    return colorStr;
+  };
   const exportToTextFile = () => {
     const blob = new Blob([content], { type: "text/plain" });
     const link = document.createElement("a");
@@ -301,6 +311,7 @@ export default function NotesMobile({
             setTitle={setTitle}
             setContent={setContent}
             setBgColor={setBgColor}
+            setTextColor={setTextColor}
             theme={theme}
             textTheme={textTheme}
           />
@@ -308,7 +319,7 @@ export default function NotesMobile({
       </div>
 
       <Dialog onOpenChange={setEditForm} open={editForm}>
-        <DialogContent className="w-full min-h-[70vh] bg-black border-white border-2 text-white overflow-hidden gap-2">
+        <DialogContent className="w-full min-h-[70vh] bg-black border-white border-2 overflow-hidden gap-2">
           <DialogTitle
             style={{ color: textTheme }}
             className="flex justify-center items-center font-bold"
@@ -326,7 +337,10 @@ export default function NotesMobile({
                     TITLE
                   </label>
                   <Input
-                    style={{ color: textTheme }}
+                    style={{
+                      color: `#${manageFormat(textColor)}`,
+                      backgroundColor: `#${manageFormat(bgColor)}`,
+                    }}
                     disabled={!editable}
                     id="title"
                     type="text"
@@ -373,17 +387,62 @@ export default function NotesMobile({
             </div>
             {editable ? (
               <div className="w-full h-full flex flex-col justify-between items-center gap-4">
-                <div className="flex items-center gap-2">
+                <div className="flex items-center flex-col gap-2">
                   <label htmlFor="color" className="font-bold">
-                    Color:
+                    Colors:
                   </label>
-                  <input
-                    type="color"
-                    id="color"
-                    value={bgColor}
-                    className="w-8 h-8 p-0 m-0"
-                    onChange={(e) => setBgColor(e.target.value)}
-                  />
+
+                  <div className="flex gap-2">
+                    <div className="flex flex-col">
+                      <div>Background</div>
+                      <div className="w-full h-full flex items-center gap-2">
+                        <div
+                          className="w-8 h-8"
+                          style={{
+                            backgroundColor: `#${manageFormat(bgColor)}`,
+                            border: `1px solid ${theme}`,
+                          }}
+                        ></div>
+
+                        <Input
+                          id="color"
+                          maxLength={9}
+                          className="p-2 w-40 rounded placeholder:opacity-40"
+                          type="text"
+                          value={bgColor.toUpperCase()}
+                          onChange={(e) => {
+                            const colorV = e.target.value;
+                            setBgColor(colorV);
+                          }}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="flex flex-col">
+                      <div>Text</div>
+                      <div className="w-full h-full flex items-center gap-2">
+                        <div
+                          className="w-8 h-8"
+                          style={{
+                            backgroundColor: `#${manageFormat(textColor)}`,
+                            border: `1px solid ${theme}`,
+                          }}
+                        ></div>
+
+                        <Input
+                          id="color"
+                          maxLength={9}
+                          className="p-2 w-40 rounded placeholder:opacity-40"
+                          type="text"
+                          value={textColor.toUpperCase()}
+                          onChange={(e) => {
+                            const colorV = e.target.value;
+                            setTextColor(colorV);
+                          }}
+                        />
+                      </div>
+                    </div>
+                  </div>
                 </div>
                 <div className="flex w-full h-full items-center justify-center gap-4">
                   <AlertDialog>
@@ -413,7 +472,13 @@ export default function NotesMobile({
                           variant="destructive"
                           onClick={() => {
                             if (editingIndex !== null) {
-                              setNotes(editingIndex, "", "", "#000000");
+                              setNotes(
+                                editingIndex,
+                                "",
+                                "",
+                                "#000000",
+                                "#FAFAFA"
+                              );
                               setEditForm(false);
                             }
                           }}
@@ -429,7 +494,13 @@ export default function NotesMobile({
                     style={{ backgroundColor: theme, color: textTheme }}
                     onClick={() => {
                       if (editingIndex !== null) {
-                        setNotes(editingIndex, title, content, bgColor);
+                        setNotes(
+                          editingIndex,
+                          title,
+                          content,
+                          manageFormat(bgColor),
+                          manageFormat(textColor)
+                        );
                         setEditForm(false);
                       }
                     }}
@@ -464,6 +535,7 @@ export default function NotesMobile({
 ------------------------ */
 function NoteItem({ note, textTheme, editable }) {
   const [hover, setHover] = useState(false);
+
   const borderStyle =
     editable || (hover && note.title)
       ? `1px solid ${textTheme}`
@@ -473,12 +545,13 @@ function NoteItem({ note, textTheme, editable }) {
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
       style={{
-        color: textTheme,
+        color: `#${note.color2}`,
         border: !editable ? borderStyle : `1px solid ${textTheme}`,
-        backgroundColor: (note.title || editable) && note.color,
+        backgroundColor: (note.title || editable) && `#${note.color1}`,
       }}
       className={cn(
-        "w-full hover:opacity-70 p-2 h-12 flex items-center gap-4 rounded-xl duration-200 cursor-pointer"
+        note.title && "cursor-pointer",
+        "w-full hover:opacity-70 p-2 h-12 flex items-center gap-4 rounded-xl duration-200"
       )}
     >
       {note.title && (
