@@ -176,7 +176,7 @@ export default function NotesMobile({ notes, setNotes, theme, textTheme }) {
               </label>
               <div className="w-full h-full flex">
                 <Textarea
-                  rows={10}
+                  rows={editable ? 10 : 15}
                   disabled={!editable}
                   id="content"
                   placeholder={id !== null ? notes[id]?.content : ""}
@@ -328,9 +328,9 @@ function NoteItem({ note, textTheme, editable }) {
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
       style={{
-        color: note.color2,
+        color: `#${note.color2}`,
         border: !editable ? borderStyle : `1px solid ${textTheme}`,
-        backgroundColor: (note.title || editable) && note.color1,
+        backgroundColor: (note.title || editable) && `#${note.color1}`,
       }}
       className="w-full hover:opacity-70 p-2 h-12 flex items-center gap-4 rounded-xl duration-200"
     >

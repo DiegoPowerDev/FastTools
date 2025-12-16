@@ -369,7 +369,7 @@ export default function NotesDesktop({
               </label>
               <div className="w-full h-full flex">
                 <Textarea
-                  rows={8}
+                  rows={!editable ? 14 : 8}
                   disabled={!editable}
                   id="content"
                   placeholder={
