@@ -63,7 +63,7 @@ const componentMap = {
       loading: () => <ComponentSkeleton height="350px" />,
     }
   ),
-  webreader: dynamic(() => import("@/components/webreader/webreader"), {
+  webAnalyzer: dynamic(() => import("@/components/webanalyzer/webanalyzer"), {
     ssr: false,
     loading: () => <ComponentSkeleton height="350px" />,
   }),
@@ -125,7 +125,7 @@ export default function UserTable() {
               component.label === "apiTester" ||
               component.label === "jwt" ||
               component.label === "videoTrimmer" ||
-              component.label === "webreader"
+              component.label === "webAnalyzer"
                 ? "h-[500px]"
                 : "h-[350px]"
             } ${

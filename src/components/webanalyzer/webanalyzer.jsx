@@ -13,7 +13,7 @@ import {
 import { cn } from "@/lib/utils";
 import { Button } from "../ui/button";
 
-export default function WebReader({ theme, textTheme }) {
+export default function WebAnalyzer({ theme, textTheme }) {
   const [url, setUrl] = useState("");
   const [loading, setLoading] = useState(false);
   const [resources, setResources] = useState(null);
