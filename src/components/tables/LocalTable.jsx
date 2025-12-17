@@ -56,6 +56,10 @@ const componentMap = {
     ssr: false,
     loading: () => <ComponentSkeleton height="500px" />,
   }),
+  webanalyzer: dynamic(() => import("@/components/webanalyzer/webanalyzer"), {
+    ssr: false,
+    loading: () => <ComponentSkeleton height="350px" />,
+  }),
 };
 export default function LocalTable() {
   const {
@@ -111,7 +115,9 @@ export default function LocalTable() {
               ease: "easeInOut",
             }}
             className={`rounded-xl overflow-hidden ${
-              component.label === "apiTester" || component.label === "jwt"
+              component.label === "apiTester" ||
+              component.label === "jwt" ||
+              component.label === "webanalyzer"
                 ? "h-[500px]"
                 : "h-[350px]"
             } ${
