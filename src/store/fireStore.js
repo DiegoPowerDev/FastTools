@@ -6,16 +6,19 @@ import {
   onSnapshot,
   setDoc,
   updateDoc,
+  getDoc,
 } from "firebase/firestore";
 import { app } from "@/firebase/config";
 import { getAuth } from "firebase/auth";
 const db = getFirestore(app);
+
 function arrayMove(arr, from, to) {
   const cloned = [...arr];
   const item = cloned.splice(from, 1)[0];
   cloned.splice(to, 0, item);
   return cloned;
 }
+
 const initialState = {
   uid: null,
   backgroundType: "image",
@@ -214,7 +217,7 @@ const initialState = {
     { id: 8, label: "apiTester" },
     { id: 9, label: "jwt" },
     { id: 12, label: "videoTrimmer" },
-    { id: 13, label: "extractor" },
+    { id: 13, label: "webreader" },
   ],
   api: "http://localhost:3000",
   socketApi: "http://localhost:3000",
@@ -461,7 +464,7 @@ export const fireStore = createStore((set, get) => ({
     { id: 8, label: "apiTester" },
     { id: 9, label: "jwt" },
     { id: 12, label: "videoTrimmer" },
-    { id: 13, label: "extractor" },
+    { id: 13, label: "webreader" },
   ],
 
   setTheme: (color) => {
@@ -476,6 +479,10 @@ export const fireStore = createStore((set, get) => ({
   socketApi: "http://localhost:3000",
   loading: true,
   error: null,
+
+  // 🔴 NUEVA FLAG CRÍTICA: Evita sobrescribir datos mientras se carga desde Firestore
+  isLoadingFromFirestore: false,
+
   loadUserData: () => {
     const auth = getAuth();
     const uid = auth.currentUser?.uid;
@@ -485,22 +492,68 @@ export const fireStore = createStore((set, get) => ({
       set({ loading: false });
       return;
     }
+
+    // 🔴 Marcar que estamos cargando desde Firestore
+    set({ isLoadingFromFirestore: true });
+
     const userDoc = doc(db, "stores", uid);
+
     const unsubscribe = onSnapshot(
       userDoc,
-      (snapshot) => {
+      async (snapshot) => {
         if (snapshot.exists()) {
-          set({ ...snapshot.data(), uid: uid, loading: false });
+          // ✅ Usuario existente: cargar datos
+          const firestoreData = snapshot.data();
+          set({
+            ...firestoreData,
+            uid: uid,
+            loading: false,
+            isLoadingFromFirestore: false, // ✅ Datos cargados, ahora sí se puede guardar
+          });
+          console.log("✅ Datos cargados desde Firestore");
         } else {
-          // ✅ Usar initialState en lugar de get()
-          const initialData = { ...initialState, uid };
-          setDoc(userDoc, initialData);
-          set({ ...initialData, loading: false });
+          // ✅ Usuario nuevo: verificar primero con getDoc para evitar race conditions
+          try {
+            const docSnapshot = await getDoc(userDoc);
+
+            if (!docSnapshot.exists()) {
+              // Realmente es un usuario nuevo
+              const initialData = { ...initialState, uid };
+              await setDoc(userDoc, initialData);
+              set({
+                ...initialData,
+                loading: false,
+                isLoadingFromFirestore: false,
+              });
+              console.log("✅ Nuevo usuario: datos iniciales guardados");
+            } else {
+              // El documento apareció entre el snapshot y getDoc
+              const firestoreData = docSnapshot.data();
+              set({
+                ...firestoreData,
+                uid: uid,
+                loading: false,
+                isLoadingFromFirestore: false,
+              });
+              console.log("✅ Datos recuperados con getDoc");
+            }
+          } catch (error) {
+            console.error("❌ Error al verificar/crear documento:", error);
+            set({
+              error: error.message,
+              loading: false,
+              isLoadingFromFirestore: false,
+            });
+          }
         }
       },
       (error) => {
-        console.error("Error al cargar datos:", error);
-        set({ error: error.message, loading: false });
+        console.error("❌ Error en onSnapshot:", error);
+        set({
+          error: error.message,
+          loading: false,
+          isLoadingFromFirestore: false,
+        });
       }
     );
 
@@ -510,24 +563,44 @@ export const fireStore = createStore((set, get) => ({
   saveToFirestore: async () => {
     const state = get();
     const uid = state.uid;
+
+    // 🔴 PROTECCIÓN CRÍTICA: No guardar si aún estamos cargando desde Firestore
+    if (state.isLoadingFromFirestore) {
+      console.log("⏸️ Guardado pausado: cargando desde Firestore");
+      return;
+    }
+
     if (!uid) {
       console.error("❌ No hay UID en el store");
-
       return;
     }
 
     const data = Object.fromEntries(
       Object.entries(state).filter(
-        ([key, value]) => key !== "uid" && typeof value !== "function"
+        ([key, value]) =>
+          key !== "uid" &&
+          key !== "isLoadingFromFirestore" && // ✅ Excluir flag de sincronización
+          typeof value !== "function"
       )
     );
 
     try {
       await updateDoc(doc(db, "stores", uid), data);
+      console.log("💾 Datos guardados en Firestore");
     } catch (err) {
       console.error("❌ Error guardando:", err);
+      // Si falla por documento inexistente, intentar crearlo
+      if (err.code === "not-found") {
+        try {
+          await setDoc(doc(db, "stores", uid), { ...data, uid });
+          console.log("📝 Documento creado después de error not-found");
+        } catch (setErr) {
+          console.error("❌ Error al crear documento:", setErr);
+        }
+      }
     }
   },
+
   setBackground: (background) => {
     set({ background });
     get().saveToFirestore();
@@ -646,12 +719,14 @@ export const fireStore = createStore((set, get) => ({
     }));
     get().saveToFirestore();
   },
-  restoreTask: (taskId) =>
+  restoreTask: (taskId) => {
     set((state) => ({
       task: state.task.map((t) =>
         t.id === taskId ? { ...t, state: "attention" } : t
       ),
-    })),
+    }));
+    get().saveToFirestore();
+  },
   deleteTask: async (taskId) => {
     const auth = getAuth();
     const uid = auth.currentUser?.uid;
@@ -665,9 +740,9 @@ export const fireStore = createStore((set, get) => ({
         method: "DELETE",
       });
 
-      console.log("Task deleted completely. How delightful.");
+      console.log("Task deleted completely.");
     } catch (error) {
-      console.error("Error deleting task image");
+      console.error("Error deleting task image", error);
     }
   },
   updateExpiredTasks: () => {
@@ -680,7 +755,6 @@ export const fireStore = createStore((set, get) => ({
 
       const end = task.endDate.toDate?.() ?? new Date(task.endDate);
 
-      // Si aún no ha vencido, no hacer nada
       if (now < end) return task;
 
       hasChanges = true;
@@ -689,7 +763,6 @@ export const fireStore = createStore((set, get) => ({
 
       switch (task.frequency) {
         case "daily": {
-          // Siguiente día desde HOY (no desde el endDate antiguo)
           newStart = new Date();
           newStart.setHours(0, 0, 0, 0);
           newEnd = new Date(newStart);
@@ -698,7 +771,6 @@ export const fireStore = createStore((set, get) => ({
         }
 
         case "weekly": {
-          // Siguiente semana desde el último endDate
           newStart = new Date(end);
           newStart.setDate(newStart.getDate() + 1);
           newStart.setHours(0, 0, 0, 0);
@@ -709,12 +781,9 @@ export const fireStore = createStore((set, get) => ({
         }
 
         case "monthly": {
-          // Siguiente mes desde HOY
           const today = new Date();
-          // Primer día del próximo mes
           newStart = new Date(today.getFullYear(), today.getMonth() + 1, 1);
           newStart.setHours(0, 0, 0, 0);
-          // Último día del próximo mes
           newEnd = new Date(today.getFullYear(), today.getMonth() + 2, 0);
           newEnd.setHours(23, 59, 59, 999);
           break;
@@ -740,7 +809,6 @@ export const fireStore = createStore((set, get) => ({
   addNote: async (taskId, note) => {
     const uid = get().uid;
 
-    // Generamos ID ANTES
     const noteId = crypto.randomUUID();
 
     let imageUrl = null;
@@ -755,7 +823,6 @@ export const fireStore = createStore((set, get) => ({
         body: formData,
       });
 
-      // si Cloudinary falla → respuesta vacía → evitamos crash
       if (!res.ok) throw new Error("Upload failed");
 
       const data = await res.json();
@@ -789,14 +856,12 @@ export const fireStore = createStore((set, get) => ({
     const task = tasks.find((t) => t.id === taskId);
     const note = task.notes.find((n) => n.id === noteId);
 
-    // 1. Borrar imagen si existe
     if (note.imagePublicId) {
       await fetch(`/api/notes/${uid}/${taskId}/${noteId}`, {
         method: "DELETE",
       });
     }
 
-    // 2. Borrar local
     set((state) => ({
       task: state.task.map((t) =>
         t.id === taskId
@@ -810,7 +875,6 @@ export const fireStore = createStore((set, get) => ({
 
     get().saveToFirestore();
   },
-  // === NUEVOS MÉTODOS PARA DRAG AND DROP ===
 
   setHeaderArea: (updater) => {
     const currentHeaderArea = get().headerArea;
