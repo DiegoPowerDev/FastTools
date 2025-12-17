@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
-import puppeteer from "puppeteer";
+import puppeteer from "puppeteer-core";
+import chromium from "@sparticuz/chromium";
 
 export async function POST(request) {
   let browser;
@@ -7,11 +8,61 @@ export async function POST(request) {
   try {
     const { url } = await request.json();
 
-    // Lanzar navegador headless
-    browser = await puppeteer.launch({
-      headless: true,
-      args: ["--no-sandbox", "--disable-setuid-sandbox"],
-    });
+    // Detectar entorno
+    const isDev = process.env.NODE_ENV === "development";
+
+    let executablePath;
+    let launchOptions;
+
+    if (isDev) {
+      // En desarrollo local, intenta encontrar Chrome/Chromium
+      const possiblePaths = [
+        "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome", // Mac
+        "/usr/bin/google-chrome", // Linux
+        "/usr/bin/chromium-browser", // Linux alternativo
+        "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe", // Windows
+        "C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe", // Windows 32bit
+      ];
+
+      // Buscar el primer path que exista
+      const fs = require("fs");
+      executablePath = possiblePaths.find((path) => {
+        try {
+          return fs.existsSync(path);
+        } catch {
+          return false;
+        }
+      });
+
+      // Si no encuentra ninguno, usar puppeteer normal
+      if (!executablePath) {
+        const puppeteerRegular = require("puppeteer");
+        browser = await puppeteerRegular.launch({
+          headless: true,
+          args: ["--no-sandbox", "--disable-setuid-sandbox"],
+        });
+      } else {
+        launchOptions = {
+          executablePath,
+          headless: true,
+          args: ["--no-sandbox", "--disable-setuid-sandbox"],
+        };
+      }
+    } else {
+      // En producción (Vercel), usar chromium optimizado
+      executablePath = await chromium.executablePath();
+      launchOptions = {
+        args: chromium.args,
+        defaultViewport: chromium.defaultViewport,
+        executablePath: executablePath,
+        headless: chromium.headless,
+      };
+    }
+
+    // Lanzar navegador solo si no se lanzó antes
+    if (!browser) {
+      browser = await puppeteer.launch(launchOptions);
+    }
 
     const page = await browser.newPage();
 
@@ -32,7 +83,6 @@ export async function POST(request) {
           filename: resourceUrl.split("/").pop().split("?")[0] || "image.jpg",
         });
       } else if (resourceType === "media") {
-        // Videos
         if (resourceUrl.match(/\.(mp4|webm|ogg|mov)(\?|$)/i)) {
           videos.push({
             type: "video",
@@ -49,13 +99,11 @@ export async function POST(request) {
       }
     });
 
-    // Ir a la página y esperar a que cargue
     await page.goto(url, {
       waitUntil: "networkidle2",
       timeout: 30000,
     });
 
-    // Extraer recursos adicionales del DOM
     const domResources = await page.evaluate(() => {
       const resources = {
         images: [],
@@ -63,7 +111,6 @@ export async function POST(request) {
         fonts: [],
       };
 
-      // Imágenes
       document.querySelectorAll("img").forEach((img) => {
         if (img.src) {
           resources.images.push({
@@ -86,7 +133,6 @@ export async function POST(request) {
         }
       });
 
-      // Videos
       document.querySelectorAll("video source, video").forEach((el) => {
         const src = el.src || el.currentSrc;
         if (src) {
@@ -98,7 +144,6 @@ export async function POST(request) {
         }
       });
 
-      // Background images
       document.querySelectorAll("*").forEach((el) => {
         const style = window.getComputedStyle(el);
         const bgImage = style.backgroundImage;
@@ -118,7 +163,6 @@ export async function POST(request) {
       return resources;
     });
 
-    // Combinar recursos capturados y extraídos del DOM
     const allResources = [
       ...images,
       ...domResources.images,
@@ -128,12 +172,10 @@ export async function POST(request) {
       ...domResources.fonts,
     ];
 
-    // Eliminar duplicados por URL
     const uniqueResources = Array.from(
       new Map(allResources.map((r) => [r.url, r])).values()
     );
 
-    // Obtener tamaños
     const getResourceSize = async (resourceUrl) => {
       try {
         const res = await fetch(resourceUrl, { method: "HEAD" });
@@ -145,7 +187,7 @@ export async function POST(request) {
           return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
         }
       } catch (err) {
-        // Ignorar errores
+        // Ignorar
       }
       return null;
     };
