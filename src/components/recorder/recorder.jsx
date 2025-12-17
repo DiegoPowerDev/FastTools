@@ -133,7 +133,7 @@ export default function Recorder({ theme, textTheme }) {
                 backgroundColor: theme,
               }}
               onClick={videoRecorder}
-              className={`flex h-full flex-col w-full items-center justify-center transform duration-300 bg-red-800 rounded-lg font-bold hover:scale-105  hover:text-white text-black hover:opacity-70 ${grabando}`}
+              className={`flex h-full flex-col w-full items-center justify-center transform duration-300 bg-red-800 rounded-lg font-bold hover:scale-105  hover:text-white text-black hover:opacity-90 ${grabando}`}
             >
               <div className="bg-white rounded-full p-2">
                 <IconScreenShare
@@ -144,7 +144,7 @@ export default function Recorder({ theme, textTheme }) {
               </div>
               {grabando && (
                 <div className="text-center" style={{ color: textTheme }}>
-                  Recording{" "}
+                  Recording
                   <motion.span
                     key={dotCount}
                     initial={{ opacity: 0 }}
@@ -164,7 +164,7 @@ export default function Recorder({ theme, textTheme }) {
                 backgroundColor: theme,
               }}
               onClick={videoAndAudioRecorder}
-              className={`flex h-full flex-col w-full items-center justify-center transform duration-300 bg-red-800 rounded-lg font-bold hover:scale-105  hover:text-white hover:opacity-70 text-black ${filmando}`}
+              className={`flex h-full flex-col w-full items-center justify-center transform duration-300 bg-red-800 rounded-lg font-bold hover:scale-105  hover:text-white hover:opacity-90 text-black ${filmando}`}
             >
               <div className="flex items-center gap-2 bg-white rounded-full p-2">
                 <IconScreenShare

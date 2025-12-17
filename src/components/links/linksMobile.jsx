@@ -63,21 +63,23 @@ export default function LinksMobile({ links, setLinks, theme, textTheme }) {
           LINKS
         </div>
         <button
-          style={{
-            boxShadow: editable ? `0px 0px 5px 2px white` : "",
-          }}
           onClick={() => setEditable(!editable)}
-          className={`col-start-6 col-end-7 bg-white text-black flex justify-center w-12 h-5/6 rounded items-center absolute`}
+          className={`col-start-6 col-end-7 flex justify-center w-12 h-5/6 rounded items-center absolute`}
         >
-          <IconPencil className={editable && styles.pulse} size={40} />
+          <IconPencil
+            color={textTheme}
+            className={editable && styles.pulse}
+            size={40}
+          />
         </button>
       </div>
 
       <div
         style={{
           "--theme": textTheme,
+          backgroundColor: `${theme}90`,
         }}
-        className={`bg-black/30 w-full flex-1 overflow-x-auto overflow-y-hidden flex  justify-center items-center`}
+        className={`w-full flex-1 overflow-x-auto overflow-y-hidden flex  justify-center items-center`}
       >
         <div
           ref={scrollRef}
@@ -115,7 +117,11 @@ export default function LinksMobile({ links, setLinks, theme, textTheme }) {
 
       <Dialog onOpenChange={setEditForm} open={editForm}>
         <DialogContent
-          style={{ color: textTheme }}
+          style={{
+            color: textTheme,
+            backgroundColor: theme,
+            border: `1px solid ${textTheme}`,
+          }}
           className="w-full h-fit bg-black border-white border-2 text-white overflow-hidden "
         >
           <DialogTitle className="font-bold flex justify-center items-center pt-2">
@@ -134,6 +140,7 @@ export default function LinksMobile({ links, setLinks, theme, textTheme }) {
                 id="link"
                 className="p-2 w-full rounded placeholder:opacity-40"
                 type="text"
+                style={{ border: `1px solid ${textTheme}` }}
                 placeholder={
                   editingIndex !== null ? links[editingIndex]?.link : "URL"
                 }
@@ -150,6 +157,7 @@ export default function LinksMobile({ links, setLinks, theme, textTheme }) {
               </label>
               <Input
                 id="nombre"
+                style={{ border: `1px solid ${textTheme}` }}
                 type="text"
                 placeholder={
                   editingIndex !== null ? links[editingIndex]?.nombre : ""
@@ -184,6 +192,7 @@ export default function LinksMobile({ links, setLinks, theme, textTheme }) {
                   <Input
                     id="icono"
                     type="text"
+                    style={{ border: `1px solid ${textTheme}` }}
                     className="p-2 rounded placeholder:text-gray-500  placeholder:opacity-40"
                     placeholder="ICON URL"
                     value={icono}
@@ -214,7 +223,7 @@ export default function LinksMobile({ links, setLinks, theme, textTheme }) {
                 DELETE
               </Button>
               <button
-                style={{ backgroundColor: theme, color: textTheme }}
+                style={{ color: theme, backgroundColor: textTheme }}
                 onClick={() => {
                   if (editingIndex !== null) {
                     // ✅ Usa el índice actual para guardar

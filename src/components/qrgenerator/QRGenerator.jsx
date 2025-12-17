@@ -229,18 +229,22 @@ export default function QRGenerator({ theme, textTheme }) {
         <button
           aria-label="clean"
           onClick={() => reset()}
-          className="w-12 h-12 border-2 border-black bg-white text-black font-bold   flex justify-center items-center p-2 rounded hover:opacity-80"
+          className="w-12 h-12 font-bold   flex justify-center items-center p-2 rounded hover:opacity-80"
         >
-          <BrushCleaningIcon size={30} />
+          <BrushCleaningIcon color={textTheme} size={30} />
         </button>
       </div>
-      <div className="grid grid-cols-2 grid-rows-[6fr_1fr] md:grid-rows-[3fr_1fr] w-full h-full items-center justify-center gap-2">
+      <div
+        style={{ border: `2px solid ${theme}`, backgroundColor: `${theme}90` }}
+        className="grid grid-cols-2 grid-rows-[6fr_1fr] md:grid-rows-[3fr_1fr] w-full h-full items-center justify-center gap-2"
+      >
         <div className="flex flex-col md:p-2 gap-2 items-center justify-center h-full w-full">
           <label className="font-bold">Text or URL</label>
           <Input
             style={{
+              backgroundColor: theme,
               color: textTheme,
-              border: `1px solid ${theme}`,
+              border: `1px solid ${textTheme}`,
               placeholderTextColor: "red",
             }}
             value={text}
@@ -256,7 +260,8 @@ export default function QRGenerator({ theme, textTheme }) {
                 type="text"
                 style={{
                   color: textTheme,
-                  border: `1px solid ${theme}`,
+                  border: `1px solid ${textTheme}`,
+                  backgroundColor: theme,
                 }}
                 value={size}
                 onChange={(e) => {
@@ -332,7 +337,7 @@ export default function QRGenerator({ theme, textTheme }) {
                   Logo Size: {logoSize}%
                 </label>
                 <Slider
-                  style={theme}
+                  style={textTheme}
                   disabled={!logo}
                   value={[logoSize]}
                   track="red"
@@ -353,20 +358,20 @@ export default function QRGenerator({ theme, textTheme }) {
         </div>
         <div className="col-span-2 md:col-span-1 flex gap-4 items-center justify-center">
           <Button
-            style={{ backgroundColor: theme, color: textTheme }}
+            style={{ color: theme, backgroundColor: textTheme }}
             onClick={downloadPNG}
             className="hover:opacity-80 font-bold ease-in-out hover:scale-105"
           >
-            Download PNG
+            DOWNLOAD PNG
           </Button>
 
           <Button
-            style={{ backgroundColor: theme, color: textTheme }}
+            style={{ color: theme, backgroundColor: textTheme }}
             onClick={downloadSVG}
             className="hover:opacity-80 font-bold ease-in-out hover:scale-105"
             disabled={!svgData}
           >
-            Download SVG
+            DOWNLOAD SVG
           </Button>
         </div>
       </div>

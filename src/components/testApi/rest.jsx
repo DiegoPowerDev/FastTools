@@ -85,7 +85,7 @@ export default function Rest({ theme, textTheme, api, setApi }) {
       setHeadersError(null);
     } catch (err) {
       setHeadersError(err.message);
-      toast.error("No se pudo corregir automáticamente");
+      toast.error("The format could not be corrected.");
     }
   };
 
@@ -111,7 +111,7 @@ export default function Rest({ theme, textTheme, api, setApi }) {
       setBodyError(null);
     } catch (err) {
       setBodyError(err.message);
-      toast.error("No se pudo corregir automáticamente");
+      toast.error("The format could not be corrected.");
     }
   };
 
@@ -184,7 +184,10 @@ export default function Rest({ theme, textTheme, api, setApi }) {
 
   return (
     <>
-      <div className="bg-black/30 w-full flex-1 flex flex-col gap-4 py-4 px-4 md:px-16">
+      <div
+        style={{ backgroundColor: `${theme}90` }}
+        className="w-full flex-1 flex flex-col gap-4 py-4 px-4 md:px-16"
+      >
         <div className="h-full grid grid-cols-1 gap-2  justify-center">
           <div className="flex w-full gap-4 items-center justify-center">
             <Select
@@ -195,15 +198,19 @@ export default function Rest({ theme, textTheme, api, setApi }) {
             >
               <SelectTrigger
                 className=" w-[100px] md:w-[150px] font-bold"
-                style={{ color: textTheme, border: `1px solid ${theme}` }}
+                style={{
+                  color: textTheme,
+                  border: `1px solid ${textTheme}`,
+                  backgroundColor: theme,
+                }}
               >
                 <SelectValue placeholder="Format" />
               </SelectTrigger>
               <SelectContent
                 style={{
                   color: textTheme,
-                  backgroundColor: "black",
-                  border: `1px solid ${theme}`,
+                  backgroundColor: theme,
+                  border: `1px solid ${textTheme}`,
                 }}
               >
                 {["GET", "POST", "PUT", "DELETE", "PATCH", "HEAD"].map((m) => (
@@ -216,10 +223,14 @@ export default function Rest({ theme, textTheme, api, setApi }) {
             <input
               type="text"
               value={api}
-              style={{ color: textTheme, border: `1px solid ${theme}` }}
+              style={{
+                color: textTheme,
+                outline: `1px solid ${textTheme}90`,
+                backgroundColor: theme,
+              }}
               onChange={(e) => setApi(e.target.value)}
               placeholder="Enter API URL..."
-              className="w-full font-bold bg-transparent h-10 p-2 rounded outline-none"
+              className="w-full font-bold bg-transparent h-9  p-2 rounded "
             />
           </div>
           {/* HEADER */}
@@ -240,6 +251,8 @@ export default function Rest({ theme, textTheme, api, setApi }) {
                 style={{
                   color: textTheme,
                   "--theme": textTheme,
+                  backgroundColor: theme,
+                  outline: `1px solid ${textTheme}90`,
                 }}
                 value={headers}
                 onChange={handleHeadersChange}
@@ -260,13 +273,13 @@ export default function Rest({ theme, textTheme, api, setApi }) {
                 </p>
                 <button
                   style={{
-                    color: textTheme,
-                    backgroundColor: theme,
+                    color: theme,
+                    backgroundColor: textTheme,
                   }}
                   onClick={formatHeaders}
                   className="text-xs font-bold px-2 py-1 rounded bg-gray-700 hover:bg-gray-600"
                 >
-                  Format
+                  FORMAT
                 </button>
               </div>
             </div>
@@ -288,8 +301,9 @@ export default function Rest({ theme, textTheme, api, setApi }) {
                 value={body}
                 style={{
                   color: textTheme,
-
+                  backgroundColor: theme,
                   "--theme": textTheme,
+                  outline: `1px solid ${textTheme}90`,
                 }}
                 onChange={handleBodyChange}
                 disabled={method === "GET" || method === "HEAD"}
@@ -310,14 +324,14 @@ export default function Rest({ theme, textTheme, api, setApi }) {
                 </p>
                 <button
                   style={{
-                    color: textTheme,
-                    backgroundColor: theme,
+                    color: theme,
+                    backgroundColor: textTheme,
                   }}
                   disabled={method === "GET" || method === "HEAD"}
                   onClick={formatBody}
                   className={`font-bold disabled:opacity-20 text-xs px-2 py-1 rounded`}
                 >
-                  Format
+                  FORMAT
                 </button>
               </div>
             </div>
@@ -327,12 +341,12 @@ export default function Rest({ theme, textTheme, api, setApi }) {
               <DialogTrigger
                 onClick={handleSend}
                 style={{
-                  backgroundColor: theme,
-                  color: textTheme,
+                  color: theme,
+                  backgroundColor: textTheme,
                 }}
                 className="flex-1 hover:opacity-80 p-2 rounded font-bold disabled:opacity-50"
               >
-                Send Request
+                SEND REQUEST
               </DialogTrigger>
               <DialogContent className="w-[100vw] rounded 2xl:h-[70vh] h-[85vh] bg-black border-white border-2 text-white overflow-hidden">
                 <DialogHeader>

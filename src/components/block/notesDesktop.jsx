@@ -288,21 +288,24 @@ export default function NotesDesktop({
           Notes
         </div>
         <button
-          style={{
-            boxShadow: editable ? `0px 0px 5px 2px white` : "",
-          }}
           onClick={() => setEditable(!editable)}
-          className={` bg-white text-black flex justify-center w-12 h-12 p-2 rounded items-center`}
+          className={`  flex justify-center w-12 h-12 p-2 rounded items-center`}
         >
-          <IconPencil className={editable && styles.pulse} size={40} />
+          <IconPencil
+            color={textTheme}
+            className={editable && styles.pulse}
+            size={40}
+          />
         </button>
       </div>
       <div
         ref={scrollRef}
         style={{
           "--theme": textTheme,
+          backgroundColor: `${theme}90`,
+          border: `2px solid ${theme}`,
         }}
-        className={`bg-black/50 w-full flex-1 flex items-center overflow-x-auto overflow-y-hidden ${styles.scrollContainer}`}
+        className={`w-full flex-1 flex items-center overflow-x-auto overflow-y-hidden ${styles.scrollContainer}`}
       >
         <div className="h-full">
           <NotesGrid
@@ -322,7 +325,14 @@ export default function NotesDesktop({
       </div>
 
       <Dialog onOpenChange={setEditForm} open={editForm}>
-        <DialogContent className="w-full min-h-[70vh] bg-black border-white border-2 overflow-hidden gap-2">
+        <DialogContent
+          style={{
+            color: textTheme,
+            backgroundColor: theme,
+            border: `1px solid ${textTheme}`,
+          }}
+          className="w-full min-h-[70vh] border-2 overflow-hidden gap-2"
+        >
           <DialogTitle
             style={{ color: textTheme }}
             className="flex justify-center items-center font-bold"
@@ -343,6 +353,7 @@ export default function NotesDesktop({
                     style={{
                       color: `#${manageFormat(textColor)}`,
                       backgroundColor: `#${manageFormat(bgColor)}`,
+                      border: `1px solid ${textTheme}`,
                     }}
                     disabled={!editable}
                     id="title"
@@ -378,6 +389,7 @@ export default function NotesDesktop({
                   style={{
                     "--theme": textTheme,
                     color: textTheme,
+                    border: `1px solid ${textTheme}`,
                   }}
                   className={`text-white disabled:cursor-text disabled:select-text resize-none p-2 w-full rounded ${styles.scrollContainer} placeholder:opacity-40`}
                   value={content}
@@ -408,6 +420,10 @@ export default function NotesDesktop({
                           maxLength={9}
                           className="p-2 w-40 rounded placeholder:opacity-40"
                           type="text"
+                          style={{
+                            color: textTheme,
+                            border: `1px solid ${textTheme}`,
+                          }}
                           value={bgColor.toUpperCase()}
                           onChange={(e) => {
                             const colorV = e.target.value;
@@ -431,6 +447,10 @@ export default function NotesDesktop({
                         <Input
                           id="color"
                           maxLength={9}
+                          style={{
+                            color: textTheme,
+                            border: `1px solid ${textTheme}`,
+                          }}
                           className="p-2 w-40 rounded placeholder:opacity-40"
                           type="text"
                           value={textColor.toUpperCase()}
@@ -446,13 +466,17 @@ export default function NotesDesktop({
                 <div className="flex w-full h-full items-center justify-center gap-4">
                   <AlertDialog>
                     <AlertDialogTrigger className="flex gap-2">
-                      <div className="border-2 flex items-center justify-center bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90 w-full text-sm p-2 rounded  font-bold duration-200 active:scale-105 active:border-2 active:border-white">
+                      <div className="border-2 h-10 flex items-center justify-center bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90 w-full text-sm p-2 rounded  font-bold duration-200 active:scale-105 active:border-2 active:border-white">
                         DELETE <IconEraser />
                       </div>
                     </AlertDialogTrigger>
                     <AlertDialogContent
-                      style={{ color: textTheme }}
-                      className="bg-black"
+                      style={{
+                        color: textTheme,
+                        backgroundColor: theme,
+                        border: `1px solid ${textTheme}`,
+                      }}
+                      className=""
                     >
                       <AlertDialogHeader>
                         <AlertDialogTitle>
@@ -464,11 +488,15 @@ export default function NotesDesktop({
                         </AlertDialogDescription>
                       </AlertDialogHeader>
                       <AlertDialogFooter>
-                        <AlertDialogCancel className="text-black">
-                          Cancel
+                        <AlertDialogCancel
+                          style={{ color: theme, backgroundColor: textTheme }}
+                          className="font-bold h-10"
+                        >
+                          CANCEL
                         </AlertDialogCancel>
                         <Button
                           variant="destructive"
+                          className="h-10"
                           onClick={() => {
                             if (editingIndex !== null) {
                               setNotes(editingIndex, "", "", "", "#FAFAFA");
@@ -484,7 +512,7 @@ export default function NotesDesktop({
 
                   <button
                     disabled={!editable}
-                    style={{ backgroundColor: theme, color: textTheme }}
+                    style={{ color: theme, backgroundColor: textTheme }}
                     onClick={() => {
                       if (editingIndex !== null) {
                         setNotes(
@@ -497,7 +525,7 @@ export default function NotesDesktop({
                         setEditForm(false);
                       }
                     }}
-                    className="hover:opacity-60  w-8/12 p-2 rounded  font-bold duration-200 active:scale-105 active:border-2 active:border-white"
+                    className="hover:opacity-60  w-8/12 p-2 rounded  font-bold duration-200 active:scale-110 active:border-2 active:border-white"
                   >
                     <div className="flex gap-2 items-center justify-center">
                       <span>SAVE</span> <IconDeviceFloppy />
@@ -509,8 +537,8 @@ export default function NotesDesktop({
               <div className="w-full h-full mt-4 flex justify-center md:justify-end">
                 <Button
                   onClick={exportToTextFile}
-                  style={{ backgroundColor: theme, color: textTheme }}
-                  className="font-bold w-3/4 md:w-4/12 flex justify-center hover:opacity-70"
+                  style={{ color: theme, backgroundColor: textTheme }}
+                  className="font-bold w-3/4 md:w-4/12 h-10 flex justify-center hover:opacity-70"
                 >
                   DOWNLOAD <IconDownload />
                 </Button>

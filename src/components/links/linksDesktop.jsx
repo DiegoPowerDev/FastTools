@@ -400,13 +400,14 @@ export default function Links({
           LINKS
         </div>
         <button
-          style={{
-            boxShadow: editable ? `0px 0px 5px 2px white` : "",
-          }}
           onClick={() => setEditable(!editable)}
-          className={` bg-white text-black flex justify-center w-12 h-12 p-2 rounded items-center`}
+          className={` flex justify-center w-12 h-12 p-2 rounded items-center`}
         >
-          <IconPencil className={editable && styles.pulse} size={40} />
+          <IconPencil
+            color={textTheme}
+            className={editable && styles.pulse}
+            size={40}
+          />
         </button>
       </div>
 
@@ -414,9 +415,11 @@ export default function Links({
         ref={scrollRef}
         style={{
           "--theme": textTheme,
+          backgroundColor: `${theme}90`,
+          border: `2px solid ${theme}`,
         }}
         className={cn(
-          `bg-black/50 w-full flex-1 flex items-center overflow-x-auto  overflow-y-hidden ${styles.scrollContainer} p-2`
+          ` w-full flex-1 flex items-center overflow-x-auto  overflow-y-hidden ${styles.scrollContainer} p-2`
         )}
       >
         <div className="h-full">
@@ -438,7 +441,11 @@ export default function Links({
 
       <Dialog onOpenChange={setEditForm} open={editForm}>
         <DialogContent
-          style={{ color: textTheme }}
+          style={{
+            color: textTheme,
+            backgroundColor: theme,
+            border: `1px solid ${textTheme}`,
+          }}
           className="w-full h-fit bg-black border-white border-2 text-white overflow-hidden "
         >
           <DialogTitle className="font-bold flex justify-center items-center pt-2">
@@ -461,6 +468,7 @@ export default function Links({
                 placeholder={
                   editingIndex !== null ? links[editingIndex]?.link : "URL"
                 }
+                style={{ border: `1px solid ${textTheme}` }}
                 value={link}
                 onChange={(e) => {
                   const v = e.target.value;
@@ -475,6 +483,7 @@ export default function Links({
               <Input
                 id="nombre"
                 type="text"
+                style={{ border: `1px solid ${textTheme}` }}
                 placeholder={
                   editingIndex !== null ? links[editingIndex]?.nombre : ""
                 }
@@ -508,6 +517,7 @@ export default function Links({
                   <Input
                     id="icono"
                     type="text"
+                    style={{ border: `1px solid ${textTheme}` }}
                     className="p-2 rounded placeholder:text-gray-500  placeholder:opacity-40"
                     placeholder="ICON URL"
                     value={icono}
@@ -523,6 +533,7 @@ export default function Links({
             <div className="w-full h-full flex justify-center items-center pt-4 gap-4">
               <Button
                 variant="destructive"
+                className="h-10"
                 onClick={() => {
                   if (editingIndex !== null) {
                     setEditForm(false);
@@ -537,7 +548,7 @@ export default function Links({
                 DELETE
               </Button>
               <button
-                style={{ backgroundColor: theme, color: textTheme }}
+                style={{ color: theme, backgroundColor: textTheme }}
                 onClick={() => {
                   if (editingIndex !== null) {
                     // ✅ Usa el índice actual para editar
@@ -545,7 +556,7 @@ export default function Links({
                     setEditForm(false);
                   }
                 }}
-                className="hover:opacity-60 w-full p-2 rounded  font-bold duration-200 active:scale-105 active:border-2 active:border-white"
+                className="hover:opacity-60 w-full h-10 p-2 rounded  font-bold duration-200 active:scale-105 active:border-2 active:border-white"
               >
                 <div className="flex gap-2 items-center justify-center">
                   <span>SAVE</span> <IconDeviceFloppy />

@@ -206,9 +206,9 @@ export default function ImageCropper({ theme, textTheme }) {
         <button
           aria-label="clean"
           onClick={() => reset()}
-          className="active:scale-110 duration-200  border-2 bg-white text-black border-black font-bold  flex justify-center items-center gap-4 p-2 rounded hover:opacity-80"
+          className="active:scale-110 duration-200  font-bold  flex justify-center items-center gap-4 p-2 rounded hover:opacity-80"
         >
-          <BrushCleaningIcon size={30} />
+          <BrushCleaningIcon color={textTheme} size={30} />
         </button>
       </div>
       <label htmlFor="ImageToCrop">
@@ -216,8 +216,12 @@ export default function ImageCropper({ theme, textTheme }) {
       </label>
       {!imageUrl ? (
         <div
+          style={{
+            backgroundColor: `${theme}90`,
+            border: `2px solid ${theme}`,
+          }}
           {...getRootProps()}
-          className="h-full bg-black/30 cursor-pointer w-full flex gap-4 items-center justify-center"
+          className="h-full  cursor-pointer w-full flex gap-4 items-center justify-center"
         >
           <div className="h-full w-full flex flex-col items-center justify-center font-bold">
             {isDragActive ? (
@@ -239,7 +243,13 @@ export default function ImageCropper({ theme, textTheme }) {
           </div>
         </div>
       ) : (
-        <div className="bg-black/20 h-full grid md:grid-cols-4 grid-cols-1 grid-rows-[auto_auto] md:grid-rows-1 justify-center items-center gap-4 p-4">
+        <div
+          style={{
+            backgroundColor: `${theme}90`,
+            border: `2px solid ${theme}`,
+          }}
+          className=" h-full grid md:grid-cols-4 grid-cols-1 grid-rows-[auto_auto] md:grid-rows-1 justify-center items-center gap-4 p-4"
+        >
           <div className="md:col-span-3 w-full flex justify-center items-start h-full">
             <div className="w-full max-w-full flex items-center justify-center h-full">
               <ReactCrop
@@ -266,7 +276,8 @@ export default function ImageCropper({ theme, textTheme }) {
           >
             <div className="w-full flex flex-col gap-2">
               <Button
-                style={{ backgroundColor: theme, color: textTheme }}
+                style={{ color: theme, backgroundColor: textTheme }}
+                className="hover:opacity-80 w-full font-bold"
                 disabled={!imageReady}
                 onClick={async () => {
                   const base64 = await downloadCroppedImage(true);
@@ -285,8 +296,8 @@ export default function ImageCropper({ theme, textTheme }) {
               <Button
                 disabled={!imageReady}
                 onClick={() => downloadCroppedImage(false)}
-                style={{ backgroundColor: theme, color: textTheme }}
-                className="hover:opacity-80 w-full"
+                style={{ color: theme, backgroundColor: textTheme }}
+                className="hover:opacity-80 w-full font-bold"
               >
                 <div className="flex gap-2 items-center justify-center">
                   <span className="">DOWNLOAD</span>

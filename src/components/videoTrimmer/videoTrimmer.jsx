@@ -374,7 +374,7 @@ export default function VideoTrimmer({ theme, textTheme }) {
 
   return (
     <div
-      style={{ border: `2px solid ${theme}` }}
+      style={{ border: `2px solid ${theme}`, backgroundColor: `${theme}90` }}
       className="flex flex-col w-full h-full rounded-xl overflow-hidden"
     >
       <div
@@ -387,21 +387,21 @@ export default function VideoTrimmer({ theme, textTheme }) {
         {videoUrl && (
           <button
             onClick={deleteTemp}
-            className="active:scale-110 duration-200 border-2 border-black bg-white text-black font-bold flex justify-center items-center gap-4 p-2 rounded md:m-4 hover:opacity-80 cursor-pointer transition-opacity"
+            className="active:scale-110 duration-200  font-bold flex justify-center items-center gap-4 p-2 rounded md:m-4 hover:opacity-80 cursor-pointer transition-opacity"
           >
-            <Trash2 size={24} />
+            <Trash2 color={textTheme} size={24} />
           </button>
         )}
       </div>
 
       <div
-        style={{ "--theme": textTheme }}
-        className={`container bg-black/50 mx-auto h-full flex flex-col ${
+        style={{ "--theme": textTheme, backgroundColor: `${theme}90` }}
+        className={`container  mx-auto h-full flex flex-col ${
           orientation === "vertical" ? "lg:flex-row" : "lg:flex-col"
         }`}
       >
         {/* Video Preview */}
-        <div className="flex-1 bg-black/50 h-full overflow-hidden shadow-2xl flex items-center justify-center">
+        <div className="flex-1 h-full overflow-hidden shadow-2xl flex items-center justify-center">
           {!videoUrl ? (
             <div className="text-center p-8">
               <input
@@ -553,13 +553,20 @@ export default function VideoTrimmer({ theme, textTheme }) {
               <div className="flex gap-4 items-center">
                 <Select value={formatExport} onValueChange={setFormatExport}>
                   <SelectTrigger
-                    style={{ color: textTheme, border: `1px solid ${theme}` }}
+                    style={{
+                      color: textTheme,
+                      border: `1px solid ${textTheme}`,
+                    }}
                     className="w-[140px] bg-black"
                   >
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent
-                    style={{ color: textTheme, backgroundColor: "black" }}
+                    style={{
+                      color: textTheme,
+                      backgroundColor: "black",
+                      border: `1px solid ${textTheme}`,
+                    }}
                   >
                     <SelectItem value="mp4">MP4</SelectItem>
                     <SelectItem value="webm">WEBM</SelectItem>
@@ -568,9 +575,10 @@ export default function VideoTrimmer({ theme, textTheme }) {
                 </Select>
 
                 <Button
+                  style={{ backgroundColor: textTheme, color: theme }}
                   onClick={() => exportVideo(formatExport)}
                   disabled={isExporting}
-                  className="px-6 py-2 bg-black text-white hover:opacity-70"
+                  className="px-6 py-2 hover:opacity-70"
                 >
                   <Download size={20} className={isExporting ? "mr-2" : ""} />
                   {isExporting ? "Loading..." : ""}

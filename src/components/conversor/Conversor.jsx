@@ -250,8 +250,8 @@ export default function Conversor({ theme, textTheme }) {
 
   return (
     <div
-      style={{ border: `2px solid ${theme}` }}
-      className="bg-black/30 flex flex-col h-full rounded-xl overflow-hidden"
+      style={{ border: `2px solid ${theme}`, backgroundColor: `${theme}90` }}
+      className="flex flex-col h-full rounded-xl overflow-hidden"
     >
       <div
         style={{ backgroundColor: theme }}
@@ -264,13 +264,14 @@ export default function Conversor({ theme, textTheme }) {
         <button
           aria-label="clean"
           onClick={reset}
-          className="active:scale-110 duration-200 border-2 border-black bg-white text-black font-bold  flex justify-center items-center gap-4 p-2 rounded hover:opacity-80 cursor-pointer transition-opacity"
+          className="active:scale-110 duration-200  font-bold  flex justify-center items-center gap-4 p-2 rounded hover:opacity-80 cursor-pointer transition-opacity"
         >
-          <BrushCleaningIcon size={30} />
+          <BrushCleaningIcon color={textTheme} size={30} />
         </button>
       </div>
 
       <div
+        style={{ border: `2px solid ${theme}` }}
         className={`${
           preview
             ? "grid md:grid-cols-[5fr_1fr] grid-cols-1 grid-rows-[2fr_1fr] md:grid-rows-1"
@@ -351,13 +352,21 @@ export default function Conversor({ theme, textTheme }) {
                   onValueChange={setFormat}
                 >
                   <SelectTrigger
-                    style={{ color: textTheme, border: `1px solid ${theme}` }}
+                    style={{
+                      color: textTheme,
+                      border: `1px solid ${textTheme}`,
+                      backgroundColor: theme,
+                    }}
                     className="w-[100px] md:w-[140px]"
                   >
                     <SelectValue placeholder="Format" />
                   </SelectTrigger>
                   <SelectContent
-                    style={{ color: textTheme, backgroundColor: "black" }}
+                    style={{
+                      color: textTheme,
+                      backgroundColor: theme,
+                      border: `1px solid ${textTheme}`,
+                    }}
                   >
                     <SelectItem value="webp">WEBP</SelectItem>
                     <SelectItem value="jpeg">JPEG</SelectItem>
@@ -376,7 +385,11 @@ export default function Conversor({ theme, textTheme }) {
                   <Input
                     name="width"
                     type="text"
-                    style={{ color: textTheme }}
+                    style={{
+                      color: textTheme,
+                      backgroundColor: theme,
+                      border: `1px solid ${textTheme}`,
+                    }}
                     className="w-[70px] md:w-full text-center p-2 rounded"
                     value={width}
                     onChange={(e) => {
@@ -388,11 +401,15 @@ export default function Conversor({ theme, textTheme }) {
                       }
                     }}
                   />
-                  <div className="text-white font-bold">X</div>
+                  <div className=" font-bold">X</div>
                   <Input
                     name="height"
                     type="text"
-                    style={{ color: textTheme }}
+                    style={{
+                      color: textTheme,
+                      backgroundColor: theme,
+                      border: `1px solid ${textTheme}`,
+                    }}
                     className="w-[70px] md:w-full text-center p-2 rounded"
                     value={height}
                     onChange={(e) => {
@@ -411,8 +428,8 @@ export default function Conversor({ theme, textTheme }) {
             <div className="h-full w-full flex items-center justify-center md:mt-4">
               <Button
                 onClick={descargar}
-                style={{ backgroundColor: theme, color: textTheme }}
-                className="hover:opacity-80 w-full"
+                style={{ color: theme, backgroundColor: textTheme }}
+                className="hover:opacity-80 w-full font-bold"
               >
                 <div className="flex gap-2 items-center justify-center">
                   <span className="">DOWNLOAD</span>

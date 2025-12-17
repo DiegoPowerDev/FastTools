@@ -36,7 +36,7 @@ export default function ImageColorPicker({ theme, textTheme }) {
   const copyToClipboard = () => {
     toast((t) => (
       <span className="flex items-center justify-center gap-4">
-        <IconBrush stroke={3} size={20} style={{ color: `${color}` }} />
+        <IconBrush stroke={3} size={20} color={color} />
         Copied <b>{color.toUpperCase()}</b>
         <div className="h-4 w-4" style={{ backgroundColor: color }}></div>
       </span>
@@ -189,8 +189,8 @@ export default function ImageColorPicker({ theme, textTheme }) {
   }, [color]);
   return (
     <div
-      style={{ border: `2px solid ${theme}` }}
-      className={`bg-black/50 flex flex-col h-full border- rounded-xl overflow-hidden`}
+      style={{ border: `2px solid ${theme}`, backgroundColor: `${theme}90` }}
+      className={`flex flex-col h-full border- rounded-xl overflow-hidden`}
     >
       <div
         style={{
@@ -205,9 +205,9 @@ export default function ImageColorPicker({ theme, textTheme }) {
         <button
           aria-label="clean"
           onClick={() => reset()}
-          className="active:scale-110 duration-200 border-2 border-black bg-white text-black  font-bold flex justify-center items-center gap-4 p-2 rounded hover:opacity-80"
+          className="active:scale-110 duration-200   font-bold flex justify-center items-center gap-4 p-2 rounded hover:opacity-80"
         >
-          <BrushCleaningIcon size={30} />
+          <BrushCleaningIcon color={textTheme} size={30} />
         </button>
       </div>
       <div
@@ -299,10 +299,10 @@ export default function ImageColorPicker({ theme, textTheme }) {
                 <div>
                   <Button
                     style={{
-                      backgroundColor: theme,
-                      color: textTheme,
+                      color: theme,
+                      backgroundColor: textTheme,
                     }}
-                    className="hover:opacity-80"
+                    className="hover:opacity-80 font-bold"
                     onClick={copyToClipboard}
                   >
                     COPY <IconClipboard />
@@ -322,13 +322,21 @@ export default function ImageColorPicker({ theme, textTheme }) {
                   onValueChange={setFormat}
                 >
                   <SelectTrigger
-                    style={{ color: textTheme, border: `1px solid ${theme}` }}
+                    style={{
+                      color: textTheme,
+                      border: `1px solid ${theme}`,
+                      backgroundColor: theme,
+                    }}
                     className=" w-[80px] md:w-[120px] font-bold"
                   >
                     <SelectValue placeholder="Format" />
                   </SelectTrigger>
                   <SelectContent
-                    style={{ color: textTheme, backgroundColor: "black" }}
+                    style={{
+                      color: textTheme,
+                      backgroundColor: "black",
+                      backgroundColor: theme,
+                    }}
                   >
                     <SelectItem value="webp">WEBP</SelectItem>
                     <SelectItem value="jpeg">JPEG</SelectItem>
@@ -337,10 +345,10 @@ export default function ImageColorPicker({ theme, textTheme }) {
                 </Select>
                 <Button
                   style={{
-                    backgroundColor: theme,
-                    color: textTheme,
+                    color: theme,
+                    backgroundColor: textTheme,
                   }}
-                  className="hover:opacity-80"
+                  className="hover:opacity-80 font-bold"
                   onClick={() => handleDownload(format)}
                 >
                   DOWNLOAD <IconDeviceFloppy />

@@ -401,7 +401,11 @@ export default function FireToolBar() {
                   </motion.div>
                 </DialogTrigger>
                 <DialogContent
-                  style={{ color: textTheme }}
+                  style={{
+                    color: textTheme,
+                    border: `1px solid ${textTheme}`,
+                    backgroundColor: theme,
+                  }}
                   className="w-full bg-black border-white border-2 p-2 md:p-4 overflow-hidden"
                 >
                   <DialogHeader>
@@ -508,7 +512,7 @@ export default function FireToolBar() {
               <button
                 style={{
                   backgroundColor: period != "all" ? theme : "black",
-                  color: period === "all" ? textTheme : "white",
+                  color: period === "all" ? "white" : textTheme,
                   boxShadow: period === "all" && `0 0 15px 5px ${textTheme}`,
                 }}
                 onClick={() => setPeriod("all")}
@@ -521,7 +525,7 @@ export default function FireToolBar() {
               <button
                 style={{
                   backgroundColor: period != "daily" ? theme : "black",
-                  color: period === "daily" ? textTheme : "white",
+                  color: period === "daily" ? "white" : textTheme,
                   boxShadow: period === "daily" && `0 0 15px 5px ${textTheme}`,
                 }}
                 onClick={() => setPeriod("daily")}
@@ -535,7 +539,7 @@ export default function FireToolBar() {
                 onClick={() => setPeriod("weekly")}
                 style={{
                   backgroundColor: period != "weekly" ? theme : "black",
-                  color: period === "weekly" ? textTheme : "white",
+                  color: period === "weekly" ? "white" : textTheme,
                   boxShadow: period === "weekly" && `0 0 15px 5px ${textTheme}`,
                 }}
                 className={cn(
@@ -548,7 +552,7 @@ export default function FireToolBar() {
                 onClick={() => setPeriod("monthly")}
                 style={{
                   backgroundColor: period != "monthly" ? theme : "black",
-                  color: period === "monthly" ? textTheme : "white",
+                  color: period === "monthly" ? "white" : textTheme,
                   boxShadow:
                     period === "monthly" && `0 0 15px 5px ${textTheme}`,
                 }}
@@ -562,7 +566,7 @@ export default function FireToolBar() {
                 onClick={() => setPeriod("special")}
                 style={{
                   backgroundColor: period != "special" ? theme : "black",
-                  color: period === "special" ? textTheme : "white",
+                  color: period === "special" ? "white" : textTheme,
                   boxShadow:
                     period === "special" && `0 0 15px 5px ${textTheme}`,
                 }}

@@ -44,7 +44,7 @@ export default function MenuSettings() {
               style={{
                 backgroundColor: theme,
                 color: textTheme,
-                outline: mode != "Theme" && "2px solid white",
+                outline: mode != "Theme" && `2px solid ${textTheme}`,
               }}
               className={cn(mode === "Theme" && "opacity-50", "font-bold")}
               onClick={() => {
@@ -57,7 +57,7 @@ export default function MenuSettings() {
               style={{
                 backgroundColor: theme,
                 color: textTheme,
-                outline: mode === "Theme" && "2px solid white",
+                outline: mode === "Theme" && `2px solid ${textTheme}`,
               }}
               className={cn(
                 mode != "Theme" && "opacity-50",
@@ -73,7 +73,10 @@ export default function MenuSettings() {
           {mode === "Theme" && (
             <>
               {isDesktop ? (
-                <div className=" w-full h-full items-center justify-center border-2 border-white rounded p-2 flex">
+                <div
+                  style={{ border: `1px solid ${textTheme}` }}
+                  className=" w-full h-full items-center justify-center  rounded p-2 flex"
+                >
                   <ColorGrill
                     colors={colors}
                     theme={theme}
@@ -82,7 +85,10 @@ export default function MenuSettings() {
                   />
                 </div>
               ) : (
-                <div className="flex w-full h-full items-center justify-center border-2 border-white rounded p-2 ">
+                <div
+                  style={{ border: `1px solid ${textTheme}` }}
+                  className="flex w-full h-full items-center justify-center  rounded p-2 "
+                >
                   <ColorGrillMobile
                     colors={colors}
                     theme={theme}
@@ -96,7 +102,10 @@ export default function MenuSettings() {
           {mode === "Text" && (
             <>
               {isDesktop ? (
-                <div className=" w-full h-full items-center justify-center border-2 border-white rounded p-2 flex ">
+                <div
+                  style={{ border: `1px solid ${textTheme}` }}
+                  className=" w-full h-full items-center justify-center rounded p-2 flex "
+                >
                   <ColorGrill
                     mode={mode}
                     colors={colors}
@@ -105,7 +114,10 @@ export default function MenuSettings() {
                   />
                 </div>
               ) : (
-                <div className="flex w-full h-full items-center justify-center border-2 border-white rounded p-2 ">
+                <div
+                  style={{ border: `1px solid ${textTheme}` }}
+                  className="flex w-full h-full items-center justify-center rounded p-2 "
+                >
                   <ColorGrillMobile
                     mode={mode}
                     colors={colors}
@@ -138,7 +150,7 @@ export default function MenuSettings() {
               style={{
                 backgroundColor: theme,
                 color: textTheme,
-                outline: !video && "2px solid white",
+                outline: !video && `2px solid ${textTheme}`,
               }}
               className={cn(
                 video && "opacity-50",
@@ -154,7 +166,7 @@ export default function MenuSettings() {
               style={{
                 backgroundColor: theme,
                 color: textTheme,
-                outline: video && "2px solid white",
+                outline: video && `2px solid ${textTheme}`,
               }}
               className={cn(!video && "opacity-50", "font-bold")}
               onClick={() => {

@@ -335,7 +335,7 @@ export default function Task({ task }) {
                           >
                             <DialogDescription></DialogDescription>
                             <DialogTitle className="text-center">
-                              Edit End Date
+                              EDIT END DATE
                             </DialogTitle>
                             <div className="w-full h-full flex flex-col gap-4 items-center justify-center p-4">
                               <div className="w-full flex justify-center">
@@ -345,8 +345,12 @@ export default function Task({ task }) {
                               <div className="w-full flex justify-center">
                                 <DialogClose asChild>
                                   <Button
+                                    style={{
+                                      color: theme,
+                                      backgroundColor: textTheme,
+                                    }}
                                     onClick={() => updateEndDate(task.id)}
-                                    className="w-full md:w-1/2 px-8 p-2"
+                                    className="w-full md:w-1/2 h-10 font-bold px-8 p-2"
                                   >
                                     SAVE
                                   </Button>
@@ -384,7 +388,7 @@ export default function Task({ task }) {
                         setOpen(false);
                         toast.success("Task restored");
                       }}
-                      className="bg-black select-none border-2 flex items-center justify-center text-destructive-foreground shadow-sm  w-full text-sm p-2 rounded  font-bold duration-200 active:scale-105 active:border-2 active:border-white"
+                      className="bg-black select-none border-2 flex items-center justify-center text-destructive-foreground shadow-sm h-10 w-full text-sm p-2 rounded  font-bold duration-200 active:scale-105 active:border-2 active:border-white"
                     >
                       RESTORE <IconEraser />
                     </Button>
@@ -395,16 +399,16 @@ export default function Task({ task }) {
                         setOpen(false);
                         toast.success("Task completed");
                       }}
-                      className="bg-black select-none border-2 flex items-center justify-center text-destructive-foreground shadow-sm  w-full text-sm p-2 rounded  font-bold duration-200 active:scale-105 active:border-2 active:border-white"
+                      className="bg-black select-none border-2 flex items-center justify-center text-destructive-foreground shadow-sm h-10 w-full text-sm p-2 rounded  font-bold duration-200 active:scale-105 active:border-2 active:border-white"
                     >
                       COMPLETE <IconEraser />
                     </Button>
                   )}
                 </div>
-                <div></div>
+
                 <AlertDialog>
                   <AlertDialogTrigger className="flex gap-2 w-full justify-center">
-                    <div className=" border-2 flex items-center justify-center bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90 w-full text-sm p-2 rounded  font-bold duration-200 active:scale-105 active:border-2 active:border-white">
+                    <div className=" border-2 flex items-center justify-center bg-destructive text-destructive-foreground h-10 shadow-sm hover:bg-destructive/90 w-full text-sm p-2 rounded  font-bold duration-200 active:scale-105 active:border-2 active:border-white">
                       DELETE <IconEraser />
                     </div>
                   </AlertDialogTrigger>
@@ -426,7 +430,7 @@ export default function Task({ task }) {
                         CANCEL
                       </AlertDialogCancel>
                       <Button
-                        className="font-bold"
+                        className="font-bold h-10"
                         variant="destructive"
                         onClick={async () => {
                           setOpen(false);
@@ -457,7 +461,7 @@ export default function Task({ task }) {
                 }}
                 className={cn(
                   styles.scrollContainer,
-                  "w-full bg-black h-full flex flex-col overflow-y-auto gap-2 p-2"
+                  "w-full  h-full flex flex-col overflow-y-auto gap-2 p-2"
                 )}
               >
                 {task.notes &&
@@ -550,7 +554,10 @@ export default function Task({ task }) {
                         >
                           {note.text && note.text}
                         </div>
-                        <DialogClose className="w-full h-12 font-bold bg-black text-white hover:bg-white hover:text-black active:opacity-50 duration-300 rounded">
+                        <DialogClose
+                          style={{ color: theme, backgroundColor: textTheme }}
+                          className="w-full h-10 font-bold active:opacity-50 duration-300 rounded"
+                        >
                           OK
                         </DialogClose>
                       </DialogContent>
@@ -588,6 +595,10 @@ export default function Task({ task }) {
                       </label>
                       <Input
                         id="note"
+                        style={{
+                          color: textTheme,
+                          border: `1px solid ${textTheme}`,
+                        }}
                         value={title}
                         onChange={(e) => setTitle(e.currentTarget.value)}
                       />
@@ -621,7 +632,10 @@ export default function Task({ task }) {
                         COMMENT
                       </label>
                       <Textarea
-                        style={{ "--theme": textTheme }}
+                        style={{
+                          "--theme": textTheme,
+                          border: `1px solid ${textTheme}`,
+                        }}
                         id="note"
                         rows={4}
                         value={comment}
@@ -631,7 +645,8 @@ export default function Task({ task }) {
                     </div>
                     <div className="w-full h-full flex justify-center">
                       <Button
-                        className="w-full h-12 font-bold bg-black text-white hover:bg-white hover:text-black active:opacity-50 duration-300 rounded"
+                        style={{ color: theme, backgroundColor: textTheme }}
+                        className="w-full h-10 font-bold active:opacity-50 duration-300 rounded"
                         onClick={async () => {
                           console.log(task.id);
                           await addNote(task.id, {

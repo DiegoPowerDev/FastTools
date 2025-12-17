@@ -19,6 +19,7 @@ import toast from "react-hot-toast";
 import * as jose from "jose";
 import styles from "../style.module.css";
 import { Input } from "../ui/input";
+import { cn } from "@/lib/utils";
 
 export default function JWTGenerator({ theme, textTheme }) {
   const [rsa, setRsa] = useState(false);
@@ -147,18 +148,23 @@ export default function JWTGenerator({ theme, textTheme }) {
         <label className="font-bold text-sm">Payload (JSON)</label>
         <button
           onClick={formatJSON}
-          style={{ backgroundColor: theme, color: textTheme }}
-          className="px-2 text-xs rounded hover:opacity-80 font-bold "
+          style={{
+            color: theme,
+            backgroundColor: textTheme,
+            outline: `1px solid ${textTheme}50`,
+          }}
+          className="px-2 h-6 text-xs rounded hover:opacity-80 font-bold "
         >
-          Format
+          FORMAT
         </button>
       </div>
       <div className="">
         <textarea
           style={{
             color: textTheme,
-            border: `1px solid ${theme}`,
+            outline: `1px solid ${textTheme}50`,
             "--theme": textTheme,
+            backgroundColor: theme,
           }}
           rows={3}
           value={payload}
@@ -177,13 +183,21 @@ export default function JWTGenerator({ theme, textTheme }) {
               className="p-2 rounded w-full bg-transparent"
             >
               <SelectTrigger
-                style={{ color: textTheme, border: `1px solid ${theme}` }}
+                style={{
+                  color: textTheme,
+                  border: `1px solid ${textTheme}50`,
+                  backgroundColor: theme,
+                }}
                 className=" w-[100px] md:w-[150px]"
               >
                 <SelectValue placeholder="Format" />
               </SelectTrigger>
               <SelectContent
-                style={{ color: textTheme, backgroundColor: "black" }}
+                style={{
+                  color: textTheme,
+                  border: `1px solid ${textTheme}50`,
+                  backgroundColor: theme,
+                }}
               >
                 <SelectItem value="HS256">HS256 (SHA-256)</SelectItem>
                 <SelectItem value="HS384">HS384 (SHA-384)</SelectItem>
@@ -206,7 +220,11 @@ export default function JWTGenerator({ theme, textTheme }) {
             <Input
               type="number"
               min={0}
-              style={{ color: textTheme, border: `1px solid ${theme}` }}
+              style={{
+                color: textTheme,
+                border: `1px solid ${textTheme}90`,
+                backgroundColor: theme,
+              }}
               disabled={!expiration}
               value={expiryMinutes}
               onChange={(e) => setExpiryMinutes(e.target.value)}
@@ -225,8 +243,9 @@ export default function JWTGenerator({ theme, textTheme }) {
             value={secret}
             style={{
               color: textTheme,
-              border: `1px solid ${theme}`,
+              outline: `1px solid ${textTheme}50`,
               "--theme": textTheme,
+              backgroundColor: theme,
             }}
             onChange={(e) => setSecret(e.target.value)}
             className="p-2 rounded bg-transparent w-full"
@@ -241,13 +260,12 @@ export default function JWTGenerator({ theme, textTheme }) {
                 setRsa(true);
               }}
               style={{
-                backgroundColor: theme,
-                color: textTheme,
-                boxShadow: `0px 0px 5px 1px ${textTheme}`,
+                color: theme,
+                backgroundColor: textTheme,
               }}
-              className="p-2 rounded font-semibold hover:opacity-80"
+              className="p-2 h-10 rounded font-semibold hover:opacity-80"
             >
-              Generate RSA Keys
+              GENERATE RSA KEYS
             </button>
           </div>
         </>
@@ -255,10 +273,14 @@ export default function JWTGenerator({ theme, textTheme }) {
 
       <button
         onClick={handleGenerate}
-        style={{ backgroundColor: theme, color: textTheme }}
-        className="rounded p-2 font-bold hover:opacity-90"
+        style={{
+          color: theme,
+          backgroundColor: textTheme,
+          outline: `1px solid ${textTheme}50`,
+        }}
+        className="rounded p-2 h-10 font-bold hover:opacity-90"
       >
-        Generate Token
+        GENERATE TOKEN
       </button>
 
       <div className="">
@@ -268,25 +290,37 @@ export default function JWTGenerator({ theme, textTheme }) {
           <pre
             style={{
               "--theme": textTheme,
-              border: `1px solid ${theme}`,
+              outline: `1px solid ${textTheme}50`,
               color: textTheme,
+              backgroundColor: theme,
             }}
-            className={`bg-black font-bold p-2 w-full h-12 items-center rounded overflow-auto text-xs break-all ${styles.scrollContainer}`}
+            className={`font-bold p-2 w-full h-10 items-center rounded overflow-auto text-xs break-all ${styles.scrollContainer}`}
           >
             {token && <span>{token}</span>}
           </pre>
 
           <button
             onClick={handleCopy}
-            style={{ backgroundColor: theme, color: textTheme }}
-            className="p-2 text-xs rounded hover:opacity-80 font-bold "
+            style={{
+              color: theme,
+              backgroundColor: textTheme,
+              outline: `1px solid ${textTheme}50`,
+            }}
+            className="p-2 h-10 text-xs rounded hover:opacity-80 font-bold "
           >
-            Copy
+            COPY
           </button>
         </div>
       </div>
       <Dialog open={rsa} onOpenChange={setRsa}>
-        <DialogContent className=" md:w-[60vw] 2xl:h-[70vh] h-[85vh] bg-black border-white border-2 text-white overflow-hidden">
+        <DialogContent
+          style={{
+            color: textTheme,
+            backgroundColor: theme,
+            border: `1px solid ${textTheme}`,
+          }}
+          className=" md:w-[60vw] 2xl:h-[70vh] h-[85vh]  overflow-hidden"
+        >
           <DialogHeader>
             <DialogTitle className="text-center" style={{ color: textTheme }}>
               RSA KEYS
@@ -294,56 +328,73 @@ export default function JWTGenerator({ theme, textTheme }) {
             <div className="py-3 w-full flex justify-center items-center gap-4">
               <button
                 onClick={generateRSAKeys}
-                style={{ backgroundColor: theme, color: textTheme }}
-                className="p-2 rounded font-semibold hover:opacity-80"
+                style={{ color: theme, backgroundColor: textTheme }}
+                className="p-2 rounded h-10 font-semibold hover:opacity-80"
               >
-                Generate RSA Keys
+                GENERATE RSA KEYS
               </button>
               <button
+                style={{ color: theme, backgroundColor: textTheme }}
                 onClick={() => {
                   setPublicKey("");
                   setPrivateKey("");
                   toast.success("Keys cleared");
                 }}
-                className="p-2 rounded border"
+                className="p-2 h-10 rounded font-bold"
               >
-                Clear keys
+                CLEAR KEYS
               </button>
             </div>
             <div className="w-full     flex gap-2">
               <div className="w-full h-full flex flex-col gap-4">
                 <textarea
-                  style={{ border: `1px solid ${theme}`, color: textTheme }}
+                  style={{
+                    "--theme": textTheme,
+                    outline: `1px solid ${textTheme}`,
+                    color: textTheme,
+                    backgroundColor: theme,
+                  }}
                   value={publicKey}
                   placeholder="Public Key (SPKI)"
                   onChange={(e) => setPublicKey(e.target.value)}
-                  className="p-2 rounded bg-black w-full font-mono text-xs resize-none 2xl:h-96 h-72"
+                  className={cn(
+                    "p-2 rounded bg-black w-full font-mono text-xs resize-none 2xl:h-96 h-72",
+                    styles.scrollContainer
+                  )}
                 />
                 <div className="w-full flex items-center justify-center">
                   <button
                     onClick={handleCopyPublic}
-                    style={{ backgroundColor: theme, color: textTheme }}
-                    className="p-2 font-bold w-3/4 rounded hover:opacity-80"
+                    style={{ color: theme, backgroundColor: textTheme }}
+                    className="p-2 h-10 font-bold w-3/4 rounded hover:opacity-80"
                   >
-                    Copy
+                    COPY
                   </button>
                 </div>
               </div>
               <div className="w-full h-full flex flex-col gap-4">
                 <textarea
-                  style={{ border: `1px solid ${theme}`, color: textTheme }}
+                  style={{
+                    "--theme": textTheme,
+                    outline: `1px solid ${textTheme}`,
+                    color: textTheme,
+                    backgroundColor: theme,
+                  }}
                   placeholder="Private Key (PKCS8)"
                   value={privateKey}
                   onChange={(e) => setPrivateKey(e.target.value)}
-                  className="p-2 rounded bg-black w-full font-mono text-xs resize-none 2xl:h-96 h-72"
+                  className={cn(
+                    "p-2 rounded bg-black w-full font-mono text-xs resize-none 2xl:h-96 h-72",
+                    styles.scrollContainer
+                  )}
                 />
                 <div className="w-full flex items-center justify-center">
                   <button
                     onClick={handlePrivate}
-                    style={{ backgroundColor: theme, color: textTheme }}
-                    className="p-2 w-3/4 font-bold  rounded hover:opacity-80"
+                    style={{ color: theme, backgroundColor: textTheme }}
+                    className="p-2 h-10 w-3/4 font-bold  rounded hover:opacity-80"
                   >
-                    Copy
+                    COPY
                   </button>
                 </div>
               </div>

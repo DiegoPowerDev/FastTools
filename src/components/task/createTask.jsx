@@ -202,7 +202,11 @@ export default function CreateTask({ open, setOpen }) {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent
         ref={containerRef}
-        style={{ color: textTheme, backgroundColor: theme }}
+        style={{
+          color: textTheme,
+          backgroundColor: theme,
+          border: `1px solid ${textTheme}`,
+        }}
         className="max-w-2xl  bg-black border-white border-2 overflow-y-auto flex flex-col gap-4 "
       >
         <DialogHeader className="flex flex-col items-center">
@@ -240,6 +244,7 @@ export default function CreateTask({ open, setOpen }) {
               <div className="flex flex-col w-full">
                 <label className="font-bold">NAME</label>
                 <Input
+                  style={{ color: textTheme, border: `1px solid ${textTheme}` }}
                   placeholder="Name"
                   value={name}
                   required
@@ -252,6 +257,7 @@ export default function CreateTask({ open, setOpen }) {
                   placeholder="Description"
                   rows={4}
                   required
+                  style={{ color: textTheme, border: `1px solid ${textTheme}` }}
                   className="resize-none"
                   value={descrition}
                   onChange={(e) => setDescrition(e.currentTarget.value)}
@@ -306,7 +312,10 @@ export default function CreateTask({ open, setOpen }) {
             </div>
           </div>
           <div className="w-full flex justify-center px-4 pt-4">
-            <Button className="w-full md:w-2/3 h-12 duration-300 rounded font-bold bg-black text-white hover:bg-white hover:text-black active:opacity-50">
+            <Button
+              style={{ color: theme, backgroundColor: textTheme }}
+              className="w-full md:w-2/3 h-12 duration-300 rounded font-bold  active:opacity-50"
+            >
               CREATE TASK
             </Button>
           </div>

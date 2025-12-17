@@ -394,13 +394,14 @@ export default function ColorsDesktop({
           Colors
         </div>
         <button
-          style={{
-            boxShadow: editable ? `0px 0px 5px 2px white` : "",
-          }}
           onClick={() => setEditable(!editable)}
-          className={` bg-white text-black flex justify-center w-12 h-12 p-2 rounded items-center`}
+          className={` flex justify-center w-12 h-12 p-2 rounded items-center`}
         >
-          <IconPencil className={editable && styles.pulse} size={40} />
+          <IconPencil
+            color={textTheme}
+            className={editable && styles.pulse}
+            size={40}
+          />
         </button>
       </div>
 
@@ -408,10 +409,12 @@ export default function ColorsDesktop({
         ref={scrollRef}
         style={{
           "--theme": textTheme,
+          backgroundColor: `${theme}90`,
+          border: `2px solid ${theme}`,
         }}
         className={cn(
           !displayColors && "justify-center",
-          `bg-black/50 w-full flex-1 flex items-center overflow-x-auto overflow-y-hidden ${styles.scrollContainer}`
+          ` w-full flex-1 flex items-center overflow-x-auto overflow-y-hidden ${styles.scrollContainer}`
         )}
       >
         <div className="h-full">
@@ -432,7 +435,11 @@ export default function ColorsDesktop({
 
       <Dialog onOpenChange={setEditForm} open={editForm}>
         <DialogContent
-          style={{ color: textTheme }}
+          style={{
+            color: textTheme,
+            backgroundColor: theme,
+            border: `1px solid ${textTheme}`,
+          }}
           className="w-full bg-black border-white border-2 overflow-hidden"
         >
           <DialogTitle className="flex justify-center items-center font-bold">
@@ -449,6 +456,7 @@ export default function ColorsDesktop({
               <Input
                 id="nombre"
                 type="text"
+                style={{ border: `1px solid ${textTheme}` }}
                 placeholder={
                   editingIndex !== null ? colors[editingIndex]?.nombre : ""
                 }
@@ -480,6 +488,7 @@ export default function ColorsDesktop({
                   maxLength={9}
                   className="p-2 w-40 rounded placeholder:opacity-40"
                   type="text"
+                  style={{ border: `1px solid ${textTheme}` }}
                   placeholder={
                     editingIndex !== null ? colors[editingIndex]?.color : ""
                   }
@@ -494,6 +503,7 @@ export default function ColorsDesktop({
 
             <div className="w-full h-full flex justify-center items-center gap-4">
               <Button
+                className="h-10"
                 variant="destructive"
                 onClick={() => {
                   if (editingIndex !== null) {
@@ -508,16 +518,16 @@ export default function ColorsDesktop({
                 DELETE
               </Button>
               <button
-                style={{ backgroundColor: theme, color: textTheme }}
+                style={{ color: theme, backgroundColor: textTheme }}
                 onClick={() => {
                   if (editingIndex !== null) {
                     setColors(editingIndex, nombre, manageFormat(color));
                     setEditForm(false);
                   }
                 }}
-                className="hover:opacity-60 w-full p-2 rounded  font-bold duration-200 active:scale-105 active:border-2 active:border-white"
+                className="hover:opacity-60 w-full p-2 h-10 rounded  font-bold duration-200 active:scale-105 active:border-2 active:border-white"
               >
-                <div className="flex gap-2 items-center justify-center">
+                <div className="flex gap-2  items-center justify-center">
                   <span>SAVE</span> <IconDeviceFloppy />
                 </div>
               </button>

@@ -32,24 +32,26 @@ export default function ApiTester({
         <div className="md:col-start-4 md:col-end-7 flex justify-center items-center gap-4">
           <button
             style={{
-              backgroundColor: modo === "rest" && "white",
-              boxShadow: modo === "rest" && `0px 0px 5px 1px white`,
+              color: textTheme,
+              outline:
+                modo === "rest"
+                  ? `2px solid ${textTheme}`
+                  : `1px solid ${textTheme}40`,
             }}
-            className={`flex p-2 rounded ${
-              modo != "rest" ? "border-white" : "border-black text-black"
-            } border-2 font-bold items-center justify-center gap-2 hover:opacity-70`}
+            className={`flex p-2 rounded font-bold items-center justify-center gap-2 hover:opacity-70`}
             onClick={() => setModo("rest")}
           >
             <div>HTTP</div>
           </button>
           <button
             style={{
-              backgroundColor: modo === "websocket" && "white",
-              boxShadow: modo === "websocket" && `0px 0px 5px 1px white  `,
+              color: textTheme,
+              outline:
+                modo != "rest"
+                  ? `2px solid ${textTheme}`
+                  : `1px solid ${textTheme}40`,
             }}
-            className={`flex p-2 rounded font-bold  ${
-              modo != "websocket" ? "border-white" : "border-black text-black"
-            } border-2 items-center justify-center gap-2 hover:opacity-70`}
+            className={`flex p-2 rounded font-bold  items-center justify-center gap-2 hover:opacity-70`}
             onClick={() => setModo("websocket")}
           >
             <div>WEBSOCKET </div>

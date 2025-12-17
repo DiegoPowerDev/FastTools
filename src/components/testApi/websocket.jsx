@@ -133,15 +133,18 @@ export default function Websocket({
 
   return (
     <div
-      style={{ color: textTheme }}
-      className="bg-black/30 w-full h-screen flex flex-col gap-4 p-4"
+      style={{ color: textTheme, backgroundColor: `${theme}90` }}
+      className="w-full h-screen flex flex-col gap-4 p-4"
     >
       <div className="max-w-4xl mx-auto w-full flex flex-col gap-4">
         <div className="flex gap-2">
           <Input
             placeholder="http://localhost:3010"
             value={socketApi}
-            style={{ border: `1px solid ${theme}` }}
+            style={{
+              border: `1px solid ${textTheme}90`,
+              backgroundColor: theme,
+            }}
             onChange={(e) => setsocketApi(e.target.value)}
             disabled={isConnected}
             className="flex-1"
@@ -158,10 +161,10 @@ export default function Websocket({
           ) : (
             <Button
               className="font-bold"
-              style={{ backgroundColor: theme, color: textTheme }}
+              style={{ color: theme, backgroundColor: textTheme }}
               onClick={connect}
             >
-              Connect
+              CONNECT
             </Button>
           )}
         </div>
@@ -171,7 +174,10 @@ export default function Websocket({
           <Input
             placeholder="Event name"
             value={event}
-            style={{ border: `1px solid ${theme}` }}
+            style={{
+              border: `1px solid ${textTheme}90`,
+              backgroundColor: theme,
+            }}
             onChange={(e) => setEvent(e.target.value)}
             disabled={!isConnected}
             className="w-48"
@@ -179,7 +185,10 @@ export default function Websocket({
           <Input
             placeholder="Message (text or JSON)"
             value={message}
-            style={{ border: `1px solid ${theme}` }}
+            style={{
+              border: `1px solid ${textTheme}90`,
+              backgroundColor: theme,
+            }}
             onChange={(e) => setMessage(e.target.value)}
             onKeyPress={handleKeyPress}
             disabled={!isConnected}
@@ -187,11 +196,11 @@ export default function Websocket({
           />
           <Button
             className="font-bold"
-            style={{ backgroundColor: theme, color: textTheme }}
+            style={{ color: theme, backgroundColor: textTheme }}
             onClick={sendMessage}
             disabled={!isConnected || !message.trim()}
           >
-            Send
+            SEND
           </Button>
         </div>
 
@@ -215,21 +224,27 @@ export default function Websocket({
               </span>
             </div>
             <Button
+              style={{
+                color: theme,
+                backgroundColor: textTheme,
+              }}
               className="font-bold"
               variant="outline"
               onClick={() => setLogs([])}
               disabled={logs.length === 0}
             >
-              Clear
+              CLEAR
             </Button>
           </div>
           <div
             ref={logsRef}
             style={{
               "--theme": textTheme,
-              border: `1px solid ${theme}`,
+              border: `1px solid ${textTheme}90`,
+              backgroundColor: theme,
+              color: textTheme,
             }}
-            className={`h-64 overflow-y-auto p-3 border bg-black text-green-400 rounded text-sm font-mono ${styles.scrollContainer}`}
+            className={`h-64 overflow-y-auto p-3 border rounded text-sm font-mono ${styles.scrollContainer}`}
           >
             {logs.length === 0 ? (
               <p className="text-neutral-500">No logs yet…</p>

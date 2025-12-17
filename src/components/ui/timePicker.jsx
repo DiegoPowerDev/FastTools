@@ -40,7 +40,11 @@ export function TimePicker({ setNewDate }) {
         <Popover open={open} onOpenChange={setOpen}>
           <PopoverTrigger asChild>
             <Button
-              style={{ backgroundColor: theme, color: textTheme }}
+              style={{
+                backgroundColor: theme,
+                color: textTheme,
+                border: `1px solid ${textTheme}`,
+              }}
               variant="outline"
               id="date-picker"
               className="w-32 justify-between font-normal"
@@ -71,7 +75,11 @@ export function TimePicker({ setNewDate }) {
           type="time"
           id="time-picker"
           step="1"
-          style={{ backgroundColor: theme, color: textTheme }}
+          style={{
+            backgroundColor: theme,
+            color: textTheme,
+            border: `1px solid ${textTheme}`,
+          }}
           onChange={(e) => newTime(e.currentTarget.value)}
           className="appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
         />

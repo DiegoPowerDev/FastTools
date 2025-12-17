@@ -9,13 +9,7 @@ import {
 } from "@/components/ui/dialog";
 import styles from "../style.module.css";
 import { useRef, useEffect, useState } from "react";
-import {
-  IconBrush,
-  IconColorSwatch,
-  IconDeviceFloppy,
-  IconPencil,
-  IconTextColor,
-} from "@tabler/icons-react";
+import { IconBrush, IconDeviceFloppy, IconPencil } from "@tabler/icons-react";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 
@@ -96,20 +90,22 @@ export default function ColorsMobile({
           Colors
         </div>
         <button
-          style={{
-            boxShadow: editable ? `0px 0px 5px 2px white` : "",
-          }}
           onClick={() => setEditable(!editable)}
-          className={`col-start-6 col-end-7 bg-white text-black flex justify-center w-12 h-5/6 rounded items-center absolute`}
+          className={`col-start-6 col-end-7 flex justify-center w-12 h-5/6 rounded items-center absolute`}
         >
-          <IconPencil className={editable && styles.pulse} size={40} />
+          <IconPencil
+            color={textTheme}
+            className={editable && styles.pulse}
+            size={40}
+          />
         </button>
       </div>
       <div
         style={{
           "--theme": textTheme,
+          backgroundColor: `${theme}90`,
         }}
-        className={`bg-black/50 w-full flex-1 overflow-x-auto overflow-y-hidden `}
+        className={`w-full flex-1 overflow-x-auto overflow-y-hidden `}
       >
         <div
           ref={scrollRef}
@@ -145,7 +141,7 @@ export default function ColorsMobile({
       </div>
       <Dialog onOpenChange={setEditForm} open={editForm}>
         <DialogContent
-          style={{ color: textTheme }}
+          style={{ color: textTheme, backgroundColor: theme }}
           className="w-full bg-black border-white border-2 overflow-hidden"
         >
           <DialogTitle className="flex justify-center items-center font-bold">

@@ -76,7 +76,11 @@ export default function JWTVerifier({ theme, textTheme }) {
             <label className="text-sm font-bold ">Verify JWT</label>
             <input
               type="text"
-              style={{ color: textTheme, border: `1px solid ${theme}` }}
+              style={{
+                color: textTheme,
+                outline: `1px solid ${textTheme}50`,
+                backgroundColor: theme,
+              }}
               value={verifyToken}
               onChange={(e) => setVerifyToken(e.target.value)}
               className="p-2 rounded bg-transparent font-mono text-sm w-full"
@@ -92,13 +96,21 @@ export default function JWTVerifier({ theme, textTheme }) {
               className="p-2 rounded w-full bg-transparent"
             >
               <SelectTrigger
-                style={{ color: textTheme, border: `1px solid ${theme}` }}
+                style={{
+                  color: textTheme,
+                  border: `1px solid ${textTheme}50`,
+                  backgroundColor: theme,
+                }}
                 className=" w-[100px] md:w-[150px]"
               >
                 <SelectValue placeholder="Format" />
               </SelectTrigger>
               <SelectContent
-                style={{ color: textTheme, backgroundColor: "black" }}
+                style={{
+                  color: textTheme,
+                  border: `1px solid ${textTheme}50`,
+                  backgroundColor: theme,
+                }}
               >
                 <SelectItem value="HS256">HS256 (SHA-256)</SelectItem>
                 <SelectItem value="HS384">HS384 (SHA-384)</SelectItem>
@@ -114,7 +126,11 @@ export default function JWTVerifier({ theme, textTheme }) {
             <label className="text-sm font-bold ">Secret key</label>
             <input
               type="text"
-              style={{ color: textTheme, border: `1px solid ${theme}` }}
+              style={{
+                color: textTheme,
+                outline: `1px solid ${textTheme}50`,
+                backgroundColor: theme,
+              }}
               value={verifySecret}
               onChange={(e) => setVerifySecret(e.target.value)}
               className="p-2 rounded bg-transparent w-full"
@@ -127,38 +143,47 @@ export default function JWTVerifier({ theme, textTheme }) {
               <Dialog>
                 <DialogTrigger
                   style={{
-                    backgroundColor: theme,
-                    color: textTheme,
-                    boxShadow: `0px 0px 5px 1px ${textTheme}`,
+                    color: theme,
+                    backgroundColor: textTheme,
                   }}
                   className="p-2 rounded w-3/4 md:w-1/4 font-semibold hover:opacity-80"
                 >
-                  Public Key
+                  PUBLIC KEY
                 </DialogTrigger>
-                <DialogContent className="flex flex-col  justify-center gap-2 w-full md:w-80 h-[80vh] 2xl:h-[60vh] 2xl:w-[90vw] bg-black border-white border-2 text-white overflow-hidden">
+                <DialogContent
+                  style={{
+                    color: textTheme,
+                    backgroundColor: theme,
+                    border: `1px solid ${textTheme}`,
+                  }}
+                  className="flex flex-col  justify-center gap-2 w-full md:w-80 h-[80vh] 2xl:h-[60vh] 2xl:w-[90vw] bg-black border-white border-2 text-white overflow-hidden"
+                >
                   <DialogHeader></DialogHeader>
                   <DialogTitle
                     className="text-center"
                     style={{ color: textTheme }}
                   >
-                    Public Key
+                    PUBLIC KEY
                   </DialogTitle>
                   <div
                     style={{ color: textTheme }}
                     className="flex flex-col gap-4"
                   >
                     <textarea
-                      style={{ border: `1px solid ${theme}` }}
+                      style={{
+                        outline: `1px solid ${textTheme}`,
+                        backgroundColor: theme,
+                      }}
                       placeholder={`-----BEGIN PUBLIC KEY-----\n\n\n\n........\n\n\n\n\n\n\n-----END PUBLIC KEY-----`}
                       value={verifyPublicKey}
                       onChange={(e) => setVerifyPublicKey(e.target.value)}
                       className=" p-2 rounded bg-black font-mono text-xs w-full h-80 resize-none"
                     />
                     <DialogClose
-                      style={{ backgroundColor: theme }}
-                      className="flex w-full font-bold items-center justify-center hover:opacity-80 duration-300 p-2 rounded"
+                      style={{ color: theme, backgroundColor: textTheme }}
+                      className="flex h-10 w-full font-bold items-center justify-center hover:opacity-80 duration-300 p-2 rounded"
                     >
-                      Close
+                      CLOSE
                     </DialogClose>
                   </div>
                 </DialogContent>
@@ -170,10 +195,10 @@ export default function JWTVerifier({ theme, textTheme }) {
 
       <button
         onClick={handleVerify}
-        style={{ backgroundColor: theme, color: textTheme }}
-        className="rounded p-2 font-bold w-full mt-2 hover:opacity-90"
+        style={{ color: theme, backgroundColor: textTheme }}
+        className="rounded p-2 font-bold w-full h-10 mt-2 hover:opacity-90"
       >
-        Verify
+        VERIFY
       </button>
 
       <div className="mt-2">
@@ -181,7 +206,7 @@ export default function JWTVerifier({ theme, textTheme }) {
         <pre
           style={{
             "--theme": textTheme,
-            border: `1px solid ${theme}`,
+            border: `1px solid ${textTheme}50`,
             color: textTheme,
           }}
           className={`bg-black/50 p-2 rounded overflow-auto text-xs break-all h-40 ${styles.scrollContainer}`}

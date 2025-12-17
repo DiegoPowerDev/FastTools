@@ -86,18 +86,20 @@ export default function NotesMobile({ notes, setNotes, theme, textTheme }) {
           Notes
         </div>
         <button
-          style={{
-            boxShadow: editable ? `0px 0px 5px 2px white` : "",
-          }}
           onClick={() => setEditable(!editable)}
-          className={`col-start-6 col-end-7 bg-white text-black  flex justify-center w-12 h-5/6 rounded items-center absolute`}
+          className={`col-start-6 col-end-7   flex justify-center w-12 h-5/6 rounded items-center absolute`}
         >
-          <IconPencil className={editable && styles.pulse} size={40} />
+          <IconPencil
+            color={textTheme}
+            className={editable && styles.pulse}
+            size={40}
+          />
         </button>
       </div>
       <div
         style={{
           "--theme": textTheme,
+          backgroundColor: `${theme}90`,
         }}
         className={`w-full flex-1 overflow-x-auto overflow-y-hidden `}
       >
@@ -131,7 +133,14 @@ export default function NotesMobile({ notes, setNotes, theme, textTheme }) {
         </div>
       </div>
       <Dialog onOpenChange={setEditForm} open={editForm}>
-        <DialogContent className="w-full min-h-[70vh] bg-black border-white border-2 text-white overflow-hidden gap-2">
+        <DialogContent
+          style={{
+            color: textTheme,
+            backgroundColor: theme,
+            border: `1px solid ${textTheme}`,
+          }}
+          className="w-full min-h-[70vh] overflow-hidden gap-2"
+        >
           <DialogTitle
             style={{ color: textTheme }}
             className="flex justify-center items-center font-bold"
@@ -152,6 +161,7 @@ export default function NotesMobile({ notes, setNotes, theme, textTheme }) {
                     style={{
                       color: `#${manageFormat(textColor)}`,
                       backgroundColor: `#${manageFormat(bgColor)}`,
+                      border: `1px solid ${textTheme}`,
                     }}
                     disabled={!editable}
                     id="title"
@@ -183,6 +193,7 @@ export default function NotesMobile({ notes, setNotes, theme, textTheme }) {
                   style={{
                     "--theme": textTheme,
                     color: textTheme,
+                    border: `1px solid ${textTheme}`,
                   }}
                   className={`text-white disabled:cursor-text disabled:select-text resize-none p-2 w-full rounded ${styles.scrollContainer} placeholder:opacity-40`}
                   value={content}
@@ -212,6 +223,10 @@ export default function NotesMobile({ notes, setNotes, theme, textTheme }) {
                         maxLength={9}
                         className="p-2 w-40 rounded placeholder:opacity-40"
                         type="text"
+                        style={{
+                          color: textTheme,
+                          border: `1px solid ${textTheme}`,
+                        }}
                         value={bgColor.toUpperCase()}
                         onChange={(e) => {
                           const colorV = e.target.value;
@@ -235,6 +250,10 @@ export default function NotesMobile({ notes, setNotes, theme, textTheme }) {
                       <Input
                         id="color"
                         maxLength={9}
+                        style={{
+                          color: textTheme,
+                          border: `1px solid ${textTheme}`,
+                        }}
                         className="p-2 w-40 rounded placeholder:opacity-40"
                         type="text"
                         value={textColor.toUpperCase()}
@@ -303,7 +322,7 @@ export default function NotesMobile({ notes, setNotes, theme, textTheme }) {
               <div className="w-full h-full mt-4 flex justify-center md:justify-end">
                 <Button
                   onClick={exportToTextFile}
-                  style={{ backgroundColor: theme, color: textTheme }}
+                  style={{ color: theme, backgroundColor: textTheme }}
                   className="font-bold w-3/4 md:w-4/12 flex justify-center hover:opacity-70"
                 >
                   DOWNLOAD <IconDownload />
