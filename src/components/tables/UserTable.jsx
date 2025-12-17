@@ -63,6 +63,10 @@ const componentMap = {
       loading: () => <ComponentSkeleton height="350px" />,
     }
   ),
+  webreader: dynamic(() => import("@/components/webreader/webreader"), {
+    ssr: false,
+    loading: () => <ComponentSkeleton height="350px" />,
+  }),
 };
 export default function UserTable() {
   const {
@@ -120,7 +124,8 @@ export default function UserTable() {
             className={`rounded-xl w-full overflow-hidden ${
               component.label === "apiTester" ||
               component.label === "jwt" ||
-              component.label === "videoTrimmer"
+              component.label === "videoTrimmer" ||
+              component.label === "webreader"
                 ? "h-[500px]"
                 : "h-[350px]"
             } ${

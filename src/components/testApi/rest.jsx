@@ -117,55 +117,25 @@ export default function Rest({ theme, textTheme, api, setApi }) {
 
   // 🚀 Enviar solicitud
   const handleSend = async () => {
-    if (!api)
-      return toast.error("Please enter a URL", {
-        style: {
-          border: "1px solid #713200",
-          backgroundColor: "black",
-          padding: "16px",
-          color: theme,
-        },
-      });
+    if (!api) return toast.error("Please enter a URL");
+
     setLoading(true);
     setResponse(null);
 
     try {
-      const options = {
-        method,
-        headers: JSON.parse(headers || "{}"),
-        credentials: "include", // 👈 permite enviar cookies
-      };
-
-      if (method !== "GET" && method !== "HEAD") {
-        options.body = body ? JSON.stringify(JSON.parse(body)) : undefined;
-      }
-
-      async function fetchWithTimeout(
-        resource,
-        options = {},
-        timeout = 600000
-      ) {
-        // 10 min
-        const controller = new AbortController();
-        const id = setTimeout(() => controller.abort(), timeout);
-        const response = await fetch(resource, {
-          ...options,
-          signal: controller.signal,
-        });
-        clearTimeout(id);
-        return response;
-      }
-      const res = await fetchWithTimeout(api, options, 600000);
-      const contentType = res.headers.get("content-type");
-      const data = contentType?.includes("application/json")
-        ? await res.json()
-        : await res.text();
-
-      setResponse({
-        status: res.status,
-        statusText: res.statusText,
-        data,
+      const res = await fetch("/api/proxy", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          url: api,
+          method,
+          headers: JSON.parse(headers || "{}"),
+          body: body ? JSON.parse(body) : undefined,
+        }),
       });
+
+      const data = await res.json();
+      setResponse(data);
     } catch (err) {
       setResponse({ error: err.message });
     } finally {

@@ -49,6 +49,7 @@ import {
   IconCarambola,
   IconCalendarMonth,
   IconListCheck,
+  IconSpy,
 } from "@tabler/icons-react";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
@@ -61,6 +62,7 @@ import { cn } from "@/lib/utils";
 import {
   CalendarClock,
   Film,
+  HatGlasses,
   ImageUpscale,
   Link,
   NotebookText,
@@ -85,6 +87,7 @@ const iconMap = {
   qr: IconQrcode,
   colorpicker: Pipette,
   videoTrimmer: Film,
+  webreader: HatGlasses,
 };
 
 // === Sortable Button ===
