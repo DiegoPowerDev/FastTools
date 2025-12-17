@@ -87,7 +87,7 @@ const iconMap = {
   qr: IconQrcode,
   colorpicker: Pipette,
   videoTrimmer: Film,
-  webanalyler: HatGlasses,
+  webanalyzer: HatGlasses,
 };
 
 // === Sortable Button ===
