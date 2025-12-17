@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
-import puppeteer from "puppeteer-core";
-import chromium from "@sparticuz/chromium-min";
+import puppeteer from "puppeteer";
 
 export async function POST(request) {
   let browser;
@@ -8,53 +7,11 @@ export async function POST(request) {
   try {
     const { url } = await request.json();
 
-    // Detectar entorno
-    const isDev = process.env.NODE_ENV === "development";
-
-    let executablePath;
-    let launchOptions;
-
-    if (isDev) {
-      // En desarrollo local, usar puppeteer normal
-      try {
-        const puppeteerRegular = require("puppeteer");
-        browser = await puppeteerRegular.launch({
-          headless: true,
-          args: ["--no-sandbox", "--disable-setuid-sandbox"],
-        });
-      } catch (error) {
-        return NextResponse.json(
-          {
-            error:
-              "Please install puppeteer for local development: npm install puppeteer --save-dev",
-          },
-          { status: 500 }
-        );
-      }
-    } else {
-      // En producción (Vercel), usar chromium-min
-      executablePath = await chromium.executablePath(
-        "https://github.com/Sparticuz/chromium/releases/download/v131.0.1/chromium-v131.0.1-pack.tar"
-      );
-
-      launchOptions = {
-        args: [
-          ...chromium.args,
-          "--disable-gpu",
-          "--disable-dev-shm-usage",
-          "--disable-setuid-sandbox",
-          "--no-first-run",
-          "--no-sandbox",
-          "--no-zygote",
-          "--single-process",
-        ],
-        defaultViewport: chromium.defaultViewport,
-        executablePath: executablePath,
-        headless: chromium.headless,
-      };
-
-      browser = await puppeteer.launch(launchOptions);
-    }
+    // Lanzar navegador headless
+    browser = await puppeteer.launch({
+      headless: true,
+      args: ["--no-sandbox", "--disable-setuid-sandbox"],
+    });
 
     const page = await browser.newPage();
 
@@ -75,6 +32,7 @@ export async function POST(request) {
           filename: resourceUrl.split("/").pop().split("?")[0] || "image.jpg",
         });
       } else if (resourceType === "media") {
+        // Videos
         if (resourceUrl.match(/\.(mp4|webm|ogg|mov)(\?|$)/i)) {
           videos.push({
             type: "video",
@@ -91,11 +49,13 @@ export async function POST(request) {
       }
     });
 
+    // Ir a la página y esperar a que cargue
     await page.goto(url, {
-      waitUntil: "domcontentloaded", // Menos estricto que networkidle2
-      timeout: 8000, // 8 segundos máximo
+      waitUntil: "networkidle2",
+      timeout: 30000,
     });
 
+    // Extraer recursos adicionales del DOM
     const domResources = await page.evaluate(() => {
       const resources = {
         images: [],
@@ -103,6 +63,7 @@ export async function POST(request) {
         fonts: [],
       };
 
+      // Imágenes
       document.querySelectorAll("img").forEach((img) => {
         if (img.src) {
           resources.images.push({
@@ -125,6 +86,7 @@ export async function POST(request) {
         }
       });
 
+      // Videos
       document.querySelectorAll("video source, video").forEach((el) => {
         const src = el.src || el.currentSrc;
         if (src) {
@@ -136,6 +98,7 @@ export async function POST(request) {
         }
       });
 
+      // Background images
       document.querySelectorAll("*").forEach((el) => {
         const style = window.getComputedStyle(el);
         const bgImage = style.backgroundImage;
@@ -155,6 +118,7 @@ export async function POST(request) {
       return resources;
     });
 
+    // Combinar recursos capturados y extraídos del DOM
     const allResources = [
       ...images,
       ...domResources.images,
@@ -164,16 +128,15 @@ export async function POST(request) {
       ...domResources.fonts,
     ];
 
+    // Eliminar duplicados por URL
     const uniqueResources = Array.from(
       new Map(allResources.map((r) => [r.url, r])).values()
     );
 
+    // Obtener tamaños
     const getResourceSize = async (resourceUrl) => {
       try {
-        const res = await fetch(resourceUrl, {
-          method: "HEAD",
-          signal: AbortSignal.timeout(5000),
-        });
+        const res = await fetch(resourceUrl, { method: "HEAD" });
         const contentLength = res.headers.get("content-length");
         if (contentLength) {
           const bytes = parseInt(contentLength);
@@ -182,7 +145,7 @@ export async function POST(request) {
           return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
         }
       } catch (err) {
-        // Ignorar
+        // Ignorar errores
       }
       return null;
     };
