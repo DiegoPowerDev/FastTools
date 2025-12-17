@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import styles from "../style.module.css";
 import {
   Download,
@@ -168,6 +168,19 @@ export default function WebAnalyzer({ theme, textTheme }) {
       {resources?.resources && (
         <>
           <div className="flex gap-2 flex-wrap px-2">
+            <button
+              className={`px-4 py-2 rounded-lg font-semibold transition-all capitalize`}
+              onClick={() => setFilter("all")}
+              style={{
+                backgroundColor: filter === "all" ? theme : "",
+                border:
+                  filter === "all"
+                    ? `1px solid ${textTheme}`
+                    : `1px solid ${textTheme}50`,
+              }}
+            >
+              All ({resources.resources.length})
+            </button>
             {Object.entries(resourceCounts).map(([type, count]) => (
               <button
                 style={{
@@ -187,10 +200,10 @@ export default function WebAnalyzer({ theme, textTheme }) {
           </div>
 
           <div
-            style={{ "--theme": textTheme }}
+            style={{ "--theme": textTheme, border: `2px solid ${textTheme}` }}
             className={cn(
               styles.scrollContainer,
-              "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 flex-1 gap-4 overflow-y-auto p-4"
+              "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 flex-1 gap-4 overflow-y-auto p-4 rounded m-2"
             )}
           >
             {filteredResources.map((resource, index) => (
@@ -198,7 +211,8 @@ export default function WebAnalyzer({ theme, textTheme }) {
                 style={{ backgroundColor: theme, color: textTheme }}
                 key={index}
                 className={cn(
-                  filter === "font" && "h-32",
+                  resource.type === "font" && "h-32",
+                  resource.type === "image" && "h-48",
                   "backdrop-blur-lg rounded-xl p-4 border hover:scale-105 transition-all"
                 )}
               >

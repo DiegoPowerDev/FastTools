@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import puppeteer from "puppeteer-core";
 import chromium from "@sparticuz/chromium-min";
 
-export const maxDuration = 60; // Requiere plan Pro, sino elimina esta línea
+export const maxDuration = 60;
 
 export async function POST(request) {
   let browser;
@@ -16,11 +16,9 @@ export async function POST(request) {
 
     console.log("Starting extraction for:", url);
 
-    // Detectar entorno
     const isDev = process.env.NODE_ENV === "development";
 
     if (isDev) {
-      // En desarrollo local, usar puppeteer normal
       try {
         const puppeteerRegular = require("puppeteer");
         browser = await puppeteerRegular.launch({
@@ -39,7 +37,6 @@ export async function POST(request) {
         );
       }
     } else {
-      // En producción (Vercel)
       try {
         console.log("Getting executable path...");
         const executablePath = await chromium.executablePath(
@@ -77,12 +74,10 @@ export async function POST(request) {
     const page = await browser.newPage();
     console.log("New page created");
 
-    // Arrays para capturar recursos
     const images = [];
     const videos = [];
     const fonts = [];
 
-    // Interceptar requests de recursos
     page.on("request", (request) => {
       const resourceUrl = request.url();
       const resourceType = request.resourceType();
@@ -193,11 +188,40 @@ export async function POST(request) {
 
     console.log("Total unique resources:", uniqueResources.length);
 
-    // Simplificar: no obtener tamaños si hay muchos recursos
-    const resourcesWithSize = uniqueResources.slice(0, 50).map((resource) => ({
-      ...resource,
-      size: null,
-    }));
+    // Función para obtener tamaño con timeout
+    const getResourceSize = async (resourceUrl) => {
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 3000); // 3 segundos max
+
+        const res = await fetch(resourceUrl, {
+          method: "HEAD",
+          signal: controller.signal,
+        });
+
+        clearTimeout(timeoutId);
+
+        const contentLength = res.headers.get("content-length");
+        if (contentLength) {
+          const bytes = parseInt(contentLength);
+          if (bytes < 1024) return `${bytes} B`;
+          if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(2)} KB`;
+          return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
+        }
+      } catch (err) {
+        // Timeout o error de red, ignorar
+      }
+      return null;
+    };
+
+    // Obtener tamaños (máximo 100 recursos, en paralelo pero con límite)
+    console.log("Getting resource sizes...");
+    const resourcesWithSize = await Promise.all(
+      uniqueResources.slice(0, 100).map(async (resource) => {
+        const size = await getResourceSize(resource.url);
+        return { ...resource, size };
+      })
+    );
 
     await browser.close();
     console.log("Browser closed");
