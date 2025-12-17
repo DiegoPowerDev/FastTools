@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import puppeteer from "puppeteer-core";
-import chromium from "@sparticuz/chromium";
+import chromium from "@sparticuz/chromium-min";
 
 export async function POST(request) {
   let browser;
@@ -15,52 +15,44 @@ export async function POST(request) {
     let launchOptions;
 
     if (isDev) {
-      // En desarrollo local, intenta encontrar Chrome/Chromium
-      const possiblePaths = [
-        "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome", // Mac
-        "/usr/bin/google-chrome", // Linux
-        "/usr/bin/chromium-browser", // Linux alternativo
-        "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe", // Windows
-        "C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe", // Windows 32bit
-      ];
-
-      // Buscar el primer path que exista
-      const fs = require("fs");
-      executablePath = possiblePaths.find((path) => {
-        try {
-          return fs.existsSync(path);
-        } catch {
-          return false;
-        }
-      });
-
-      // Si no encuentra ninguno, usar puppeteer normal
-      if (!executablePath) {
+      // En desarrollo local, usar puppeteer normal
+      try {
         const puppeteerRegular = require("puppeteer");
         browser = await puppeteerRegular.launch({
           headless: true,
           args: ["--no-sandbox", "--disable-setuid-sandbox"],
         });
-      } else {
-        launchOptions = {
-          executablePath,
-          headless: true,
-          args: ["--no-sandbox", "--disable-setuid-sandbox"],
-        };
+      } catch (error) {
+        return NextResponse.json(
+          {
+            error:
+              "Please install puppeteer for local development: npm install puppeteer --save-dev",
+          },
+          { status: 500 }
+        );
       }
     } else {
-      // En producción (Vercel), usar chromium optimizado
-      executablePath = await chromium.executablePath();
+      // En producción (Vercel), usar chromium-min
+      executablePath = await chromium.executablePath(
+        "https://github.com/Sparticuz/chromium/releases/download/v131.0.1/chromium-v131.0.1-pack.tar"
+      );
+
       launchOptions = {
-        args: chromium.args,
+        args: [
+          ...chromium.args,
+          "--disable-gpu",
+          "--disable-dev-shm-usage",
+          "--disable-setuid-sandbox",
+          "--no-first-run",
+          "--no-sandbox",
+          "--no-zygote",
+          "--single-process",
+        ],
         defaultViewport: chromium.defaultViewport,
         executablePath: executablePath,
         headless: chromium.headless,
       };
-    }
 
-    // Lanzar navegador solo si no se lanzó antes
-    if (!browser) {
       browser = await puppeteer.launch(launchOptions);
     }
 
@@ -100,8 +92,8 @@ export async function POST(request) {
     });
 
     await page.goto(url, {
-      waitUntil: "networkidle2",
-      timeout: 30000,
+      waitUntil: "domcontentloaded", // Menos estricto que networkidle2
+      timeout: 8000, // 8 segundos máximo
     });
 
     const domResources = await page.evaluate(() => {
@@ -178,7 +170,10 @@ export async function POST(request) {
 
     const getResourceSize = async (resourceUrl) => {
       try {
-        const res = await fetch(resourceUrl, { method: "HEAD" });
+        const res = await fetch(resourceUrl, {
+          method: "HEAD",
+          signal: AbortSignal.timeout(5000),
+        });
         const contentLength = res.headers.get("content-length");
         if (contentLength) {
           const bytes = parseInt(contentLength);
