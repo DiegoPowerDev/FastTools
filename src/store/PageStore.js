@@ -315,7 +315,7 @@ export const pageStore = createStore(
         { id: 6, label: "links" },
         { id: 8, label: "apiTester" },
         { id: 9, label: "jwt" },
-        { id: 12, label: "webanalyler" },
+        { id: 12, label: "webanalyzer" },
       ],
       setHeaderArea: (updater) => {
         set((state) => ({

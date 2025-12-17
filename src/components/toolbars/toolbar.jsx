@@ -49,6 +49,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 import MenuSettingsBasic from "../menuSettings/MenuSettingsBasic";
 import {
+  HatGlasses,
   ImageUpscale,
   Link,
   NotebookText,
@@ -70,6 +71,7 @@ const iconMap = {
   editor: ImageUpscale,
   qr: IconQrcode,
   colorpicker: Pipette,
+  webanalyzer: HatGlasses,
 };
 
 // === Sortable Button ===
