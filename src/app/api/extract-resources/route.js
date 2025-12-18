@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import * as cheerio from "cheerio";
 
+// Función rápida con Cheerio (sin JavaScript)
 async function extractWithCheerio(url) {
   const response = await fetch(url);
   const html = await response.text();
@@ -32,6 +33,22 @@ async function extractWithCheerio(url) {
     }
   });
 
+  // Videos
+  $("video source, video").each((i, el) => {
+    const src = $(el).attr("src");
+    if (src) {
+      const fullUrl = resolveUrl(src);
+      if (fullUrl) {
+        resources.push({
+          type: "video",
+          url: fullUrl,
+          filename: fullUrl.split("/").pop().split("?")[0] || `video-${i}.mp4`,
+        });
+      }
+    }
+  });
+
+  // Fuentes en CSS
   $("link[rel='stylesheet'], style").each((i, el) => {
     const href = $(el).attr("href");
     if (href) {
@@ -137,7 +154,7 @@ async function extractWithPuppeteer(url) {
 
   await page.goto(url, {
     waitUntil: "domcontentloaded",
-    timeout: 5000,
+    timeout: 15000,
   });
 
   const domResources = await page.evaluate(() => {
@@ -192,10 +209,34 @@ export async function POST(request) {
     let method = "cheerio";
 
     // Primero intentar con Cheerio (rápido)
+    try {
+      console.log("Trying with Cheerio...");
+      allResources = await extractWithCheerio(url);
+      console.log(`Found ${allResources.length} resources with Cheerio`);
 
-    // Si Cheerio falló, intentar Puppeteer
+      // Si no encontró recursos, probablemente es una SPA
+      if (allResources.length < 3) {
+        console.log("Few resources found, trying with Puppeteer...");
+        method = "puppeteer";
+        allResources = await extractWithPuppeteer(url);
+        console.log(`Found ${allResources.length} resources with Puppeteer`);
+      }
+    } catch (error) {
+      console.error(`Error with ${method}:`, error);
 
-    allResources = await extractWithPuppeteer(url);
+      // Si Cheerio falló, intentar Puppeteer
+      if (method === "cheerio") {
+        try {
+          console.log("Cheerio failed, trying Puppeteer...");
+          allResources = await extractWithPuppeteer(url);
+        } catch (puppeteerError) {
+          console.error("Puppeteer also failed:", puppeteerError);
+          throw puppeteerError;
+        }
+      } else {
+        throw error;
+      }
+    }
 
     const uniqueResources = Array.from(
       new Map(allResources.map((r) => [r.url, r])).values()
