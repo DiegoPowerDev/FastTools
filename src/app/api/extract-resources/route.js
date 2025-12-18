@@ -2,8 +2,6 @@ import { NextResponse } from "next/server";
 import puppeteer from "puppeteer-core";
 import chromium from "@sparticuz/chromium-min";
 
-export const maxDuration = 60;
-
 export async function POST(request) {
   let browser;
 
@@ -72,7 +70,9 @@ export async function POST(request) {
     }
 
     const page = await browser.newPage();
-    console.log("New page created");
+
+    // Bloquear recursos pesados para cargar más rápido
+    await page.setRequestInterception(true);
 
     const images = [];
     const videos = [];
@@ -82,12 +82,19 @@ export async function POST(request) {
       const resourceUrl = request.url();
       const resourceType = request.resourceType();
 
+      // Capturar URLs pero no descargar videos/fuentes pesadas
       if (resourceType === "image") {
         images.push({
           type: "image",
           url: resourceUrl,
           filename: resourceUrl.split("/").pop().split("?")[0] || "image.jpg",
         });
+        // Bloquear imágenes muy grandes
+        if (resourceUrl.includes("4k") || resourceUrl.includes("original")) {
+          request.abort();
+        } else {
+          request.continue();
+        }
       } else if (resourceType === "media") {
         if (resourceUrl.match(/\.(mp4|webm|ogg|mov)(\?|$)/i)) {
           videos.push({
@@ -96,20 +103,41 @@ export async function POST(request) {
             filename: resourceUrl.split("/").pop().split("?")[0] || "video.mp4",
           });
         }
+        request.abort(); // No descargar videos
       } else if (resourceType === "font") {
         fonts.push({
           type: "font",
           url: resourceUrl,
           filename: resourceUrl.split("/").pop().split("?")[0] || "font.woff",
         });
+        request.continue();
+      } else {
+        request.continue();
       }
     });
 
     console.log("Navigating to URL:", url);
-    await page.goto(url, {
-      waitUntil: "domcontentloaded",
-    });
-    console.log("Page loaded");
+
+    // Timeout más corto para producción
+    const timeout = isDev ? 30000 : 7000;
+
+    try {
+      await page.goto(url, {
+        waitUntil: "domcontentloaded",
+        timeout: timeout,
+      });
+      console.log("Page loaded");
+    } catch (error) {
+      if (error.name === "TimeoutError") {
+        console.log("Timeout but continuing with partial data...");
+        // Continuar aunque haya timeout
+      } else {
+        throw error;
+      }
+    }
+
+    // Esperar solo 500ms adicionales
+    await page.waitForTimeout(500);
 
     const domResources = await page.evaluate(() => {
       const resources = {
@@ -187,40 +215,11 @@ export async function POST(request) {
 
     console.log("Total unique resources:", uniqueResources.length);
 
-    // Función para obtener tamaño con timeout
-    const getResourceSize = async (resourceUrl) => {
-      try {
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 3000); // 3 segundos max
-
-        const res = await fetch(resourceUrl, {
-          method: "HEAD",
-          signal: controller.signal,
-        });
-
-        clearTimeout(timeoutId);
-
-        const contentLength = res.headers.get("content-length");
-        if (contentLength) {
-          const bytes = parseInt(contentLength);
-          if (bytes < 1024) return `${bytes} B`;
-          if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(2)} KB`;
-          return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
-        }
-      } catch (err) {
-        // Timeout o error de red, ignorar
-      }
-      return null;
-    };
-
-    // Obtener tamaños (máximo 100 recursos, en paralelo pero con límite)
-    console.log("Getting resource sizes...");
-    const resourcesWithSize = await Promise.all(
-      uniqueResources.slice(0, 100).map(async (resource) => {
-        const size = await getResourceSize(resource.url);
-        return { ...resource, size };
-      })
-    );
+    // NO obtener tamaños en producción para ahorrar tiempo
+    const resourcesWithSize = uniqueResources.slice(0, 200).map((resource) => ({
+      ...resource,
+      size: null, // Calcular en el frontend si es necesario
+    }));
 
     await browser.close();
     console.log("Browser closed");
