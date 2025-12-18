@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import * as cheerio from "cheerio";
 
-// Función rápida con Cheerio (sin JavaScript)
 async function extractWithCheerio(url) {
   const response = await fetch(url);
   const html = await response.text();
@@ -33,22 +32,6 @@ async function extractWithCheerio(url) {
     }
   });
 
-  // Videos
-  $("video source, video").each((i, el) => {
-    const src = $(el).attr("src");
-    if (src) {
-      const fullUrl = resolveUrl(src);
-      if (fullUrl) {
-        resources.push({
-          type: "video",
-          url: fullUrl,
-          filename: fullUrl.split("/").pop().split("?")[0] || `video-${i}.mp4`,
-        });
-      }
-    }
-  });
-
-  // Fuentes en CSS
   $("link[rel='stylesheet'], style").each((i, el) => {
     const href = $(el).attr("href");
     if (href) {
@@ -90,16 +73,25 @@ async function extractWithCheerio(url) {
 // Función con Puppeteer (para SPAs)
 async function extractWithPuppeteer(url) {
   const puppeteer = await import("puppeteer-core");
-  const chromium = await import("@sparticuz/chromium");
+  const chromium = await import("@sparticuz/chromium-min");
 
-  const isVercel = !!process.env.VERCEL;
+  const executablePath = await chromium.default.executablePath(
+    "https://github.com/Sparticuz/chromium/releases/download/v131.0.1/chromium-v131.0.1-pack.tar"
+  );
 
-  const browser = await puppeteer.launch({
-    args: chromium.default.args,
+  const browser = await puppeteer.default.launch({
+    args: [
+      ...chromium.default.args,
+      "--disable-gpu",
+      "--disable-dev-shm-usage",
+      "--disable-setuid-sandbox",
+      "--no-first-run",
+      "--no-sandbox",
+      "--no-zygote",
+      "--single-process",
+    ],
     defaultViewport: chromium.default.defaultViewport,
-    executablePath: isVercel
-      ? await chromium.default.executablePath()
-      : undefined, // ⬅️ CLAVE
+    executablePath: executablePath,
     headless: chromium.default.headless,
   });
 
@@ -145,7 +137,7 @@ async function extractWithPuppeteer(url) {
 
   await page.goto(url, {
     waitUntil: "domcontentloaded",
-    timeout: 15000,
+    timeout: 5000,
   });
 
   const domResources = await page.evaluate(() => {
@@ -200,19 +192,13 @@ export async function POST(request) {
     let method = "cheerio";
 
     // Primero intentar con Cheerio (rápido)
-    try {
-      console.log("Trying with Cheerio...");
-      allResources = await extractWithCheerio(url);
-      console.log(`Found ${allResources.length} resources with Cheerio`);
 
-      // Si no encontró recursos, probablemente es una SPA
-      if (allResources.length < 3) {
-        console.log("Few resources found, trying with Puppeteer...");
-        method = "puppeteer";
-        allResources = await extractWithPuppeteer(url);
-        console.log(`Found ${allResources.length} resources with Puppeteer`);
-      }
-    } catch (error) {
+    console.log("Few resources found, trying with Puppeteer...");
+    method = "puppeteer";
+    allResources = await extractWithPuppeteer(url);
+    console.log(`Found ${allResources.length} resources with Puppeteer`);
+
+    {
       console.error(`Error with ${method}:`, error);
 
       // Si Cheerio falló, intentar Puppeteer
