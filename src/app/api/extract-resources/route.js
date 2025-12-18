@@ -193,29 +193,9 @@ export async function POST(request) {
 
     // Primero intentar con Cheerio (rápido)
 
-    console.log("Trying with Cheerio...");
-    allResources = await extractWithCheerio(url);
-    console.log(`Found ${allResources.length} resources with Cheerio`);
-
-    // Si no encontró recursos, probablemente es una SPA
-
-    console.log("Few resources found, trying with Puppeteer...");
-    method = "puppeteer";
-    allResources = await extractWithPuppeteer(url);
-    console.log(`Found ${allResources.length} resources with Puppeteer`);
-
     // Si Cheerio falló, intentar Puppeteer
-    if (method === "cheerio") {
-      try {
-        console.log("Cheerio failed, trying Puppeteer...");
-        allResources = await extractWithPuppeteer(url);
-      } catch (puppeteerError) {
-        console.error("Puppeteer also failed:", puppeteerError);
-        throw puppeteerError;
-      }
-    } else {
-      throw error;
-    }
+
+    allResources = await extractWithPuppeteer(url);
 
     const uniqueResources = Array.from(
       new Map(allResources.map((r) => [r.url, r])).values()
