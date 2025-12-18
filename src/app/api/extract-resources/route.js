@@ -1,201 +1,12 @@
 import { NextResponse } from "next/server";
-import * as cheerio from "cheerio";
+import puppeteer from "puppeteer-core";
+import chromium from "@sparticuz/chromium-min";
 
-// Función rápida con Cheerio (sin JavaScript)
-async function extractWithCheerio(url) {
-  const response = await fetch(url);
-  const html = await response.text();
-  const $ = cheerio.load(html);
-
-  const baseUrl = new URL(url);
-  const resources = [];
-
-  const resolveUrl = (href) => {
-    try {
-      return new URL(href, baseUrl).href;
-    } catch {
-      return null;
-    }
-  };
-
-  // Imágenes
-  $("img").each((i, el) => {
-    const src = $(el).attr("src") || $(el).attr("data-src");
-    if (src) {
-      const fullUrl = resolveUrl(src);
-      if (fullUrl) {
-        resources.push({
-          type: "image",
-          url: fullUrl,
-          filename: fullUrl.split("/").pop().split("?")[0] || `image-${i}.jpg`,
-        });
-      }
-    }
-  });
-
-  // Videos
-  $("video source, video").each((i, el) => {
-    const src = $(el).attr("src");
-    if (src) {
-      const fullUrl = resolveUrl(src);
-      if (fullUrl) {
-        resources.push({
-          type: "video",
-          url: fullUrl,
-          filename: fullUrl.split("/").pop().split("?")[0] || `video-${i}.mp4`,
-        });
-      }
-    }
-  });
-
-  // Fuentes en CSS
-  $("link[rel='stylesheet'], style").each((i, el) => {
-    const href = $(el).attr("href");
-    if (href) {
-      const fullUrl = resolveUrl(href);
-      if (
-        fullUrl &&
-        (fullUrl.includes(".woff") ||
-          fullUrl.includes(".ttf") ||
-          fullUrl.includes(".otf"))
-      ) {
-        resources.push({
-          type: "font",
-          url: fullUrl,
-          filename: fullUrl.split("/").pop().split("?")[0],
-        });
-      }
-    }
-
-    const content = $(el).html();
-    if (content) {
-      const fontRegex = /url\(['"]?([^'"]+\.(?:woff2?|ttf|otf|eot))['"]?\)/gi;
-      let match;
-      while ((match = fontRegex.exec(content)) !== null) {
-        const fullUrl = resolveUrl(match[1]);
-        if (fullUrl) {
-          resources.push({
-            type: "font",
-            url: fullUrl,
-            filename: fullUrl.split("/").pop().split("?")[0],
-          });
-        }
-      }
-    }
-  });
-
-  return resources;
-}
-
-// Función con Puppeteer (para SPAs)
-async function extractWithPuppeteer(url) {
-  const puppeteer = await import("puppeteer-core");
-  const chromium = await import("@sparticuz/chromium-min");
-
-  const executablePath = await chromium.default.executablePath(
-    "https://github.com/Sparticuz/chromium/releases/download/v131.0.1/chromium-v131.0.1-pack.tar"
-  );
-
-  const browser = await puppeteer.default.launch({
-    args: [
-      ...chromium.default.args,
-      "--disable-gpu",
-      "--disable-dev-shm-usage",
-      "--disable-setuid-sandbox",
-      "--no-first-run",
-      "--no-sandbox",
-      "--no-zygote",
-      "--single-process",
-    ],
-    defaultViewport: chromium.default.defaultViewport,
-    executablePath: executablePath,
-    headless: chromium.default.headless,
-  });
-
-  const page = await browser.newPage();
-
-  await page.setRequestInterception(true);
-
-  const images = [];
-  const videos = [];
-  const fonts = [];
-
-  page.on("request", (request) => {
-    const resourceUrl = request.url();
-    const resourceType = request.resourceType();
-
-    if (resourceType === "image") {
-      images.push({
-        type: "image",
-        url: resourceUrl,
-        filename: resourceUrl.split("/").pop().split("?")[0] || "image.jpg",
-      });
-      request.continue();
-    } else if (resourceType === "media") {
-      if (resourceUrl.match(/\.(mp4|webm|ogg|mov)(\?|$)/i)) {
-        videos.push({
-          type: "video",
-          url: resourceUrl,
-          filename: resourceUrl.split("/").pop().split("?")[0] || "video.mp4",
-        });
-      }
-      request.abort();
-    } else if (resourceType === "font") {
-      fonts.push({
-        type: "font",
-        url: resourceUrl,
-        filename: resourceUrl.split("/").pop().split("?")[0] || "font.woff",
-      });
-      request.continue();
-    } else {
-      request.continue();
-    }
-  });
-
-  await page.goto(url, {
-    waitUntil: "domcontentloaded",
-    timeout: 15000,
-  });
-
-  const domResources = await page.evaluate(() => {
-    const resources = { images: [], videos: [], fonts: [] };
-
-    document.querySelectorAll("img").forEach((img) => {
-      if (img.src) {
-        resources.images.push({
-          type: "image",
-          url: img.src,
-          filename: img.src.split("/").pop().split("?")[0] || "image.jpg",
-        });
-      }
-    });
-
-    document.querySelectorAll("video source, video").forEach((el) => {
-      const src = el.src || el.currentSrc;
-      if (src) {
-        resources.videos.push({
-          type: "video",
-          url: src,
-          filename: src.split("/").pop().split("?")[0] || "video.mp4",
-        });
-      }
-    });
-
-    return resources;
-  });
-
-  await browser.close();
-
-  return [
-    ...images,
-    ...domResources.images,
-    ...videos,
-    ...domResources.videos,
-    ...fonts,
-  ];
-}
+export const maxDuration = 60;
 
 export async function POST(request) {
+  let browser;
+
   try {
     const { url } = await request.json();
 
@@ -205,57 +16,229 @@ export async function POST(request) {
 
     console.log("Starting extraction for:", url);
 
-    let allResources = [];
-    let method = "cheerio";
+    const isDev = process.env.NODE_ENV === "development";
 
-    // Primero intentar con Cheerio (rápido)
-    try {
-      console.log("Trying with Cheerio...");
-      allResources = await extractWithCheerio(url);
-      console.log(`Found ${allResources.length} resources with Cheerio`);
-
-      // Si no encontró recursos, probablemente es una SPA
-      if (allResources.length < 3) {
-        console.log("Few resources found, trying with Puppeteer...");
-        method = "puppeteer";
-        allResources = await extractWithPuppeteer(url);
-        console.log(`Found ${allResources.length} resources with Puppeteer`);
+    if (isDev) {
+      try {
+        const puppeteerRegular = require("puppeteer");
+        browser = await puppeteerRegular.launch({
+          headless: true,
+          args: ["--no-sandbox", "--disable-setuid-sandbox"],
+        });
+        console.log("Browser launched (development mode)");
+      } catch (error) {
+        console.error("Failed to launch browser in dev:", error);
+        return NextResponse.json(
+          {
+            error:
+              "Please install puppeteer for local development: npm install puppeteer --save-dev",
+          },
+          { status: 500 }
+        );
       }
-    } catch (error) {
-      console.error(`Error with ${method}:`, error);
+    } else {
+      try {
+        console.log("Getting executable path...");
+        const executablePath = await chromium.executablePath(
+          "https://github.com/Sparticuz/chromium/releases/download/v131.0.1/chromium-v131.0.1-pack.tar"
+        );
 
-      // Si Cheerio falló, intentar Puppeteer
-      if (method === "cheerio") {
-        try {
-          console.log("Cheerio failed, trying Puppeteer...");
-          allResources = await extractWithPuppeteer(url);
-        } catch (puppeteerError) {
-          console.error("Puppeteer also failed:", puppeteerError);
-          throw puppeteerError;
-        }
-      } else {
-        throw error;
+        console.log("Launching browser...");
+        browser = await puppeteer.launch({
+          args: [
+            ...chromium.args,
+            "--disable-gpu",
+            "--disable-dev-shm-usage",
+            "--disable-setuid-sandbox",
+            "--no-first-run",
+            "--no-sandbox",
+            "--no-zygote",
+            "--single-process",
+          ],
+          defaultViewport: chromium.defaultViewport,
+          executablePath: executablePath,
+          headless: chromium.headless,
+        });
+        console.log("Browser launched successfully");
+      } catch (error) {
+        console.error("Failed to launch browser:", error);
+        return NextResponse.json(
+          {
+            error: "Failed to launch browser: " + error.message,
+          },
+          { status: 500 }
+        );
       }
     }
+
+    const page = await browser.newPage();
+    console.log("New page created");
+
+    const images = [];
+    const videos = [];
+    const fonts = [];
+
+    page.on("request", (request) => {
+      const resourceUrl = request.url();
+      const resourceType = request.resourceType();
+
+      if (resourceType === "image") {
+        images.push({
+          type: "image",
+          url: resourceUrl,
+          filename: resourceUrl.split("/").pop().split("?")[0] || "image.jpg",
+        });
+      } else if (resourceType === "media") {
+        if (resourceUrl.match(/\.(mp4|webm|ogg|mov)(\?|$)/i)) {
+          videos.push({
+            type: "video",
+            url: resourceUrl,
+            filename: resourceUrl.split("/").pop().split("?")[0] || "video.mp4",
+          });
+        }
+      } else if (resourceType === "font") {
+        fonts.push({
+          type: "font",
+          url: resourceUrl,
+          filename: resourceUrl.split("/").pop().split("?")[0] || "font.woff",
+        });
+      }
+    });
+
+    console.log("Navigating to URL:", url);
+    await page.goto(url, {
+      waitUntil: "domcontentloaded",
+    });
+    console.log("Page loaded");
+
+    const domResources = await page.evaluate(() => {
+      const resources = {
+        images: [],
+        videos: [],
+        fonts: [],
+      };
+
+      document.querySelectorAll("img").forEach((img) => {
+        if (img.src) {
+          resources.images.push({
+            type: "image",
+            url: img.src,
+            filename: img.src.split("/").pop().split("?")[0] || "image.jpg",
+          });
+        }
+        if (img.srcset) {
+          const srcsetUrls = img.srcset
+            .split(",")
+            .map((s) => s.trim().split(" ")[0]);
+          srcsetUrls.forEach((url) => {
+            resources.images.push({
+              type: "image",
+              url: url,
+              filename: url.split("/").pop().split("?")[0] || "image.jpg",
+            });
+          });
+        }
+      });
+
+      document.querySelectorAll("video source, video").forEach((el) => {
+        const src = el.src || el.currentSrc;
+        if (src) {
+          resources.videos.push({
+            type: "video",
+            url: src,
+            filename: src.split("/").pop().split("?")[0] || "video.mp4",
+          });
+        }
+      });
+
+      document.querySelectorAll("*").forEach((el) => {
+        const style = window.getComputedStyle(el);
+        const bgImage = style.backgroundImage;
+        if (bgImage && bgImage !== "none") {
+          const matches = bgImage.match(/url\(['"]?([^'"]+)['"]?\)/);
+          if (matches && matches[1]) {
+            resources.images.push({
+              type: "image",
+              url: matches[1],
+              filename:
+                matches[1].split("/").pop().split("?")[0] || "bg-image.jpg",
+            });
+          }
+        }
+      });
+
+      return resources;
+    });
+
+    console.log("Resources extracted from DOM");
+
+    const allResources = [
+      ...images,
+      ...domResources.images,
+      ...videos,
+      ...domResources.videos,
+      ...fonts,
+      ...domResources.fonts,
+    ];
 
     const uniqueResources = Array.from(
       new Map(allResources.map((r) => [r.url, r])).values()
     );
 
-    const resourcesWithSize = uniqueResources.slice(0, 200).map((resource) => ({
-      ...resource,
-      size: null,
-    }));
+    console.log("Total unique resources:", uniqueResources.length);
 
-    return NextResponse.json({
-      resources: resourcesWithSize,
-      method: method, // Para debug
-    });
+    // Función para obtener tamaño con timeout
+    const getResourceSize = async (resourceUrl) => {
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 3000); // 3 segundos max
+
+        const res = await fetch(resourceUrl, {
+          method: "HEAD",
+          signal: controller.signal,
+        });
+
+        clearTimeout(timeoutId);
+
+        const contentLength = res.headers.get("content-length");
+        if (contentLength) {
+          const bytes = parseInt(contentLength);
+          if (bytes < 1024) return `${bytes} B`;
+          if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(2)} KB`;
+          return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
+        }
+      } catch (err) {
+        // Timeout o error de red, ignorar
+      }
+      return null;
+    };
+
+    // Obtener tamaños (máximo 100 recursos, en paralelo pero con límite)
+    console.log("Getting resource sizes...");
+    const resourcesWithSize = await Promise.all(
+      uniqueResources.slice(0, 100).map(async (resource) => {
+        const size = await getResourceSize(resource.url);
+        return { ...resource, size };
+      })
+    );
+
+    await browser.close();
+    console.log("Browser closed");
+
+    return NextResponse.json({ resources: resourcesWithSize });
   } catch (error) {
     console.error("Error in extract-resources:", error);
+    if (browser) {
+      try {
+        await browser.close();
+      } catch (e) {
+        console.error("Error closing browser:", e);
+      }
+    }
     return NextResponse.json(
       {
         error: error.message || "Unknown error occurred",
+        stack: process.env.NODE_ENV === "development" ? error.stack : undefined,
       },
       { status: 500 }
     );
