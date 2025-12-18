@@ -118,13 +118,9 @@ export async function POST(request) {
 
     console.log("Navigating to URL:", url);
 
-    // Timeout más corto para producción
-    const timeout = isDev ? 30000 : 15000;
-
     try {
       await page.goto(url, {
         waitUntil: "domcontentloaded",
-        timeout: timeout,
       });
       console.log("Page loaded");
     } catch (error) {
