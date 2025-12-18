@@ -43,7 +43,10 @@ export default function MenuSettingsBasic({
               style={{
                 backgroundColor: theme,
                 color: textTheme,
-                outline: mode === "Theme" && "2px solid white",
+                outline:
+                  mode === "Theme"
+                    ? "2px solid white"
+                    : `1px solid ${textTheme}40`,
               }}
               className={cn(
                 mode != "Theme" && "opacity-50",
@@ -59,7 +62,10 @@ export default function MenuSettingsBasic({
               style={{
                 backgroundColor: theme,
                 color: textTheme,
-                outline: mode != "Theme" && "2px solid white",
+                outline:
+                  mode != "Theme"
+                    ? "2px solid white"
+                    : `1px solid ${textTheme}40`,
               }}
               className={cn(mode === "Theme" && "opacity-50", "font-bold")}
               onClick={() => {

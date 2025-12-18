@@ -44,7 +44,10 @@ export default function MenuSettings() {
               style={{
                 backgroundColor: theme,
                 color: textTheme,
-                outline: mode != "Theme" && `2px solid ${textTheme}`,
+                outline:
+                  mode != "Theme"
+                    ? `2px solid ${textTheme}`
+                    : `1px solid ${textTheme}40`,
               }}
               className={cn(mode === "Theme" && "opacity-50", "font-bold")}
               onClick={() => {
@@ -57,7 +60,10 @@ export default function MenuSettings() {
               style={{
                 backgroundColor: theme,
                 color: textTheme,
-                outline: mode === "Theme" && `2px solid ${textTheme}`,
+                outline:
+                  mode === "Theme"
+                    ? `2px solid ${textTheme}`
+                    : `1px solid ${textTheme}40`,
               }}
               className={cn(
                 mode != "Theme" && "opacity-50",
@@ -150,7 +156,9 @@ export default function MenuSettings() {
               style={{
                 backgroundColor: theme,
                 color: textTheme,
-                outline: !video && `2px solid ${textTheme}`,
+                outline: !video
+                  ? `2px solid ${textTheme}`
+                  : `1px solid ${textTheme}40`,
               }}
               className={cn(
                 video && "opacity-50",
@@ -166,7 +174,9 @@ export default function MenuSettings() {
               style={{
                 backgroundColor: theme,
                 color: textTheme,
-                outline: video && `2px solid ${textTheme}`,
+                outline: video
+                  ? `2px solid ${textTheme}`
+                  : `1px solid ${textTheme}40`,
               }}
               className={cn(!video && "opacity-50", "font-bold")}
               onClick={() => {
