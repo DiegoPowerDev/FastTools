@@ -108,7 +108,6 @@ export async function POST(request) {
     console.log("Navigating to URL:", url);
     await page.goto(url, {
       waitUntil: "domcontentloaded",
-      timeout: isDev ? 30000 : 8000,
     });
     console.log("Page loaded");
 
