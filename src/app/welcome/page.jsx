@@ -12,30 +12,15 @@ import UserToasterClient from "@/components/toast/UserToasterClient";
 import ScheduleTable from "@/components/tables/ScheduleTable";
 
 export default function Page() {
-  const { loadUserData, uid, setAllImages, mode } = useFireStore();
+  const { loadUserData, uid, mode } = useFireStore();
 
   const router = useRouter();
-
-  async function loadImages(uid) {
-    try {
-      const res = await fetch(`/api/upload/${uid}`);
-      if (!res.ok) {
-        throw new Error(`Error fetching images: ${res.status}`);
-      }
-      const data = await res.json();
-      const newData = data.map((e) => e.secure_url);
-      setAllImages(newData);
-    } catch (error) {
-      console.error("Error loading images", error);
-    }
-  }
 
   useEffect(() => {
     const auth = getAuth();
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
       if (firebaseUser) {
-        const unsubFirestore = loadUserData(); // loadUserData ya obtiene el uid internamente
-        loadImages(firebaseUser.uid);
+        const unsubFirestore = loadUserData();
         window.__UNSUB_FIRESTORE__ = unsubFirestore;
       } else {
         console.log("No hay usuario autenticado");

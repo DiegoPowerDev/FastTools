@@ -22,7 +22,7 @@ function arrayMove(arr, from, to) {
 const initialState = {
   uid: null,
   backgroundType: "image",
-  background: "/background.webp",
+  background: "/background.png",
   mobileBackground: "/background.webp",
   theme: "#b91c1c",
   textTheme: "#fafafa",
@@ -236,7 +236,7 @@ export const fireStore = createStore((set, get) => ({
     set({ backgroundType });
     get().saveToFirestore();
   },
-  background: "/background.webp",
+  background: "/background.png",
   mobileBackground: "/background.webp",
   images: [],
   theme: "#b91c1c",

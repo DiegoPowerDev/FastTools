@@ -57,6 +57,7 @@ export default function Register({ theme, textTheme }) {
         <div className="w-full">
           <label className="font-bold">EMAIL</label>
           <Input
+            style={{ border: `1px solid ${textTheme}` }}
             required
             type="email"
             onChange={(e) => setEmail(e.target.value)}
@@ -66,6 +67,7 @@ export default function Register({ theme, textTheme }) {
         <div className="w-full">
           <label className="font-bold">PASSWORD</label>
           <Input
+            style={{ border: `1px solid ${textTheme}` }}
             required
             type="password"
             onChange={(e) => setPassword(e.target.value)}
@@ -75,6 +77,7 @@ export default function Register({ theme, textTheme }) {
         <div className="w-full">
           <label className="font-bold">CONFIRM PASSWORD</label>
           <Input
+            style={{ border: `1px solid ${textTheme}` }}
             required
             type="password"
             onChange={(e) => setConfirmPassword(e.target.value)}
@@ -85,10 +88,10 @@ export default function Register({ theme, textTheme }) {
           <Button
             disabled={loading}
             style={{
-              color: textTheme,
-              backgroundColor: theme,
+              color: theme,
+              backgroundColor: textTheme,
             }}
-            className={cn("w-3/4 hover:opacity-60 gap-2 disabled:opacity-50 ")}
+            className=" font-bold w-3/4 hover:opacity-60 disabled:opacity-50"
           >
             {loading ? (
               <div className="w-4 h-4 border-t-2 border-white rounded-full animate-spin"></div>

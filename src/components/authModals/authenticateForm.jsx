@@ -51,42 +51,48 @@ export default function AuthenticateForm() {
   return (
     <>
       <div className="w-full items-center justify-center flex gap-2">
-        <Button
-          variant="ghost"
+        <button
           className="font-bold p-2 rounded"
           style={{
-            color: modo === "login" ? textTheme : theme,
-            border: modo === "login" ? "2px solid white" : "",
-            backgroundColor: modo === "login" ? theme : `${theme}40`,
+            backgroundColor: modo === "login" && textTheme,
+            color: modo === "login" && theme,
+            border:
+              modo === "login"
+                ? `2px solid ${textTheme}`
+                : `1px solid ${textTheme}`,
           }}
           onClick={() => setModo("login")}
         >
           LOGIN
-        </Button>
-        <Button
-          variant="ghost"
-          style={{
-            color: modo === "register" ? textTheme : theme,
-            border: modo === "register" ? "2px solid white" : "",
-            backgroundColor: modo === "register" ? theme : `${theme}40`,
-          }}
+        </button>
+        <button
           className="font-bold p-2 rounded"
+          style={{
+            backgroundColor: modo === "register" && textTheme,
+            color: modo === "register" && theme,
+            border:
+              modo === "register"
+                ? `2px solid ${textTheme}`
+                : `1px solid ${textTheme}`,
+          }}
           onClick={() => setModo("register")}
         >
           REGISTER
-        </Button>
-        <Button
-          variant="ghost"
+        </button>
+        <button
+          className="font-bold p-2 rounded"
           style={{
-            color: modo === "google" ? textTheme : theme,
-            border: modo === "google" ? "2px solid white" : "",
-            backgroundColor: modo === "google" ? theme : `${theme}40`,
+            backgroundColor: modo === "google" && textTheme,
+            color: modo === "google" && theme,
+            border:
+              modo === "google"
+                ? `2px solid ${textTheme}`
+                : `1px solid ${textTheme}`,
           }}
-          className="font-bold p-2 rounded flex items-center gap-2"
           onClick={() => setModo("google")}
         >
           OTHER
-        </Button>
+        </button>
       </div>
       <div className="flex-1 flex flex-col items-center justify-center ">
         {modo === "login" && <Login theme={theme} textTheme={textTheme} />}

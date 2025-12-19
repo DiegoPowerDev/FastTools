@@ -430,9 +430,9 @@ export default function Toolbar() {
       <div className=" w-screen flex justify-center items-center gap-2 py-2 px-8">
         <div
           style={{
+            boxShadow: `0 0 15px 5px ${textTheme}`,
             backgroundColor: theme,
             color: textTheme,
-            boxShadow: `0 0 15px 5px ${textTheme}`,
           }}
           onClick={() => {
             setTabs("header");
@@ -457,7 +457,7 @@ export default function Toolbar() {
           }}
           className="hover:scale-125 duration-300 flex justify-end pr-4 cursor-pointer"
         >
-          <IconCloud color={theme} size={40} />
+          <IconCloud color={textTheme} size={40} />
         </div>
       </div>
 

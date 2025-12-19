@@ -51,6 +51,7 @@ export default function Login({ theme, textTheme }) {
         <div className="w-full">
           <label className="font-bold">EMAIL</label>
           <Input
+            style={{ border: `1px solid ${textTheme}` }}
             required
             type="email"
             onChange={(e) => setEmail(e.target.value)}
@@ -60,6 +61,7 @@ export default function Login({ theme, textTheme }) {
         <div className="w-full">
           <label className="font-bold">PASSWORD</label>
           <Input
+            style={{ border: `1px solid ${textTheme}` }}
             required
             type="password"
             onChange={(e) => setPassword(e.target.value)}
@@ -71,10 +73,10 @@ export default function Login({ theme, textTheme }) {
             <Button
               disabled={loading}
               style={{
-                color: textTheme,
-                backgroundColor: theme,
+                color: theme,
+                backgroundColor: textTheme,
               }}
-              className="w-3/4 hover:opacity-60"
+              className=" font-bold w-3/4 hover:opacity-60"
             >
               {loading ? (
                 <div className="w-4 h-4 border-t-2 border-white rounded-full animate-spin"></div>
@@ -104,10 +106,10 @@ export default function Login({ theme, textTheme }) {
               }}
               type="button"
               style={{
-                color: textTheme,
-                backgroundColor: theme,
+                color: theme,
+                backgroundColor: textTheme,
               }}
-              className="w-3/4 hover:opacity-60"
+              className="w-3/4 hover:opacity-60 font-bold"
             >
               Re-send <Mails />
             </Button>
