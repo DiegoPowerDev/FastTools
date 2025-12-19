@@ -1,14 +1,13 @@
 import React, { useEffect, useRef, useState } from "react";
 import styles from "../style.module.css";
 import { Button } from "../ui/button";
-import { IconPencil } from "@tabler/icons-react";
+import { IconPencil, IconPlus, IconVideoOff } from "@tabler/icons-react";
 import { getAuth } from "firebase/auth";
 import { useFireStore } from "@/store/fireStore";
 import toast from "react-hot-toast";
 import ColorGrill from "./colorGrill";
 import { cn } from "@/lib/utils";
 import ColorGrillMobile from "./colorGrillMobile";
-import { Upload } from "lucide-react";
 
 export default function MenuSettings() {
   const {
@@ -186,16 +185,15 @@ export default function MenuSettings() {
               VIDEO
             </Button>
           </div>
+
           {video ? (
-            <>
-              <BackgroundVideo
-                setBackgroundType={setBackgroundType}
-                theme={theme}
-                editable={editable}
-                setBackground={setBackground}
-                textTheme={textTheme}
-              />
-            </>
+            <BackgroundVideo
+              setBackgroundType={setBackgroundType}
+              theme={theme}
+              editable={editable}
+              setBackground={setBackground}
+              textTheme={textTheme}
+            />
           ) : (
             <div className="w-full h-full grid md:grid-cols-4 md:grid-rows-3 grid-cols-2 place-content-center md:gap-2">
               {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((e, i) => (
@@ -232,14 +230,10 @@ function BackgroundVideo({
   editable,
 }) {
   const auth = getAuth();
-
-  const videoRef = useRef(null);
-  const [isLoading, setIsLoading] = useState(true);
   const uid = auth.currentUser?.uid;
-  const [videoUrl, setVideoUrl] = useState(null);
-  const fileInputRef = useRef(null);
+  const [videoUrl, setVideoUrl] = useState([]);
 
-  // --- Lógica de Carga Inicial ---
+  const [isLoading, setIsLoading] = useState(true);
   async function load() {
     if (!uid) {
       setIsLoading(false);
@@ -247,17 +241,23 @@ function BackgroundVideo({
     }
 
     try {
-      const res = await fetch("/api/get-background-video", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ uid }),
-      });
+      const res = await fetch(`/api/get-background-video/${uid}`);
 
       const data = await res.json();
 
-      if (data.exists) {
-        setVideoUrl(data.url);
-      }
+      const list = Array(6).fill("");
+      data.forEach((e) => {
+        // extraer número de video desde la URL
+        const match = e.url.match(/video(\d)/);
+        if (!match) return;
+
+        const index = Number(match[1]) - 1;
+
+        if (index >= 0 && index < 6) {
+          list[index] = e.url;
+        }
+      });
+      setVideoUrl(list);
     } catch (error) {
       console.error("Error loading video:", error);
     } finally {
@@ -269,16 +269,64 @@ function BackgroundVideo({
     load();
   }, [uid]);
 
-  // --- Lógica de Subida (Siempre usa uploadTemp si editable=true) ---
-  const uploadTemp = async (file) => {
-    setIsLoading(true);
+  if (isLoading) {
+    return (
+      <div
+        style={{ backgroundColor: theme, color: textTheme }}
+        className="w-full h-20 flex rounded-xl items-center justify-center"
+      >
+        <div
+          style={{ border: `2px solid ${textTheme}` }}
+          className="animate-spin rounded-full h-6 w-6 border-t-transparent"
+        ></div>
+      </div>
+    );
+  }
+  return (
+    <div className="h-40 w-full bg-black overflow-hidden shadow-2xl flex items-center justify-center">
+      <div className="w-full h-full grid grid-cols-3 grid-rows-2 gap-1">
+        {[1, 2, 3, 4, 5, 6].map((e) => (
+          <SimpleVideo
+            uid={uid}
+            theme={theme}
+            videoUrl={videoUrl}
+            isLoading={isLoading}
+            textTheme={textTheme}
+            setBackgroundType={setBackgroundType}
+            setBackground={setBackground}
+            editable={editable}
+            key={e}
+            id={e}
+            setVideoUrl={setVideoUrl}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
 
+function SimpleVideo({
+  id,
+  uid,
+  theme,
+  textTheme,
+  setBackgroundType,
+  setBackground,
+  editable,
+  videoUrl,
+  setVideoUrl,
+}) {
+  const videoRef = useRef(null);
+  const [loading, setLoading] = useState(false);
+  const fileInputRef = useRef(null);
+  const uploadTemp = async (file) => {
+    setLoading(true);
     try {
       // 1. Obtener firma del servidor
       const sigResponse = await fetch("/api/get-background-signature", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ uid }),
+        body: JSON.stringify({ uid, id }),
       });
 
       if (!sigResponse.ok) {
@@ -314,8 +362,9 @@ function BackgroundVideo({
           body: formData,
         }
       );
-
+      console.log("no error");
       if (!uploadResponse.ok) {
+        console.log("error");
         const errorData = await uploadResponse.json();
         throw new Error(errorData.error?.message || "Upload failed");
       }
@@ -323,10 +372,16 @@ function BackgroundVideo({
       const data = await uploadResponse.json();
 
       console.log("Upload response:", data);
-
       if (data.secure_url || data.url) {
         const url = data.secure_url || data.url;
-        setVideoUrl(url);
+
+        setVideoUrl((prev) => {
+          const next = [...prev];
+          next[id - 1] = url + `?t=${Date.now()}`; // 👈 cache-busting
+          return next;
+        });
+      }
+      if (data.secure_url || data.url) {
         toast.success("Background video uploaded and optimized!");
       } else {
         throw new Error("No URL returned from Cloudinary");
@@ -335,10 +390,9 @@ function BackgroundVideo({
       console.error("Error uploading video:", error);
       toast.error(error.message || "Error uploading video, try again.");
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
-
   const handleFileSelect = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -348,17 +402,19 @@ function BackgroundVideo({
       return;
     }
 
-    // Ejecutar la subida
     await uploadTemp(file);
     e.target.value = null; // Limpiar input
   };
 
-  // --- Estado de Carga ---
-  if (isLoading) {
+  if (loading) {
     return (
       <div
-        style={{ backgroundColor: theme, color: textTheme }}
-        className="w-full h-40 flex rounded-xl items-center justify-center"
+        style={{
+          backgroundColor: theme,
+          color: textTheme,
+          border: `1px solid ${textTheme}`,
+        }}
+        className="w-full h-20 flex rounded-xl items-center justify-center"
       >
         <div
           style={{ border: `2px solid ${textTheme}` }}
@@ -367,82 +423,53 @@ function BackgroundVideo({
       </div>
     );
   }
-
-  // --- Renderizado Principal ---
   return (
-    <div className="h-40 bg-black overflow-hidden shadow-2xl flex items-center justify-center rounded-xl">
-      {/* SI NO HAY VIDEO: Mostrar botón de upload */}
-      {!videoUrl ? (
-        <div className="text-center p-8">
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="video/*"
-            onChange={handleFileSelect}
-            className="hidden"
-            id="video-upload"
-          />
-          <label
-            style={{ backgroundColor: theme, color: textTheme }}
-            htmlFor="video-upload"
-            className="px-8 py-4 rounded-lg font-semibold hover:opacity-70 select-none active:scale-110 duration-300 flex items-center gap-3 mx-auto cursor-pointer"
-          >
-            <Upload size={24} />
-            Click to upload a video
-          </label>
-        </div>
-      ) : (
-        /* SI HAY VIDEO: Mostrarlo */
-        <div
-          // Si NO es editable: permitir establecer como fondo
-          onClick={() => {
-            if (!editable) {
-              setBackgroundType("video");
-              setBackground(videoUrl);
-              toast.success("Background video set!");
-            }
-          }}
-          // Clase condicional para indicar si es clickeable
-          className={`w-full h-full flex flex-col items-center justify-center ${
-            !editable
-              ? "cursor-pointer hover:opacity-80 transition-opacity"
-              : ""
-          }`}
+    <>
+      <div
+        style={{ border: `1px solid ${textTheme}` }}
+        onClick={() => {
+          if (!editable && videoUrl[id - 1]) {
+            setBackgroundType("video");
+            setBackground(videoUrl[id - 1]);
+            toast.success("Background video set!");
+          }
+        }}
+        className={`border-2 border-white w-full h-full flex items-center justify-center ${
+          !editable ? "cursor-pointer hover:opacity-80 transition-opacity" : ""
+        }`}
+      >
+        <label
+          htmlFor={editable ? `video-upload-${id}` : undefined}
+          className="w-full h-full flex items-center justify-center"
         >
-          <video
-            ref={videoRef}
-            src={videoUrl}
-            autoPlay
-            loop
-            muted
-            playsInline
-            crossOrigin="anonymous"
-            className="w-full h-full object-cover"
-          />
-
-          {/* Botón para cambiar video (solo si es editable) */}
-          {editable && (
-            <div className="absolute bottom-2">
-              <input
-                type="file"
-                accept="video/*"
-                onChange={handleFileSelect}
-                className="hidden"
-                id="video-change"
-              />
-              <label
-                style={{ backgroundColor: theme, color: textTheme }}
-                htmlFor="video-change"
-                className="px-4 py-2 rounded-lg text-sm font-semibold hover:opacity-70 cursor-pointer flex items-center gap-2"
-              >
-                <Upload size={16} />
-                Change
-              </label>
+          {videoUrl[id - 1] ? (
+            <video
+              ref={videoRef}
+              src={videoUrl[id - 1]}
+              autoPlay
+              loop
+              muted
+              playsInline
+              crossOrigin="anonymous"
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <div className="text-xs opacity-50 select-none">
+              {editable ? <IconPlus /> : <IconVideoOff />}
             </div>
           )}
-        </div>
-      )}
-    </div>
+        </label>
+      </div>
+
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="video/*"
+        onChange={handleFileSelect}
+        className="hidden"
+        id={`video-upload-${id}`}
+      />
+    </>
   );
 }
 

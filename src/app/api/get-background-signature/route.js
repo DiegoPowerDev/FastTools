@@ -9,8 +9,8 @@ cloudinary.config({
 
 export async function POST(req) {
   try {
-    const { uid } = await req.json();
-
+    const { uid, id } = await req.json();
+    console.log(id);
     if (!uid) {
       return Response.json({ error: "Missing uid" }, { status: 400 });
     }
@@ -33,7 +33,7 @@ export async function POST(req) {
     // Generar timestamp y firma CON TRANSFORMACIONES
     const timestamp = Math.round(new Date().getTime() / 1000);
     const folder = `fasttools/${uid}`;
-    const publicId = "video";
+    const publicId = `video${id}`;
 
     // 🚀 PARÁMETROS DE OPTIMIZACIÓN
     const eager = "q_auto:eco,w_1920,c_scale,f_auto"; // Optimización automática
