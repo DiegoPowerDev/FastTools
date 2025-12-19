@@ -248,15 +248,16 @@ function BackgroundVideo({
       const list = Array(6).fill("");
       data.forEach((e) => {
         // extraer número de video desde la URL
-        const match = e.url.match(/video(\d)/);
+        const match = e.secure_url.match(/video(\d)/);
         if (!match) return;
 
         const index = Number(match[1]) - 1;
 
         if (index >= 0 && index < 6) {
-          list[index] = e.url;
+          list[index] = e.secure_url;
         }
       });
+      console.log(data);
       setVideoUrl(list);
     } catch (error) {
       console.error("Error loading video:", error);
