@@ -254,6 +254,8 @@ export default function VideoTrimmer({ theme, textTheme }) {
     try {
       const fileName = `video_trimmed_${Date.now()}.${format}`;
 
+      toast.loading("Preparing your video...", { id: "download" });
+
       // 1. Obtener URL de descarga
       const response = await fetch("/api/get-download-url", {
         method: "POST",
@@ -267,16 +269,28 @@ export default function VideoTrimmer({ theme, textTheme }) {
         }),
       });
 
+      if (response.status === 423) {
+        toast.error(
+          "Video is still processing. Please wait a moment and try again.",
+          {
+            id: "download",
+            duration: 5000,
+          }
+        );
+        return;
+      }
+
       if (!response.ok) {
-        throw new Error("Failed to generate download URL");
+        const error = await response.json();
+        throw new Error(error.error || "Failed to generate download URL");
       }
 
       const { downloadUrl } = await response.json();
 
-      console.log("Download URL:", downloadUrl); // Debug
+      console.log("Download URL:", downloadUrl);
 
       // 2. Descargar el video
-      toast.loading("Preparing the download...", { id: "download" });
+      toast.loading("Downloading video...", { id: "download" });
 
       const videoResponse = await fetch(downloadUrl);
 
@@ -285,6 +299,10 @@ export default function VideoTrimmer({ theme, textTheme }) {
       }
 
       const blob = await videoResponse.blob();
+
+      // Mostrar tamaño del archivo
+      const sizeMB = (blob.size / (1024 * 1024)).toFixed(2);
+      console.log(`Downloaded ${format.toUpperCase()}: ${sizeMB} MB`);
 
       // 3. Crear descarga
       const blobUrl = window.URL.createObjectURL(blob);
@@ -298,7 +316,10 @@ export default function VideoTrimmer({ theme, textTheme }) {
       // 4. Limpiar
       setTimeout(() => window.URL.revokeObjectURL(blobUrl), 100);
 
-      toast.success("Video downloaded successfully!", { id: "download" });
+      toast.success(`Video downloaded successfully! (${sizeMB} MB)`, {
+        id: "download",
+        duration: 4000,
+      });
     } catch (error) {
       console.error("Error exporting video:", error);
       toast.error(error.message || "Error downloading video", {

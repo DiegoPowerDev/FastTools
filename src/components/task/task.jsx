@@ -174,7 +174,8 @@ export default function Task({ task }) {
           )}
           <div
             style={{ color: textTheme }}
-            className="font-bold uppercase text-sm text-wrap text-center truncate"
+            title={task.name}
+            className="font-bold uppercase text-sm text-wrap text-center line-clamp-2"
           >
             {task.name}
           </div>
@@ -477,7 +478,7 @@ export default function Task({ task }) {
                         >
                           {new Date(note.createdAt).toLocaleString("en-GB")}
 
-                          <div className="truncate ">{note.title}</div>
+                          <div className="line-clamp-2 ">{note.title}</div>
                         </div>
                       </DialogTrigger>
                       <DialogContent
