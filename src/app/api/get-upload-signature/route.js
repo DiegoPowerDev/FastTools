@@ -44,7 +44,7 @@ export async function POST(req) {
     return NextResponse.json({
       signature,
       timestamp,
-      cloudName: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
+      cloudName: process.env.CLOUDINARY_CLOUD_NAME,
       apiKey: process.env.CLOUDINARY_API_KEY,
       folder,
       publicId,
